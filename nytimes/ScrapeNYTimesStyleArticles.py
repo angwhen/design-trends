@@ -15,8 +15,9 @@ def get_article_relevant_str(article):
         article_relevant_str +=  article['abstract']
     if 'headline' in article and article['headline'] != None:
         article_relevant_str +=   article['headline']['main']
-    for 'keywords' in article and keyword in article["keywords"]:
-        article_relevant_str = article_relevant_str + keyword["value"]+ " "
+    if 'keywords' in article:
+        for keywords in article and keyword in article["keywords"]:
+            article_relevant_str = article_relevant_str + keyword["value"]+ " "
     article_relevant_str = article_relevant_str.lower()
     return article_relevant_str
 
