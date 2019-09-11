@@ -7,15 +7,15 @@ import nltk
 
 def get_article_relevant_str(article):
     article_relevant_str =""
-    if article['lead_paragraph'] != None:
+    if 'lead_paragraph' in article and article['lead_paragraph'] != None:
         article_relevant_str +=  article['lead_paragraph']
-    if article['snippet'] != None:
+    if 'snippet' in article and article['snippet'] != None:
         article_relevant_str +=  article['snippet']
-    if article['abstract'] != None:
+    if 'abstract' in article and article['abstract'] != None:
         article_relevant_str +=  article['abstract']
-    if article['headline'] != None:
+    if 'headline' in article and article['headline'] != None:
         article_relevant_str +=   article['headline']['main']
-    for keyword in article["keywords"]:
+    for 'keywords' in article and keyword in article["keywords"]:
         article_relevant_str = article_relevant_str + keyword["value"]+ " "
     article_relevant_str = article_relevant_str.lower()
     return article_relevant_str
