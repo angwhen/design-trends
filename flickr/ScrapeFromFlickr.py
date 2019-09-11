@@ -2,9 +2,9 @@
 from flickrapi import FlickrAPI
 import pandas as pd
 import sys
+import re
 
-key=''
-secret=''
+
 def get_urls(image_tag,MAX_COUNT):
     api_key = open("flickr_api_key.txt").read().strip()
     api_secret = open("flickr_api_secret.txt").read().strip()
@@ -22,18 +22,18 @@ def get_urls(image_tag,MAX_COUNT):
         curr_photo = []
         if count< MAX_COUNT:
             print("Fetching url for image number {}".format(count))
-            try:
-                url=photo.get('url_o')
-                title= photo.get('title')
-                possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9]",title)
-                if len(possible_years) == 0:
-                    continue # no date
-                year = possible_years[0]
-                curr_photo = [url,title,year]
-                urls.append(curr_photo)
-                count +=1
-            except:
-                print("Url for image number {} could not be fetched".format(count))
+
+            url=photo.get('url_o')
+            title= photo.get('title')
+            possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9]",title)
+            if len(possible_years) == 0:
+                continue # no date
+            year = possible_years[0]
+            curr_photo = [url,title,year]
+            urls.append(curr_photo)
+            count +=1
+            #except:
+            #    print("Url for image number {} could not be fetched".format(count))
         else:
             break
 
