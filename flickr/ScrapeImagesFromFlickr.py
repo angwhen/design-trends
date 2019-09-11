@@ -18,8 +18,8 @@ for keyword in open("data/keywords.txt"):
 images_and_urls = []
 count = 0
 for i,row in data.iterrows():
-    print ("%s %d"%(url,count))
     url = row['url']
+    print ("%s %d"%(url,count))
     try:
         fname = "data/images/%d.jpg"%count
         urllib.request.urlretrieve(url,fname)
