@@ -41,8 +41,8 @@ def is_style_article(article):
 def get_nytimes_style_data_from_api():
     api_key = open("nytimes_api_key.txt").read().strip()
     my_data = [] #year, month, json as text
-    for year in range(1852,1853):#2020):
-        for month in range(1,2): #13
+    for year in range(1852,2020):
+        for month in range(1,13):
             url ='https://api.nytimes.com/svc/archive/v1/%d/%d.json?api-key=%s'%(year,month,api_key)
             response = requests.get(url)
             data = json.loads(response.text)['response']['docs']
@@ -60,8 +60,8 @@ def get_style_related_words():
     style_related_words_unigram = set([])
 
     style_related_words_speak_fashion = pickle.load(open("data/speak_fashion_fashion_terms.p","rb"))
-    style_related_words = pickle.load(open("data/zalora_fashion_terms.p","rb"))
-    for w in style_related_words_speak_fashion.union(style_realted_words_zalora):
+    style_related_words_zalora = pickle.load(open("data/zalora_fashion_terms.p","rb"))
+    for w in style_related_words_speak_fashion.union(style_related_words_zalora):
         if " " in w:
             style_related_words.add(w.lower().strip())
         else:
@@ -74,7 +74,7 @@ def get_style_related_words():
         if not first:
             w = l.lower().strip()
             if " " in w:
-                style_related_words.add()
+                style_related_words.add(w)
             else:
                 style_related_words_unigram.add(w)
         first = False
