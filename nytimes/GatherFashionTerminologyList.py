@@ -52,7 +52,7 @@ def get_speak_fashion_fashion_term_unigrams():
         curr_terms = curr_terms.split() #seperating multi-part terms
         for ct in curr_terms:
             ct = re.sub("\.|\)|\(", "", ct) #removing periods, and prens
-            if len(ct) > 2 and word_frequency(term, 'en') < 0.0001:
+            if len(ct) > 2 and word_frequency(ct, 'en') < 0.0001:
                 fashion_unigrams.add(ct)
 
     pickle.dump(fashion_unigrams, open( "data/speak_fashion_fashion_term_unigrams.p", "wb" ) )
