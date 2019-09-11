@@ -43,5 +43,9 @@ def get_urls(image_tag,MAX_COUNT):
     urls.columns = ["url","title","year"]
     urls.to_csv("data/"+image_tag+"_urls.csv")
 
+keywords_file = open("data/keywords.txt","a")
 for decade in range(1850,2030,10):
-    get_urls("%ds fashion"%decade,10000)
+    name = "%ds fashion"%decade
+    keywords_file.write(name+"\n")
+    get_urls(name,10000)
+keywords_file.close()
