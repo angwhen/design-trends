@@ -25,7 +25,7 @@ def get_urls(image_tag,MAX_COUNT):
             try:
                 url=photo.get('url_o')
                 title= photo.get('title')
-                possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9]"",title)
+                possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9]",title)
                 if len(possible_years) == 0:
                     continue # no date
                 year = possible_years[0]
