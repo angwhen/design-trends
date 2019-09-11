@@ -56,14 +56,15 @@ def get_nytimes_style_data_from_api():
     pickle.dump(my_data,open("data/nytimes_style_articles_data.p","wb"))
 
 def get_style_related_words():
-    style_related_words_uni_1 = pickle.load(open("data/speak_fashion_fashion_term_unigrams.p","rb"))
-    style_related_words_uni_2 = pickle.load(open("data/zalora_fashion_term_unigrams.p","rb"))
-    style_related_words_unigram_temp = style_related_words_uni_1.union(style_related_words_uni_2)
+    style_related_words = set([])
     style_related_words_unigram = set([])
+
+    style_related_words_unigram_temp = pickle.load(open("data/zalora_fashion_term_unigrams.p","rb"))
     for w in style_related_words_unigram_temp:
         style_related_words_unigram.add(w.lower())
 
-    style_related_words = set([])
+    style_related_words = pickle.load(open("data/speak_fashion_fashion_terms.p","rb"))
+
     clothing_types_file = open("data/clothing_types_list.txt", "r")
     fabrics_file = open("data/fabrics_list.txt", "r")
     first = True

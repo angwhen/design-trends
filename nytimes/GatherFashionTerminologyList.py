@@ -6,7 +6,7 @@ import re
 import pickle
 from wordfreq import word_frequency
 
-def get_zalora_fashion_term_unigrams():
+def get_zalora_fashion_terms_unigram():
     r = requests.get('https://www.zalora.com.hk/fashion-glossary/')
     poss_terms = re.findall(r"<b>[\w\s,.\(\)]+</b>",r.text)
     fashion_unigrams = set([])
@@ -20,7 +20,7 @@ def get_zalora_fashion_term_unigrams():
     pickle.dump(fashion_unigrams, open( "data/zalora_fashion_term_unigrams.p", "wb" ) )
 
 
-def get_speak_fashion_fashion_term_unigrams():
+def get_speak_fashion_fashion_terms():
     fashion_unigrams = set([])
     possible_terms = []
     for letter_ord in range(97,97+26):
@@ -44,18 +44,13 @@ def get_speak_fashion_fashion_term_unigrams():
         if possible_terms_counts[term] < 26:
             possible_terms.add(term)
 
-    # unigramming and formatting
     # some bad terms (too short or too common) are removed
     for el in possible_terms:
-        curr_terms = el.split("=")[-1][1:-1]
-        curr_terms = re.sub(",", " ", curr_terms)
-        curr_terms = curr_terms.split() #seperating multi-part terms
-        for ct in curr_terms:
-            ct = re.sub("\.|\)|\(", "", ct) #removing periods, and prens
-            if len(ct) > 2 and word_frequency(ct, 'en') < 0.0001:
-                fashion_unigrams.add(ct)
+        curr_term = el.split("=")[-1][1:-1]
+        curr_term = re.sub(",", " ", curr_term)
+        fashion_unigrams.add(curr_term)
 
-    pickle.dump(fashion_unigrams, open( "data/speak_fashion_fashion_term_unigrams.p", "wb" ) )
+    pickle.dump(fashion_unigrams, open( "data/speak_fashion_fashion_terms.p", "wb" ) )
 
-#get_zalora_fashion_term_unigrams()
-get_speak_fashion_fashion_term_unigrams()
+#get_zalora_fashion_terms_unigram()
+get_speak_fashion_fashion_terms()
