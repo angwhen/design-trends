@@ -22,18 +22,18 @@ def get_urls(image_tag,MAX_COUNT):
         curr_photo = []
         if count< MAX_COUNT:
             print("Fetching url for image number {}".format(count))
-
-            url=photo.get('url_o')
-            title= photo.get('title')
-            possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9]",title)
-            if len(possible_years) == 0:
-                continue # no date
-            year = possible_years[0]
-            curr_photo = [url,title,year]
-            urls.append(curr_photo)
-            count +=1
-            #except:
-            #    print("Url for image number {} could not be fetched".format(count))
+            try:
+                url=photo.get('url_o')
+                title= photo.get('title')
+                possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9]",title)
+                if len(possible_years) == 0:
+                    continue # no date
+                year = possible_years[0]
+                curr_photo = [url,title,year]
+                urls.append(curr_photo)
+                count +=1
+            except:
+                print("Url for image number {} could not be fetched".format(count))
         else:
             break
 
@@ -41,5 +41,4 @@ def get_urls(image_tag,MAX_COUNT):
     urls.columns = ["url","title","year"]
     urls.to_csv(image_tag+"_urls.csv")
 
-
-get_urls("vintage fashion",100)
+get_urls("vintage fashion",10000)
