@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+from flickrapi import FlickrAPI
+import pandas as pd
+import sys
+
+key=''
+secret=''
+def get_urls(image_tag,MAX_COUNT):
+    api_key = open("flickr_api_key.txt").read().strip()
+    api_secret = open("flickr_api_secret.txt").read().strip()
+    flickr = FlickrAPI(api_key, api_secret)
+    photos = flickr.walk(text=image_tag,
+                            tag_mode='all',
+                            tags=image_tag,
+                            extras='url_o',
+                            per_page=50,
+                            sort='relevance')
+
+    count=0
+    urls=[]
+    for photo in photos:
+        curr_photo = []
+        if count< MAX_COUNT:
+            print("Fetching url for image number {}".format(count))
+            try:
+                url=photo.get('url_o')
+                title= photo.get('title')
+                curr_photo = [url,title]
+                urls.append(curr_photo)
+                count +=1
+            except:
+                print("Url for image number {} could not be fetched".format(count))
+        else:
+            break
+
+    urls=pd.DataFrame(urls)
+    urls.columns = ["url","title"]
+    urls.to_csv(image_tag+"_urls.csv")
+
+
+get_urls("vintage fashion",100)
