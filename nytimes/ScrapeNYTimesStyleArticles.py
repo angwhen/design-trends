@@ -40,21 +40,26 @@ def is_style_article(article):
 
 def get_nytimes_style_data_from_api():
     api_key = open("nytimes_api_key.txt").read().strip()
+    total_and_taken_articles = []
     my_data = [] #year, month, json as text
-    for year in range(1852,2020):
-        for month in range(1,13):
+    for year in range(1852,1853):
+        for month in range(1,2):
             print ("year: %d, month: %d"%(year,month))
             url ='https://api.nytimes.com/svc/archive/v1/%d/%d.json?api-key=%s'%(year,month,api_key)
             response = requests.get(url)
             data = json.loads(response.text)['response']['docs']
+            num_taken = 0
             for article in data:
                 style_article_reasons = is_style_article(article)
                 if len(style_article_reasons) > 1:
                     article_json_str = json.dumps(article)
-                    my_data_curr = [year,1,article_json_str,style_article_reasons]
+                    my_data_curr = [year,month,article_json_str,style_article_reasons]
                     my_data.append(my_data_curr)
+                    num_taken +=1
+            total_and_taken_articles = [year,month,len(data),num_taken]
             time.sleep(10)
             pickle.dump(my_data,open("data/nytimes_style_articles/year_%d.p"%year,"wb"))
+    pickle.dump(total_and_taken_articles,open("data/nytimes_style_articles/total_and_taken_articles.p","wb"))
 
 def get_style_related_words():
     style_related_words = set([])
