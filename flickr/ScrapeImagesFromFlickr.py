@@ -3,6 +3,7 @@ import csv
 from os import walk
 import re
 import urllib.request
+import pickle
 
 # save the images
 # and also a dataframe from url to image name
