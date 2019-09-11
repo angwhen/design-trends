@@ -59,27 +59,29 @@ def get_style_related_words():
     style_related_words = set([])
     style_related_words_unigram = set([])
 
-    style_related_words_unigram_temp = pickle.load(open("data/zalora_fashion_term_unigrams.p","rb"))
-    for w in style_related_words_unigram_temp:
-        style_related_words_unigram.add(w.lower())
-
-    style_related_words = pickle.load(open("data/speak_fashion_fashion_terms.p","rb"))
+    style_related_words_speak_fashion = pickle.load(open("data/speak_fashion_fashion_terms.p","rb"))
+    style_related_words = pickle.load(open("data/zalora_fashion_terms.p","rb"))
+    for w in style_related_words_speak_fashion.union(style_realted_words_zalora):
+        if " " in w:
+            style_related_words.add(w.lower().strip())
+        else:
+            style_related_words_unigram.add(w.lower().strip())
 
     clothing_types_file = open("data/clothing_types_list.txt", "r")
     fabrics_file = open("data/fabrics_list.txt", "r")
     first = True
     for l in clothing_types_file:
         if not first:
-            w = l.strip()
+            w = l.lower().strip()
             if " " in w:
-                style_related_words.add(w)
+                style_related_words.add()
             else:
                 style_related_words_unigram.add(w)
         first = False
     first = True
     for l in fabrics_file:
         if not first:
-            w = l.strip()
+            w = l.lower().strip()
             if " " in w:
                 style_related_words.add(w)
             else:

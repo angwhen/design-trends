@@ -6,18 +6,21 @@ import re
 import pickle
 from wordfreq import word_frequency
 
-def get_zalora_fashion_terms_unigram():
+def get_zalora_fashion_terms():
     r = requests.get('https://www.zalora.com.hk/fashion-glossary/')
     poss_terms = re.findall(r"<b>[\w\s,.\(\)]+</b>",r.text)
     fashion_unigrams = set([])
+    fashion_terms = set([])
     for el in poss_terms:
         el = el[3:-4]
+        fashion_terms.add(el)
         el = el.split()
         for t in el:
             # remove overly common terms (ie "and")
             if word_frequency(t, 'en') < 0.0001:
                 fashion_unigrams.add(t)
     pickle.dump(fashion_unigrams, open( "data/zalora_fashion_term_unigrams.p", "wb" ) )
+    pickle.dump(fashion_terms, open( "data/zalora_fashion_terms.p", "wb" ) )
 
 
 def get_speak_fashion_fashion_terms():
@@ -52,5 +55,5 @@ def get_speak_fashion_fashion_terms():
 
     pickle.dump(fashion_unigrams, open( "data/speak_fashion_fashion_terms.p", "wb" ) )
 
-#get_zalora_fashion_terms_unigram()
+get_zalora_fashion_terms()
 get_speak_fashion_fashion_terms()
