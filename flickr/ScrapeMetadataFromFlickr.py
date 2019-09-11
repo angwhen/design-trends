@@ -43,4 +43,5 @@ def get_urls(image_tag,MAX_COUNT):
     urls.columns = ["url","title","year"]
     urls.to_csv("data/"+image_tag+"_urls.csv")
 
-get_urls("vintage clothes",10000)
+for decade in range(1850,2030,10):
+    get_urls("%ds fashion"%decade,10000)
