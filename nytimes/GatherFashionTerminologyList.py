@@ -15,7 +15,7 @@ def get_zalora_fashion_term_unigrams():
         el = el.split()
         for t in el:
             # remove overly common terms (ie "and")
-            if word_frequency(t, 'en') < 0.001:
+            if word_frequency(t, 'en') < 0.0001:
                 fashion_unigrams.add(t)
     pickle.dump(fashion_unigrams, open( "data/zalora_fashion_term_unigrams.p", "wb" ) )
 
@@ -48,13 +48,14 @@ def get_speak_fashion_fashion_term_unigrams():
     # some bad terms (too short or too common) are removed
     for el in possible_terms:
         curr_terms = el.split("=")[-1][1:-1]
-        curr_terms = re.split('\w |, ',curr_terms) #seperating multi-part terms
+        curr_terms = re.sub(",", " ", curr_terms)
+        curr_terms = curr_terms.split() #seperating multi-part terms
         for ct in curr_terms:
             ct = re.sub("\.|\)|\(", "", ct) #removing periods, and prens
-            if len(ct) > 2 and word_frequency(term, 'en') < 0.001:
+            if len(ct) > 2 and word_frequency(term, 'en') < 0.0001:
                 fashion_unigrams.add(ct)
 
     pickle.dump(fashion_unigrams, open( "data/speak_fashion_fashion_term_unigrams.p", "wb" ) )
 
-get_zalora_fashion_term_unigrams()
+#get_zalora_fashion_term_unigrams()
 get_speak_fashion_fashion_term_unigrams()
