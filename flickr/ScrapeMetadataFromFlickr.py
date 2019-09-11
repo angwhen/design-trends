@@ -24,6 +24,8 @@ def get_urls(image_tag,MAX_COUNT):
             print("Fetching data for image number {}".format(count))
             try:
                 url=photo.get('url_o')
+                if url == None:
+                    continue
                 title= photo.get('title')
                 possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9]",title)
                 if len(possible_years) == 0:
@@ -39,6 +41,6 @@ def get_urls(image_tag,MAX_COUNT):
 
     urls=pd.DataFrame(urls)
     urls.columns = ["url","title","year"]
-    urls.to_csv(image_tag+"_urls.csv")
+    urls.to_csv("data/"+image_tag+"_urls.csv")
 
-get_urls("vintage fashion",10000)
+get_urls("vintage clothes",10000)

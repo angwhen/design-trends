@@ -41,6 +41,6 @@ def get_urls(image_tag,MAX_COUNT):
 
     urls=pd.DataFrame(urls)
     urls.columns = ["url","title","year"]
-    urls.to_csv(image_tag+"_urls.csv")
+    urls.to_csv("data/"+image_tag+"_urls.csv")
 
-get_urls("historical fashion",10000)
+get_urls("historical style",10000)
