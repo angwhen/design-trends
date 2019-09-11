@@ -25,7 +25,11 @@ def get_urls(image_tag,MAX_COUNT):
             try:
                 url=photo.get('url_o')
                 title= photo.get('title')
-                curr_photo = [url,title]
+                possible_years = re.findall(r"[1|2][0|1|8|9][0-9][0-9],r.text)
+                if len(possible_years) == 0:
+                    continue # no date
+                year = possible_years[0]
+                curr_photo = [url,title,year]
                 urls.append(curr_photo)
                 count +=1
             except:
@@ -34,7 +38,7 @@ def get_urls(image_tag,MAX_COUNT):
             break
 
     urls=pd.DataFrame(urls)
-    urls.columns = ["url","title"]
+    urls.columns = ["url","title","year"]
     urls.to_csv(image_tag+"_urls.csv")
 
 
