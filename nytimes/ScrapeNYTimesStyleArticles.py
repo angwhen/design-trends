@@ -43,7 +43,7 @@ def get_nytimes_style_data_from_api():
     api_key = open("nytimes_api_key.txt").read().strip()
     total_and_taken_articles = []
     my_data = [] #year, month, json as text
-    for year in range(1905,2020):
+    for year in range(1917,2020):
         my_data = []
         for month in range(1,13):
             print ("year: %d, month: %d"%(year,month))
@@ -59,12 +59,13 @@ def get_nytimes_style_data_from_api():
                     my_data.append(my_data_curr)
                     num_taken +=1
 
-            time.sleep(10)
-            pickle.dump(my_data,open("data/nytimes_style_articles/year_%d.p"%year,"wb"))
+            time.sleep(6)
 
             total_and_taken_articles = [year,month,len(data),num_taken]
             print ("total: %d, taken: %d"%(len(data),num_taken))
             pickle.dump(total_and_taken_articles,open("data/nytimes_style_articles/total_and_taken_articles_year_%d.p"%year,"wb"))
+
+        pickle.dump(my_data,open("data/nytimes_style_articles/year_%d.p"%year,"wb"))
 
 def get_style_related_words():
     style_related_words = set([])
