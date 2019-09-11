@@ -43,6 +43,7 @@ def get_nytimes_style_data_from_api():
     my_data = [] #year, month, json as text
     for year in range(1852,2020):
         for month in range(1,13):
+            print ("year: %d, month: %d"%(year,month))
             url ='https://api.nytimes.com/svc/archive/v1/%d/%d.json?api-key=%s'%(year,month,api_key)
             response = requests.get(url)
             data = json.loads(response.text)['response']['docs']
@@ -53,7 +54,7 @@ def get_nytimes_style_data_from_api():
                     my_data_curr = [year,1,article_json_str,style_article_reasons]
                     my_data.append(my_data_curr)
             time.sleep(10)
-    pickle.dump(my_data,open("data/nytimes_style_articles_data.p","wb"))
+            pickle.dump(my_data,open("data/nytimes_style_articles/year_%d.p"%year,"wb"))
 
 def get_style_related_words():
     style_related_words = set([])
