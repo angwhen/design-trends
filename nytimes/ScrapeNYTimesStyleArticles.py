@@ -13,7 +13,7 @@ def get_article_relevant_str(article):
         article_relevant_str +=  article['snippet']
     if 'abstract' in article and article['abstract'] != None:
         article_relevant_str +=  article['abstract']
-    if 'headline' in article and article['headline'] != None and len(article_headline)>1 and 'main' in article['headline']:
+    if 'headline' in article and article['headline'] != None and len( article['headline'])!=0 and 'main' in article['headline']:
         article_relevant_str +=   article['headline']['main']
     if 'keywords' in article:
         for keyword in article["keywords"]:
