@@ -40,15 +40,15 @@ def get_urls(image_tag,MAX_COUNT):
             break
         # save before finishing in case breaks midway
         if count> 100 and count%100 == 0:
-            urls=pd.DataFrame(urls)
-            urls.columns = ["url","title","year"]
-            urls.to_csv("data/"+image_tag+"_urls.csv")
+            urls_df=pd.DataFrame(urls)
+            urls_df.columns = ["url","title","year"]
+            urls_df.to_csv("data/"+image_tag+"_urls.csv")
 
     if len(urls) == 0:
         return False
-    urls=pd.DataFrame(urls)
-    urls.columns = ["url","title","year"]
-    urls.to_csv("data/"+image_tag+"_urls.csv")
+    urls_df=pd.DataFrame(urls)
+    urls_df.columns = ["url","title","year"]
+    urls_df.to_csv("data/"+image_tag+"_urls.csv")
     return True
 
 name = "woman"

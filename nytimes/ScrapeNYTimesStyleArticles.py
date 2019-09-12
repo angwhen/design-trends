@@ -43,7 +43,7 @@ def get_nytimes_style_data_from_api():
     api_key = open("nytimes_api_key.txt").read().strip()
     total_and_taken_articles = []
     my_data = [] #year, month, json as text
-    for year in range(2006,2020): #start 1852
+    for year in range(2010,2020): #start 1852
         my_data = []
         for month in range(1,13):
             print ("year: %d, month: %d"%(year,month))
