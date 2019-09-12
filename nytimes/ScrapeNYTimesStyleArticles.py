@@ -13,7 +13,7 @@ def get_article_relevant_str(article):
         article_relevant_str +=  article['snippet']
     if 'abstract' in article and article['abstract'] != None:
         article_relevant_str +=  article['abstract']
-    if 'headline' in article and article['headline'] != None:
+    if 'headline' in article and article['headline'] != None and len(article_headline)>1 and 'main' in article['headline']:
         article_relevant_str +=   article['headline']['main']
     if 'keywords' in article:
         for keyword in article["keywords"]:
@@ -43,7 +43,7 @@ def get_nytimes_style_data_from_api():
     api_key = open("nytimes_api_key.txt").read().strip()
     total_and_taken_articles = []
     my_data = [] #year, month, json as text
-    for year in range(1957,2020): #start 1852
+    for year in range(2006,2020): #start 1852
         my_data = []
         for month in range(1,13):
             print ("year: %d, month: %d"%(year,month))

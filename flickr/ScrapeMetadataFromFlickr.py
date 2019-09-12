@@ -13,7 +13,7 @@ def get_urls(image_tag,MAX_COUNT):
                             tag_mode='all',
                             tags=image_tag,
                             extras='url_o',
-                            per_page=50,
+                            per_page=500,
                             sort='relevance')
 
     count=0
@@ -38,14 +38,22 @@ def get_urls(image_tag,MAX_COUNT):
                 print("Data for image number {} could not be fetched".format(count))
         else:
             break
+        # save before finishing in case breaks midway
+        if count> 100 and count%100 == 0:
+            urls=pd.DataFrame(urls)
+            urls.columns = ["url","title","year"]
+            urls.to_csv("data/"+image_tag+"_urls.csv")
 
+    if len(urls) == 0:
+        return False
     urls=pd.DataFrame(urls)
     urls.columns = ["url","title","year"]
     urls.to_csv("data/"+image_tag+"_urls.csv")
+    return True
 
+name = "woman"
 keywords_file = open("data/keywords.txt","a")
-for decade in range(1850,2030,10):
-    name = "%ds fashion"%decade
+res = get_urls(name,10000)
+if res:
     keywords_file.write(name+"\n")
-    get_urls(name,10000)
 keywords_file.close()

@@ -39,6 +39,7 @@ def later_additions():
             fname = "data/images/%d.jpg"%count
             urllib.request.urlretrieve(url,fname)
             images_and_urls.append([url,fname])
+            urls_so_far.add(url)
             count +=1
         except:
             count +=0
