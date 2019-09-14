@@ -1,12 +1,13 @@
 import time
 import json
 import pickle
-import pandas
+import pandas as pd
 
 all_years = []
-for year in range(2019,2020): #start 1852
+for year in range(1852,2020): #start 1852
     curr = pickle.load(open("data/nytimes_style_articles/year_%d.p"%year,"rb"))
     all_years.extend(curr)
 
 df=pd.DataFrame(all_years)
-df.columns = ["year","month","text","matched_keywords"]
+df.columns = ["year","month","unparsed_text","matched_keywords"]
+df.to_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
