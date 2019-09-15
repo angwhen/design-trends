@@ -12,6 +12,7 @@ for keyword in keywords_set:
     else:
         df = df.append(pd.read_csv("data/%s_urls.csv"%keyword))
 df = df.drop_duplicates(subset=['url','title'], keep="first")
+df = df[df['year'] <= 2019] # years in the future are probably bad parsing
 print ("unique url+title pairs fromflickr: %d" %len(df))
 
 url_to_image_file_df = pd.read_csv("data/images/url_to_image_file.csv")
