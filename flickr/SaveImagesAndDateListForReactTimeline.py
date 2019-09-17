@@ -12,7 +12,7 @@ my_str = ""
 for im in my_list:
     fname_specific = im[0].split("/")[-1]
     fname_num = fname_specific.split(".")[0]
-    my_str += "import im%s from '../flickr_images/default_images/%s;'\n"%(fname_num,fname_specific)
+    my_str += "import im%s from '../flickr_images/default_images/%s';\n"%(fname_num,fname_specific)
 
 my_str += "\n"
 my_str += "  images: [\n"
