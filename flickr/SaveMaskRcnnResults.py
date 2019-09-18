@@ -12,9 +12,9 @@ net = model_zoo.get_model('mask_rcnn_resnet50_v1b_coco', pretrained=True)
 
 for fname in fnames_list:
     fname_num = fname[0].split("/")[-1]
-    fname_num = (int) (fname_num[0].split(".jpg")[0])
+    fname_num = (int) (fname_num.split(".jpg")[0])
     if "%d.png"%fname_num in finished_ims:
-        print ("finished with %d previously")
+        print ("finished with %d previously"%fname_num)
         continue
     print ("working on %d"%fname_num)
     im_fname = "data/images/smaller_images/%d.jpg"%fname_num
