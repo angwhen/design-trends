@@ -2,12 +2,15 @@ import pandas as pd
 import os
 from PIL import Image
 
+#TODO add check that it is in ("data/url_title_and_file_data.csv")
+smaller_ims =set(os.listdir("data/images/smaller_images"))
 directory = os.fsencode("data/images/")
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".jpg"):
+    if filename.endswith(".jpg") and filename not in smaller_ims:
+        print (filename)
         # RESIZE IMAGE
-        img = Image.open("data/images/%s"%filename)
+        img = Image.open("data/images/%s"%filename).convert('RGB')
         # adjust width and height to your needs
         if img.size[0] < img.size[1]:
             basewidth = 600
