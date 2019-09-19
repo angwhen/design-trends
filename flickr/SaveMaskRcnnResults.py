@@ -33,6 +33,7 @@ for fname in fnames_list:
                              class_names=net.classes, ax=ax)
     plt.savefig("data/images/mask_rcnn_results/%d.png"%fname_num, bbox_inches = 'tight',
         pad_inches = 0)
-
+    plt.clf()
+    plt.close(fig)
     res = [orig_img, masks, ids, scores, bboxes]
     pickle.dump(res,open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"wb"))
