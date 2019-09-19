@@ -23,6 +23,8 @@ def return_common_prevs(year,month,my_word="dress"):
     snippets = curr_df["snippet"].values.tolist()
     word_dict = {}
     for snippet in snippets:
+        if snippet is None:
+            continue
         tokens = nltk.word_tokenize(snippet.lower())
         tokens = [el for el in tokens if el.isalpha()]
         if my_word in tokens:

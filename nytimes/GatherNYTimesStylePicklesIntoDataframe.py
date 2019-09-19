@@ -4,7 +4,7 @@ import pickle
 import pandas as pd
 
 all_years = []
-for year in range(1852,2020): #start 1852
+for year in range(1904,2020): #1904 is cumulative when i ran it : (, correctly run can start from 1852
     print (year)
     curr = pickle.load(open("data/nytimes_style_articles/year_%d.p"%year,"rb"))
     all_years.extend(curr)
