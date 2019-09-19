@@ -10,7 +10,7 @@ def snippet(row):
     return None
 
 def return_common_prevs(year,month,my_word="dress"):
-    global df
+    global df, snippet
     # import pickle for the year
     # find all the articles in the month
     # send the article to json
@@ -42,5 +42,12 @@ df2  = df[df.matched_keywords.apply(lambda x: 'dress' in x)][["year","month","sn
 df2 = df2.dropna(thresh=3)
 print (df2.head(50))
 """
-
-print (return_common_prevs(2000,1))
+res = []
+for year in (1852,2020):
+    for month in (1,13):
+        print ("year: %d month: %d"%(year,month))
+        common_words = return_common_prevs(year,month)
+        print (common_words)
+        curr = [year,month,common_words]
+        res.append(curr)
+pickle.dump(res,open("data/nytimes_style_articles/words_occuring_before_dress.p","wb"))
