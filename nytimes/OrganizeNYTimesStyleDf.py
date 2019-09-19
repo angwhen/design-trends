@@ -89,5 +89,5 @@ def parsed_to_parsed_without_unparsed_text():
     df = df.drop(["unparsed_text"],axis=1)
     df.to_csv("data/nytimes_style_articles/parsed_only_articles_df.csv")
 
-
+unparsed_to_parsed()
 parsed_to_parsed_without_unparsed_text()
