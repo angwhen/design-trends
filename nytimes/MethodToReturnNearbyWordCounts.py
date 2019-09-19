@@ -17,6 +17,8 @@ def return_common_prevs(year,month,my_word="dress"):
     # get the snippet
     # find all the words occuring before "dress"0
     curr_df = df[(df.year == year) & (df.month == month) & (df.unparsed_text.str.contains('dress'))][["unparsed_text"]]
+    if len(curr_df) == 0:
+        return {}
     curr_df["snippet"] = curr_df.apply(make_snippet, axis = 1)
     snippets = curr_df["snippet"].values.tolist()
     word_dict = {}
