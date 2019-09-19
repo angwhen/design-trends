@@ -3,21 +3,21 @@ import json
 import pickle
 import nltk
 
-def snippet(row):
+def make_snippet(row):
     j =  json.loads(row.unparsed_text)
     if "snippet" in j:
         return j["snippet"]
     return None
 
 def return_common_prevs(year,month,my_word="dress"):
-    global df, snippet
+    global df, make_snippet
     # import pickle for the year
     # find all the articles in the month
     # send the article to json
     # get the snippet
     # find all the words occuring before "dress"0
     curr_df = df[(df.year == year) & (df.month == month) & (df.unparsed_text.str.contains('dress'))][["unparsed_text"]]
-    curr_df["snippet"] = curr_df.apply(snippet, axis = 1)
+    curr_df["snippet"] = curr_df.apply(make_snippet, axis = 1)
     snippets = curr_df["snippet"].values.tolist()
     word_dict = {}
     for snippet in snippets:
@@ -42,9 +42,10 @@ df2  = df[df.matched_keywords.apply(lambda x: 'dress' in x)][["year","month","sn
 df2 = df2.dropna(thresh=3)
 print (df2.head(50))
 """
+
 res = []
-for year in (1852,2020):
-    for month in (1,13):
+for year in range(1852,2020):
+    for month in range(1,13):
         print ("year: %d month: %d"%(year,month))
         common_words = return_common_prevs(year,month)
         print (common_words)
