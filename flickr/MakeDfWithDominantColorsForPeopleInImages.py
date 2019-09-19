@@ -4,14 +4,20 @@ import pickle
 import os
 from ColorThiefModified import ColorThief
 
-#df =  pd.read_csv("data/url_title_and_file_data.csv")
-#fnames_list = df[["file_name"]].values.tolist()
-fnames_list = [["images/14.jpg"]]
+df =  pd.read_csv("data/url_title_and_file_data.csv")
+fnames_list = df[["file_name"]].values.tolist()
+
+df =  pd.read_csv("data/color_palettes.csv")
+done_nums = set([el[0] for el in df[["fname_num"]].values.tolist()])
+
 results = []
-count = 0
+count = 1
 for fname in fnames_list:
     fname_num = fname[0].split("/")[-1]
     fname_num = (int) (fname_num.split(".jpg")[0])
+    if fname_num in done_nums:
+        print ("already done with %d"%fname_num)
+        continue
     print (fname_num)
     res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
     orig_img = res[0]
@@ -39,10 +45,11 @@ for fname in fnames_list:
 
     if count % 20 == 0: #save frequently to avoid having to rerun too often
         df=pd.DataFrame(results)
-        urls_df.columns = ["fname_num","colors_list"]
-        urls_df.to_csv("data/color_palettes.csv")
+        df.columns = ["fname_num","colors_list"]
+        df.to_csv("data/color_palettes.csv")
     count +=1
 
-df=pd.DataFrame(results)
-urls_df.columns = ["fname_num","colors_list"]
-urls_df.to_csv("data/color_palettes.csv")
+if len(results) != 0:
+    df=pd.DataFrame(results)
+    df.columns = ["fname_num","colors_list"]
+    df.to_csv("data/color_palettes.csv")
