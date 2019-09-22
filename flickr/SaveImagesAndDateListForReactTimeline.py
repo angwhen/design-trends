@@ -29,7 +29,7 @@ def get_images_code_for_react():
             continue
         # regular add to string if it's fine
         url = im[0]
-        p1 = url.split("_")[0]
+        p1 = url.split("_o")[0]
         url = p1+"_n.jpg" #small size image http://joequery.me/code/flickr-api-image-search-python/
         my_str += "['%s','%s'],\n"%(url,im[1])
     my_str = my_str[:-2]+"\n"
