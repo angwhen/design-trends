@@ -37,6 +37,7 @@ for fname in fnames_list:
     im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
         print ("some dimensional problem with the mask and image for this one")
+        continue
     height,width,depth = im.shape
     circle_img = masks[people_indices[0]]
     for i in range(1,len(people_indices)):
