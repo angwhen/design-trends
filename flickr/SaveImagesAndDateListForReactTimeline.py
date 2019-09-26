@@ -31,7 +31,9 @@ def get_images_code_for_react():
         url = im[0]
         p1 = url.split("_o")[0]
         url = p1+"_n.jpg" #small size image http://joequery.me/code/flickr-api-image-search-python/
-        my_str += "['%s','%s'],\n"%(url,im[1])
+        aws_seg_url = "https://design-trends-bucket.s3.amazonaws.com/mask_rcnn_results_%d.png"%fname_num
+        my_str += "['%s','%s','%s'],\n"%(url,aws_seg_url,im[1])
+
     my_str = my_str[:-2]+"\n"
     my_str += "],"
 

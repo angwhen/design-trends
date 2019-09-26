@@ -63,7 +63,7 @@ def make_df():
 def convert_df_into_list_for_react():
     df =  pd.read_csv("data/url_title_and_file_data.csv")
     years_list = df[["file_name","year"]].values.tolist()
-
+    years_list.sort(key=lambda x: x[1])
     df =  pd.read_csv("data/color_palettes.csv")
     done_nums = {el[0]:el[1] for el in df[["fname_num","colors_list"]].values.tolist()}
 
