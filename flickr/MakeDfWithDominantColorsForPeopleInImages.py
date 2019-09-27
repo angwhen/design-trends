@@ -7,6 +7,7 @@ import re
 import colorsys
 from collections import deque
 import math
+import numpy as np
 
 def make_df():
     df =  pd.read_csv("data/url_title_and_file_data.csv")
@@ -41,14 +42,14 @@ def make_df():
 
         print (fname_num)
         my_pixels = []
-        count = 0
+        inner_count = 0
         for ind in people_indices:
             curr_mask =  masks[ind]
             for row in range(0,curr_mask.shape[0]):
                 for col in range(0,curr_mask.shape[1]):
-                    if count % 10 == 0:
+                    if inner_count % 10 == 0:
                         my_pixels.append(orig_img[row][col])
-                    count +=1
+                    inner_count +=1
         ct = ColorThief(my_pixels)
         color_list = ct.get_palette()
         palettes[fname_num] = color_list
@@ -101,14 +102,27 @@ def convert_df_into_list_for_react():
 
     used_years_list = []
     all_colors_list = []
+    years_start_and_end = {}
+    i = 0
     for el in years_list:
         fname_num = int(el[0].split(".")[0].split("/")[-1])
         year = el[1]
         if fname_num in palettes:
             used_years_list.append(year)
             all_colors_list.append(palettes[fname_num])
+            if year not in years_start_and_end:
+                years_start_and_end[year] = (i,i+1)
+            else:
+                years_start_and_end[year] = (years_start_and_end[year][0],i+1)
+            i+=1
 
     # sort rows within the same year
+    # sort by average hue of the row
+    for year in years_start_and_end.keys():
+        avg_hues_list = []
+        for  row in  all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]]:
+            avg_hues_list.append(np.mean([colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in row]))
+        all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]] =  [x for _,x in sorted(zip(avg_hues_list,all_colors_list))]
 
     # sort within row
     all_colors_list = sort_colors_lists(all_colors_list)
@@ -120,7 +134,7 @@ def convert_df_into_list_for_react():
         curr_year = used_years_list[i]
         for c in curr_colors:
             my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
-        my_str +="%d"%year
+        my_str +="%d"%curr_year
         my_str += "],\n"
     my_str = my_str[:-2] + "],"
 
@@ -128,5 +142,5 @@ def convert_df_into_list_for_react():
     text_file.write(my_str)
     text_file.close()
 
-#convert_df_into_list_for_react()
-make_df()
+convert_df_into_list_for_react()
+#make_df()
