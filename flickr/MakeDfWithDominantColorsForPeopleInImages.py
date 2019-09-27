@@ -4,23 +4,24 @@ import pickle
 import os
 from ColorThiefModified import ColorThief
 import re
+import colorsys
+from collections import deque
+import math
 
 def make_df():
     df =  pd.read_csv("data/url_title_and_file_data.csv")
     fnames_list = df[["file_name"]].values.tolist()
 
-    df =  pd.read_csv("data/color_palettes.csv")
-    done_nums = set([el[0] for el in df[["fname_num"]].values.tolist()])
+    palettes = pickle.load(open("data/color_palettes.p","rb"))
 
     results = []
-    count = 1
+    count = 0
     for fname in fnames_list:
         fname_num = fname[0].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
-        if fname_num in done_nums:
+        if fname_num in palettes:
             print ("already done with %d"%fname_num)
             continue
-        print (fname_num)
         try:
             res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
         except:
@@ -38,6 +39,7 @@ def make_df():
         if len(people_indices) == 0:
             continue
 
+        print (fname_num)
         my_pixels = []
         for ind in people_indices:
             curr_mask =  masks[ind]
@@ -46,44 +48,77 @@ def make_df():
                     my_pixels.append(orig_img[row][col])
         ct = ColorThief(my_pixels)
         color_list = ct.get_palette()
-        results.append([fname_num,color_list])
+        palettes[fname_num] = color_list
 
         if count % 5 == 0: #save frequently to avoid having to rerun too often
-            df=pd.DataFrame(results)
-            df.columns = ["fname_num","colors_list"]
-            df.to_csv("data/color_palettes.csv")
+            pickle.dump(palettes,open("data/color_palettes.p","wb"))
             print ("current part saved")
         count +=1
 
     if len(results) != 0:
-        df=pd.DataFrame(results)
-        df.columns = ["fname_num","colors_list"]
-        df.to_csv("data/color_palettes.csv")
+        pickle.dump(palettes,open("data/color_palettes.p","wb"))
+
+def diff_score(prev_row,curr_row):
+    sum_dist = 0
+    for i in range(0,len(curr_row)):
+        sum_dist += math.sqrt(math.pow((prev_row[0]/255.0-curr_row[0]/255.0),2)+math.pow((prev_row[1]/255.0-curr_row[1]/255.0),2)+math.pow((prev_row[2]/255.0-curr_row[2]/255.0),2))
+    return sum_dist
+
+def rotate_until_most_contig(prev_row,curr_row):
+    d=deque(curr_row)
+    min_diff_score = 999999999999
+    best_rot = 0
+    for i in range(0,len(curr_row)):
+        d.rotate(1)
+        diff_score = diff_score(prev_row,curr_row)
+        if diff_score < min_diff_score:
+            min_diff_score= diff_score
+            best_rot = i+1
+    d = deque(curr_row)
+    d.rotate(best_rot)
+    return list(d)
+
+def sort_colors_lists(all_colors_list):
+    new_all_colors_list = []
+    for rgb_colors_list in all_colors_list:
+        hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in rgb_colors_list]
+        rgb_colors_list = [x for _,x in sorted(zip(hue_colors_list,rgb_colors_list))]
+        if len(new_all_colors_list) == 0:
+            new_all_colors_list.append(rgb_colors_list)
+        else:
+            #rotate until rgb colors list matches the prev as best as possible
+            new_all_colors_list.append( rotate_until_most_contig(new_all_colors_list[len(new_all_colors_list)-1],rgb_colors_list))
+    return  []
 
 def convert_df_into_list_for_react():
     df =  pd.read_csv("data/url_title_and_file_data.csv")
     years_list = df[["file_name","year"]].values.tolist()
     years_list.sort(key=lambda x: x[1])
-    df =  pd.read_csv("data/color_palettes.csv")
-    done_nums = {el[0]:el[1] for el in df[["fname_num","colors_list"]].values.tolist()}
+    palettes = pickle.load(open("data/color_palettes.p","rb"))
 
-    my_str = "["
+    used_years_list = []
+    all_colors_list = []
     for el in years_list:
         fname_num = int(el[0].split(".")[0].split("/")[-1])
         year = el[1]
-        if fname_num in done_nums:
-            #https://stackoverflow.com/questions/3380726/converting-a-rgb-color-tuple-to-a-six-digit-code-in-python
-            my_str += "["
-            #print (len( done_nums[fname_num].split("),"))) #not sure why only 9
-            print  (done_nums[fname_num])
-            for color in done_nums[fname_num].split("),"):
-                r1 = re.findall(r"[0-9]+",color)
-                #print (r1)
-                my_str+="'#%02x%02x%02x'," %(int(r1[0]),int(r1[1]),int(r1[2]))
-            my_str +="%d"%year
-            my_str += "],\n"
+        if fname_num in palettes:
+            used_years_list.append(year)
+            all_colors_list.append(palettes[fname_num])
+
+    # MAKE STRING
+    my_str = "colors:["
+    for i in range(0,len(all_colors_list)):
+        curr_colors = all_colors_list[i]
+        curr_year = used_years_list[i]
+        for c in curr_colors:
+            my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
+        my_str +="%d"%year
+        my_str += "],\n"
     my_str = my_str[:-2] + "],"
+
     text_file = open("data/react_colors_list_for_colors_slides.txt", "w")
     text_file.write(my_str)
     text_file.close()
+
 convert_df_into_list_for_react()
+#make_df()

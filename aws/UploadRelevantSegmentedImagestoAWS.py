@@ -2,6 +2,7 @@ import pandas as pd
 import pickle
 import os
 import boto3
+import os
 
 # script to upload all segmented_images with proper date to aws
 
@@ -25,6 +26,7 @@ def upload_segmented_images_to_aws():
     s3 = boto3.client('s3')
     df =  pd.read_csv("../flickr/data/url_title_and_file_data.csv")
     my_list = df[["url","year","file_name"]].values.tolist()
+    finished_peopled_ims =set(os.listdir("../flickr/data/images/mask_rcnn_results/people_seg_images/"))
     try:
         already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums.p","rb"))
     except:
@@ -33,7 +35,7 @@ def upload_segmented_images_to_aws():
         fname_num = im[2].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
 
-        if contains_person(fname_num) and not fname_num in already_uploaded:
+        if contains_person(fname_num) and not fname_num in already_uploaded and "%d.png"%fname_num in finished_peopled_ims:
             # want to change to get the person segmented only version
             filename = "../flickr/data/images/mask_rcnn_results/people_seg_images/%d.png"%fname_num
             bucket_name = 'design-trends-bucket'
