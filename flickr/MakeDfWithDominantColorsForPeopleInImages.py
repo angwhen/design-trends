@@ -81,6 +81,7 @@ def rotate_until_most_contig(prev_row,curr_row):
     d = deque(curr_row)
     d.rotate(best_rot)
     return list(d)
+    #return curr_row
 
 def sort_colors_lists(all_colors_list):
     new_all_colors_list = []
@@ -122,7 +123,7 @@ def convert_df_into_list_for_react():
         avg_hues_list = []
         for  row in  all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]]:
             avg_hues_list.append(np.mean([colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in row]))
-        all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]] =  [x for _,x in sorted(zip(avg_hues_list,all_colors_list))]
+        all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]] =  [x for _,x in sorted(zip(avg_hues_list,all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]]))]
 
     # sort within row
     all_colors_list = sort_colors_lists(all_colors_list)
@@ -132,6 +133,7 @@ def convert_df_into_list_for_react():
     for i in range(0,len(all_colors_list)):
         curr_colors = all_colors_list[i]
         curr_year = used_years_list[i]
+        my_str += "["
         for c in curr_colors:
             my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
         my_str +="%d"%curr_year
