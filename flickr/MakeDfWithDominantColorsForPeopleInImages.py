@@ -62,10 +62,69 @@ def make_df():
     if len(results) != 0:
         pickle.dump(palettes,open("data/color_palettes.p","wb"))
 
+"""
+# not really done yet maybe dont need
+def save_yearly_palettes():
+    df =  pd.read_csv("data/url_title_and_file_data.csv")
+    fnames_list = df[["file_name"]].values.tolist()
+
+    palettes = pickle.load(open("data/yearly_color_palettes.p","rb"))
+
+    results = []
+    count = 0
+    for fname in fnames_list:
+        fname_num = fname[0].split("/")[-1]
+        fname_num = (int) (fname_num.split(".jpg")[0])
+        if fname_num in palettes:
+            print ("already done with %d"%fname_num)
+            continue
+        try:
+            res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
+        except:
+            continue
+        orig_img = res[0]
+        masks = res[1]
+        ids = res[2]
+        scores = res[3]
+
+        people_indices = []
+        for i in range(0,masks.shape[0]): #the masks we have for people
+            if ids[i] == 0:
+                people_indices.append(i)
+
+        if len(people_indices) == 0:
+            continue
+
+        print (fname_num)
+        my_pixels = []
+        inner_count = 0
+        for ind in people_indices:
+            curr_mask =  masks[ind]
+            for row in range(0,curr_mask.shape[0]):
+                for col in range(0,curr_mask.shape[1]):
+                    if inner_count % 10 == 0:
+                        my_pixels.append(orig_img[row][col])
+                    inner_count +=1
+        ct = ColorThief(my_pixels)
+        color_list = ct.get_palette()
+        palettes[fname_num] = color_list
+
+        pickle.dump(palettes,open("data/yearly_color_palettes.p","wb"))
+
+
+    if len(results) != 0:
+        pickle.dump(palettes,open("data/yearly_color_palettes.p","wb"))"""
+
 def diff_score(prev_row,curr_row):
     sum_dist = 0
+    curr_row =  [colorsys.rgb_to_hsv(c[0],c[1],c[2]) for c in curr_row]
+    prev_row =  [colorsys.rgb_to_hsv(c[0],c[1],c[2]) for c in prev_row]
     for i in range(0,len(curr_row)):
         sum_dist += math.sqrt(math.pow((prev_row[i][0]/255.0-curr_row[i][0]/255.0),2)+math.pow((prev_row[i][1]/255.0-curr_row[i][1]/255.0),2)+math.pow((prev_row[i][2]/255.0-curr_row[i][2]/255.0),2))
+        # diagonals
+        sum_dist += math.sqrt(math.pow((prev_row[i][0]/255.0-curr_row[i-1][0]/255.0),2)+math.pow((prev_row[i][1]/255.0-curr_row[i-1][1]/255.0),2)+math.pow((prev_row[i-1][2]/255.0-curr_row[i][2]/255.0),2))/2.0
+        sum_dist += math.sqrt(math.pow((prev_row[i-1][0]/255.0-curr_row[i][0]/255.0),2)+math.pow((prev_row[i-1][1]/255.0-curr_row[i][1]/255.0),2)+math.pow((prev_row[i-1][2]/255.0-curr_row[i][2]/255.0),2))/2.0
+
     return sum_dist
 
 def rotate_until_most_contig(prev_row,curr_row):
@@ -122,6 +181,9 @@ def convert_df_into_list_for_react():
     for year in years_start_and_end.keys():
         avg_hues_list = []
         for  row in  all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]]:
+            #ct = ColorThief(row)
+            #dom_col = ct.get_color(quality=100)
+            #avg_hues_list.append(colorsys.rgb_to_hsv(dom_col[0],dom_col[1],dom_col[2])[0])
             avg_hues_list.append(np.mean([colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in row]))
         all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]] =  [x for _,x in sorted(zip(avg_hues_list,all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]]))]
 
@@ -138,11 +200,47 @@ def convert_df_into_list_for_react():
             my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
         my_str +="%d"%curr_year
         my_str += "],\n"
+    my_str = my_str[:-2] + "],\n"
+
+
+    # make yearly colors
+    yearly_colors = []
+    yearly_years = []
+    for year in range(1800,2020):
+        if year not in years_start_and_end:
+            continue
+        colors_range = all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]]
+        flat_colors_range = [item for sublist in colors_range for item in sublist]
+        ct = ColorThief(flat_colors_range)
+        yearly_colors.append(ct.get_palette(color_count=10))
+        yearly_years.append(year)
+
+    yearly_colors_hold = yearly_colors
+    yearly_colors = []
+    for row in yearly_colors_hold:
+        hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in row]
+        yearly_colors.append([x for _,x in sorted(zip(hue_colors_list,row))])
+
+    my_str += "yearly_colors:["
+    for i in range(0,len(yearly_colors)):
+        curr_colors = yearly_colors[i]
+        curr_year = yearly_years[i]
+        my_str += "["
+        for i in range(0,9):
+            if i < len(curr_colors):
+                c = curr_colors[i]
+                my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
+            else:
+                my_str+="'#ffffff',"
+        my_str +="%d"%curr_year
+        my_str += "],\n"
     my_str = my_str[:-2] + "],"
+
 
     text_file = open("data/react_colors_list_for_colors_slides.txt", "w")
     text_file.write(my_str)
     text_file.close()
+
 
 convert_df_into_list_for_react()
 #make_df()
