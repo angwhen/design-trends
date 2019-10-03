@@ -47,10 +47,14 @@ def make_pickle_sums_and_counts():
     #pickle.load(open("data/years_to_rgb_colors_sums.p","rb")) # bigger people weighted more heavily
     rgb_colors_counts = {}
     #pickle.load(open("data/years_to_rgb_colors_counts.p","rb"))
+    done_fname_nums = []
+    #pickle.load(open("data/years_done_fname_nums_for_colors_avgs.p","rb"))
     #restart since not keeping track of the fnames done anyways
     count = 0
     for el in years_list:
         fname_num = int(el[0].split(".")[0].split("/")[-1])
+        if fname_num in done_fname_nums:
+            continue
         year = el[1]
         pixels_list = get_pixels_in_file(fname_num)
         if len(pixels_list) == 0:
@@ -68,10 +72,13 @@ def make_pickle_sums_and_counts():
         if count % 5 == 0: #save frequently to avoid having to rerun too often
             pickle.dump(rgb_colors_sums,open("data/years_to_rgb_colors_sums.p","wb"))
             pickle.dump(rgb_colors_counts,open("data/years_to_rgb_colors_counts.p","wb"))
+            pickle.dump(done_fname_nums,open("data/years_done_fname_nums_for_colors_avgs.p","wb"))
             print ("current part saved")
         count +=1
+        done_fname_nums.append(fname_num)
     pickle.dump(rgb_colors_sums,open("data/years_to_rgb_colors_sums.p","wb"))
     pickle.dump(rgb_colors_counts,open("data/years_to_rgb_colors_counts.p","wb"))
+    pickle.dump(done_fname_nums,open("data/years_done_fname_nums_for_colors_avgs.p","wb"))
 
 def make_current(rgb_colors_avg, my_type = "red"):
     my_str = ""
