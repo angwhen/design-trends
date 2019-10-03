@@ -8,6 +8,7 @@ import colorsys
 from collections import deque
 import math
 import numpy as np
+import cv2
 
 def make_df():
     df =  pd.read_csv("data/url_title_and_file_data.csv")
@@ -27,7 +28,6 @@ def make_df():
             res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
         except:
             continue
-        orig_img = res[0]
         masks = res[1]
         ids = res[2]
         scores = res[3]
@@ -43,12 +43,16 @@ def make_df():
         print (fname_num)
         my_pixels = []
         inner_count = 0
+        im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
+        if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
+            print ("some dimensional problem with the mask and image for this one")
+            continue
         for ind in people_indices:
             curr_mask =  masks[ind]
             for row in range(0,curr_mask.shape[0]):
                 for col in range(0,curr_mask.shape[1]):
                     if inner_count % 10 == 0:
-                        my_pixels.append(orig_img[row][col])
+                        my_pixels.append(im[row][col])
                     inner_count +=1
         ct = ColorThief(my_pixels)
         color_list = ct.get_palette()

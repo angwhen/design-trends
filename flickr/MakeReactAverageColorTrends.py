@@ -7,6 +7,7 @@ import colorsys
 from collections import deque
 import math
 import numpy as np
+import cv2
 
 # list of average H, S, V for each year to make react plot
 
@@ -151,7 +152,7 @@ def make_current(rgb_colors_avg, my_type = "red"):
     return my_str
 
 
-make_pickle_sums_and_counts()
+#make_pickle_sums_and_counts()
 
 #open it and make charts
 rgb_colors_sums = pickle.load(open("data/years_to_rgb_colors_sums.p","rb")) # bigger people weighted more heavily
