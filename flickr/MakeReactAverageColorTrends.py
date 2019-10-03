@@ -15,7 +15,6 @@ def get_pixels_in_file(fname_num):
         res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
     except:
         return []
-    orig_img = res[0]
     masks = res[1]
     ids = res[2]
 
