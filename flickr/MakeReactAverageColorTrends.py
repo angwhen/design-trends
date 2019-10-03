@@ -26,6 +26,10 @@ def get_pixels_in_file(fname_num):
 
     if len(people_indices) == 0:
         return []
+    im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
+    if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
+        print ("some dimensional problem")
+        return []
 
     print (fname_num)
     my_pixels = []
@@ -35,7 +39,7 @@ def get_pixels_in_file(fname_num):
         for row in range(0,curr_mask.shape[0]):
             for col in range(0,curr_mask.shape[1]):
                 if inner_count % 10 == 0: # dont save all pixels to save space
-                    my_pixels.append(orig_img[row][col])
+                    my_pixels.append(im[row][col])
                 inner_count +=1
     return my_pixels
 
@@ -148,7 +152,7 @@ def make_current(rgb_colors_avg, my_type = "red"):
     return my_str
 
 
-#make_pickle_sums_and_counts()
+make_pickle_sums_and_counts()
 
 #open it and make charts
 rgb_colors_sums = pickle.load(open("data/years_to_rgb_colors_sums.p","rb")) # bigger people weighted more heavily
@@ -164,6 +168,6 @@ my_str +=  make_current(rgb_colors_avg,my_type="blue")
 my_str +=  make_current(rgb_colors_avg,my_type="hsv_hue")
 my_str +=  make_current(rgb_colors_avg,my_type="hsv_sat")
 my_str +=  make_current(rgb_colors_avg,my_type="hsv_val")
-text_file = open("data/react_colors_charts_for_trends", "w")
+text_file = open("data/react_colors_charts_for_trends.txt", "w")
 text_file.write(my_str)
 text_file.close()
