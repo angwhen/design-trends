@@ -73,10 +73,33 @@ def make_pickle_sums_and_counts():
     pickle.dump(rgb_colors_sums,open("data/years_to_rgb_colors_sums.p","wb"))
     pickle.dump(rgb_colors_counts,open("data/years_to_rgb_colors_counts.p","wb"))
 
-def make_current(my_str,rgb_colors_avg, type = "red"):
+def make_current(rgb_colors_avg, my_type = "red"):
+    my_str = ""
+    if my_type == "red":
+        my_type_num = 0
+        my_title = "Red Over Time"
+    elif my_type == "green":
+        my_type_num = 1
+        my_title = "Green Over Time"
+    elif my_type == "blue":
+        my_type_num = 2
+        my_title = "Blue Over Time"
+    elif my_type == "hsv_hue":
+        my_type_num = 3
+        my_title = "HSV Hue Over Time"
+    elif my_type == "hsv_sat":
+        my_type_num = 4
+        my_title = "HSV Saturation Over Time"
+    elif my_type == "hsv_val":
+        my_type_num = 5
+        my_title = "HSV Value Over Time"
+    my_str += "if (this.state.currentChartNum == %d){\n"%my_type_num
     my_str +=  """
-         if (this.state.currentChartNum == 0){
-         code.push(<BarChart
+         code.push(
+         <div>
+         <p>%s</p>\n"""%(my_title)
+    my_str += """
+         <BarChart
           axisLabels={{x: 'My x Axis', y: 'My y Axis'}}
           axes
           width = {window.innerWidth*0.95}
@@ -89,10 +112,31 @@ def make_current(my_str,rgb_colors_avg, type = "red"):
     for year in range(1852,2019):
         if year not in rgb_colors_avg:
             continue
-        val = int(rgb_colors_avg[year][0])
-        color = "#%02x%02x%02x" %(val,0,0)
+        if my_type == "red":
+            val = int(rgb_colors_avg[year][0])
+            color = "#%02x%02x%02x" %(val,50,50)
+        elif my_type == "green":
+            val = int(rgb_colors_avg[year][1])
+            color = "#%02x%02x%02x" %(50,val,50)
+        elif my_type == "blue":
+            val = int(rgb_colors_avg[year][2])
+            color = "#%02x%02x%02x" %(50,50,val)
+        elif "hsv" in my_type:
+            hsv_cols = colorsys.rgb_to_hsv(rgb_colors_avg[year][0]/255,rgb_colors_avg[year][1]/255,rgb_colors_avg[year][2]/255)
+            if my_type == "hsv_hue":
+                val = int(hsv_cols[0]*255)
+                col_rgb = [int(el*255) for el in colorsys.hsv_to_rgb(val/255,1,1)]
+                color = "#%02x%02x%02x" %(col_rgb[0],col_rgb[1],col_rgb[2])
+            elif my_type == "hsv_sat":
+                val = int(hsv_cols[1]*255)
+                col_rgb = [int(el*255) for el in colorsys.hsv_to_rgb(1,val/255,1)]
+                color = "#%02x%02x%02x" %(col_rgb[0],col_rgb[1],col_rgb[2])
+            elif my_type == "hsv_val":
+                val = int(hsv_cols[2]*255)
+                col_rgb = [int(el*255) for el in colorsys.hsv_to_rgb(1,1,val/255)]
+                color = "#%02x%02x%02x" %(col_rgb[0],col_rgb[1],col_rgb[2])
         my_str += "\t\t{ x: '%s', y: %s, color: '%s' },\n"%(year,val,color)
-    my_str += """]}/>)
+    my_str += """]}/> </div>)
                 }\n"""
     return my_str
 
@@ -107,8 +151,12 @@ for k in rgb_colors_sums:
     rgb_colors_avg[k] = [c/rgb_colors_counts[k] for c in rgb_colors_sums[k]]
 
 my_str = ""
-my_str +=  make_current(my_str,rgb_colors_avg)
-
+my_str +=  make_current(rgb_colors_avg,my_type="red")
+my_str +=  make_current(rgb_colors_avg,my_type="green")
+my_str +=  make_current(rgb_colors_avg,my_type="blue")
+my_str +=  make_current(rgb_colors_avg,my_type="hsv_hue")
+my_str +=  make_current(rgb_colors_avg,my_type="hsv_sat")
+my_str +=  make_current(rgb_colors_avg,my_type="hsv_val")
 text_file = open("data/react_colors_charts_for_trends", "w")
 text_file.write(my_str)
 text_file.close()
