@@ -97,7 +97,7 @@ def make_current(rgb_colors_avg, my_type = "red"):
     my_str +=  """
          code.push(
          <div>
-         <p>%s</p>\n"""%(my_title)
+         <center><h1>%s</h1></center>\n"""%(my_title)
     my_str += """
          <BarChart
           axisLabels={{x: 'My x Axis', y: 'My y Axis'}}
@@ -114,13 +114,13 @@ def make_current(rgb_colors_avg, my_type = "red"):
             continue
         if my_type == "red":
             val = int(rgb_colors_avg[year][0])
-            color = "#%02x%02x%02x" %(val,50,50)
+            color = "#%02x%02x%02x" %(val,100,100)
         elif my_type == "green":
             val = int(rgb_colors_avg[year][1])
-            color = "#%02x%02x%02x" %(50,val,50)
+            color = "#%02x%02x%02x" %(100,val,100)
         elif my_type == "blue":
             val = int(rgb_colors_avg[year][2])
-            color = "#%02x%02x%02x" %(50,50,val)
+            color = "#%02x%02x%02x" %(100,100,val)
         elif "hsv" in my_type:
             hsv_cols = colorsys.rgb_to_hsv(rgb_colors_avg[year][0]/255,rgb_colors_avg[year][1]/255,rgb_colors_avg[year][2]/255)
             if my_type == "hsv_hue":
@@ -129,11 +129,11 @@ def make_current(rgb_colors_avg, my_type = "red"):
                 color = "#%02x%02x%02x" %(col_rgb[0],col_rgb[1],col_rgb[2])
             elif my_type == "hsv_sat":
                 val = int(hsv_cols[1]*255)
-                col_rgb = [int(el*255) for el in colorsys.hsv_to_rgb(1,val/255,1)]
+                col_rgb = [int(el*255) for el in colorsys.hsv_to_rgb(0,val/255,1)]
                 color = "#%02x%02x%02x" %(col_rgb[0],col_rgb[1],col_rgb[2])
             elif my_type == "hsv_val":
                 val = int(hsv_cols[2]*255)
-                col_rgb = [int(el*255) for el in colorsys.hsv_to_rgb(1,1,val/255)]
+                col_rgb = [int(el*255) for el in colorsys.hsv_to_rgb(0,1,val/255)]
                 color = "#%02x%02x%02x" %(col_rgb[0],col_rgb[1],col_rgb[2])
         my_str += "\t\t{ x: '%s', y: %s, color: '%s' },\n"%(year,val,color)
     my_str += """]}/> </div>)
