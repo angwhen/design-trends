@@ -14,7 +14,7 @@ def make_df():
     df =  pd.read_csv("data/url_title_and_file_data.csv")
     fnames_list = df[["file_name"]].values.tolist()
 
-    palettes = pickle.load(open("data/color_palettes.p","rb"))
+    palettes = {}#pickle.load(open("data/color_palettes.p","rb"))
 
     results = []
     count = 0

@@ -104,4 +104,5 @@ def get_style_related_words():
     return style_related_words_unigram, style_related_words
 
 style_related_words_unigram, style_related_words = get_style_related_words()
+#pickle.dump(style_related_words_unigram,open("../data/style_related_words_unigram.p","wb"))
 get_nytimes_style_data_from_api()
