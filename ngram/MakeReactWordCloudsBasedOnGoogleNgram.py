@@ -30,8 +30,15 @@ for file in os.listdir(directory):
         continue
 
 my_str = "yearly_google_ngram_fashion_terms:["
-for year in range(1800,2008):
-    cnts = [[term,years_to_terms_to_counts_dict[year][term]/terms_sums_dict[term]] for term in style_related_words if term in years_to_terms_to_counts_dict[year]]
+for year in range(1852,2020):#start 1852 since nytimes startsthen
+    if year >= 2009:
+        cnts = []
+    else:
+        cnts = [[term,years_to_terms_to_counts_dict[year][term]/terms_sums_dict[term]] for term in style_related_words if term in years_to_terms_to_counts_dict[year]]
+        # untfidf
+        #cnts = [[term,years_to_terms_to_counts_dict[year][term]] for term in style_related_words if term in years_to_terms_to_counts_dict[year]]
+        cnts.sort(key=lambda x: x[1],reverse=True)
+        cnts = cnts[:30]
     my_str += "[%s, %s],\n"%(year,cnts)
 my_str = my_str[:-2]+"],\n"
 text_file = open("data/react_key_fashion_terms_by_date_from_google_ngram.txt", "w")
