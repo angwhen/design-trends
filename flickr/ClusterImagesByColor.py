@@ -73,14 +73,14 @@ def make_clusters(num_clusters=7):
 def make_react_codes(num_clusters=7):
     # make as many lists of 7 images (one for each cluster) as we can to show
     df =  pd.read_csv("data/url_title_and_file_data.csv")
-    my_urls_list = df[["url","file_name"]].values.tolist()
+    my_urls_list = df[["url","year","file_name"]].values.tolist()
     #make filename num to url dict
     fnum_to_url_dict = {}
     for el in my_urls_list:
         url = el[0]
         p1 = url.split("_o")[0]
         url = p1+"_n.jpg"
-        fname_num = el[1].split("/")[-1]
+        fname_num = el[2].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
 
