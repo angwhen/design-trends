@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import os
 
+SAVE_SPACE = True 
 df =  pd.read_csv("data/url_title_and_file_data.csv")
 fnames_list = df[["file_name"]].values.tolist()
 finished_ims =set(os.listdir("data/images/mask_rcnn_results"))
@@ -23,17 +24,20 @@ for fname in fnames_list:
 
     # paint segmentation mask on images directly
     width, height = orig_img.shape[1], orig_img.shape[0]
-    masks, _ = utils.viz.expand_mask(masks, bboxes, (width, height), scores)
+    masks = utils.viz.expand_mask(masks, bboxes, (width, height), scores)
     orig_img = utils.viz.plot_mask(orig_img, masks)
 
     # identical to Faster RCNN object detection
-    fig = plt.figure(figsize=(10, 10))
-    ax = fig.add_subplot(1, 1, 1)
-    ax = utils.viz.plot_bbox(orig_img, bboxes, scores, ids,
+    if not SAVE_SPACE:
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.add_subplot(1, 1, 1)
+        ax = utils.viz.plot_bbox(orig_img, bboxes, scores, ids,
                              class_names=net.classes, ax=ax)
-    plt.savefig("data/images/mask_rcnn_results/%d.png"%fname_num, bbox_inches = 'tight',
-        pad_inches = 0)
-    plt.clf()
-    plt.close(fig)
+        plt.savefig("data/images/mask_rcnn_results/%d.png"%fname_num, bbox_inches = 'tight', pad_inches = 0)
+        plt.clf()
+        plt.close(fig)
+    if SAVE_SPACE:
+        orig_img = [] #set it to empty, no need for it
+        bboxes = []
     res = [orig_img, masks, ids, scores, bboxes]
-    pickle.dump(res,open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"wb"))
+    pickle.dump(res,open("data/images/mask_rcnn_results/res_%d.p"%(fname_num),"wb"))
