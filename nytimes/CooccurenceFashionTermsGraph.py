@@ -13,7 +13,7 @@ def make_cooccurence_matrix():
     mat = np.zeros([len(style_related_words_list),len(style_related_words_list)])
     fashion_terms_occurrences = df[["matched_keywords"]].values.tolist()
     for r in fashion_terms_occurrences:
-        terms = json.loads(r[0])
+        terms = r[0].strip('][').split(', ') 
         print (terms)
         for el1 in terms:
             for el2 in terms:
