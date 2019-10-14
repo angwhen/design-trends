@@ -14,9 +14,7 @@ def make_cooccurence_matrix():
     mat = np.zeros([len(style_related_words_list),len(style_related_words_list)])
     fashion_terms_occurrences = df[["matched_keywords"]].apply(list).values.tolist()
     for r in fashion_terms_occurrences:
-        print (r[0])
         terms = r[0].replace("'",'').strip('][').split(', ')
-        print (terms)
         for el1 in terms:
             if el1 not in style_words_indexer:
                 continue
