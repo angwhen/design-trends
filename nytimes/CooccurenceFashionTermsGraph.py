@@ -6,17 +6,23 @@ import json
 def make_cooccurence_matrix():
     df = pd.read_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
     style_related_words_list = pickle.load(open("../data/style_related_words_unigram_list.p","rb"))
+    print (style_related_words_list)
     style_words_indexer = {}
     for i in range(0,len(style_related_words_list)):
         style_words_indexer[style_related_words_list[i]] = i
 
     mat = np.zeros([len(style_related_words_list),len(style_related_words_list)])
-    fashion_terms_occurrences = df[["matched_keywords"]].values.tolist()
+    fashion_terms_occurrences = df[["matched_keywords"]].apply(list).values.tolist()
     for r in fashion_terms_occurrences:
-        terms = r[0].strip('][').split(', ') 
+        print (r[0])
+        terms = r[0].replace("'",'').strip('][').split(', ')
         print (terms)
         for el1 in terms:
+            if el1 not in style_words_indexer:
+                continue
             for el2 in terms:
+                if el2 not in style_words_indexer:
+                    continue
                 mat[style_words_indexer[el1]][style_words_indexer[el2]] +=1
     pickle.dump([style_related_words_list,mat],open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","wb"))
     return mat
