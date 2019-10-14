@@ -11,14 +11,15 @@ def make_cooccurence_matrix():
         style_words_indexer[style_related_words_list[i]] = i
 
     mat = np.zeros([len(style_related_words_list),len(style_related_words_list)])
-    fashion_terms_occurrences = df[["matched_keywords"]]
+    fashion_terms_occurrences = df[["matched_keywords"]].values.tolist()
     for r in fashion_terms_occurrences:
-        for el1 in r[0]:
-            for el2 in r[0]:
+        print (r)
+        for el1 in r:
+            for el2 in r:
                 mat[style_words_indexer[el1]][style_words_indexer[el2]] +=1
     pickle.dump([style_related_words_list,mat],open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","wb"))
     return mat
 
-mat = make_cooccurence_matrix()
+make_cooccurence_matrix()
 
-print (mat)
+#print (mat)
