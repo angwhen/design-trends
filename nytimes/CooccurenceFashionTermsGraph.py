@@ -14,7 +14,8 @@ def make_cooccurence_matrix():
 
     style_related_words_list = []
     for r in fashion_terms_occurrences:
-        style_related_words_list.extend(r)
+        terms = r[0].replace("'",'').strip('][').split(', ')
+        style_related_words_list.extend(terms)
     style_related_words_list = list(set(style_related_words_list))
     style_words_indexer = {}
     for i in range(0,len(style_related_words_list)):
