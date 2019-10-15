@@ -49,7 +49,7 @@ def make_react_code_for_graph():
     labels = d[0]
     #style_words_indexer = {v:i for i,v in enumerate(labels)}
     mat = d[1]
-    RAND_SEL = 12
+    RAND_SEL = 20
     my_str = "  this.state = { data: {\n"
     my_str +=  "nodes: ["
     for i in range(0,len(labels)):
@@ -73,6 +73,6 @@ def make_react_code_for_graph():
 
 
 
-make_cooccurence_matrix()
+#make_cooccurence_matrix()
 #visualize_matrix()
 make_react_code_for_graph()
