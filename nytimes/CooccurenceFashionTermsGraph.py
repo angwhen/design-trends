@@ -5,6 +5,7 @@ import json
 import networkx as nx
 import matplotlib.pyplot as plt
 import math
+from collections import Counter
 
 def make_cooccurence_matrix():
     df = pd.read_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
@@ -44,6 +45,34 @@ def visualize_matrix():
     nx.draw_spring(G)
     plt.show()
 
+def save_deg_and_weighted_deg_centrality():
+    d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
+    df = pd.read_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
+    fashion_terms_occurrences = df[["matched_keywords"]].apply(list).values.tolist()
+    style_related_words_list = []
+    for r in fashion_terms_occurrences:
+        terms = r[0].replace("'",'').strip('][').split(', ')
+        style_related_words_list.extend(terms)
+    occurences_dict = Counter(style_related_words_list)
+
+    labels = d[0]
+    mat = d[1]
+    term_to_deg_dict = {}
+    term_to_normalized_deg_dict = {} # weighted deg is the "weighted degree sum" divided by the total occurrences
+    for i,term in enumerate(labels):
+        curr_deg = 0
+        weighted_deg_sum = 0
+        for c in mat[i]:
+            weighted_deg_sum += c
+            if c != 0:
+                curr_deg +=1
+        term_to_deg_dict[term] = curr_deg
+        total_occurrences = occurences_dict[term]
+        term_to_normalized_deg_dict[term] = weighted_deg_sum/total_occurrences
+
+    pickle.dump(term_to_deg_dict,open("../fashion_terms/data/my_data/nytimes_term_to_deg_dict.p","wb"))
+    pickle.dump(term_to_normalized_deg_dict,open("../fashion_terms/data/my_data/nytimes_term_to_normalized_deg_dict.p","wb"))
+
 def make_react_code_for_graph():
     d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
     labels = d[0]
@@ -63,7 +92,7 @@ def make_react_code_for_graph():
         for j in range(i,len(mat)): #don't duplicate, undirected graph
             if i % RAND_SEL == 0 and j % RAND_SEL == 0 and mat[i][j] >= 1:
                 my_str += "{ source: \"%s\",target: \"%s\" },"%(labels[i],labels[j])
-    my_str = my_str[:-1]+"],\n}}"
+    my_str = my_str[:-1]+"],\n},   currentChartNum: 0}"
     print (my_str)
     # nodes: [{ id: "Harry" }, { id: "Sally" }, { id: "Alice" }],
     #links: [{ source: "Harry", target: "Sally" }, { source: "Harry", target: "Alice" }],
@@ -72,7 +101,7 @@ def make_react_code_for_graph():
     text_file.close()
 
 
-
 #make_cooccurence_matrix()
 #visualize_matrix()
-make_react_code_for_graph()
+#make_react_code_for_graph()
+save_deg_and_weighted_deg_centrality()
