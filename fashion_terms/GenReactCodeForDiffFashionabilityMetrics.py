@@ -5,7 +5,7 @@ nytimes_term_to_normalized_deg_dict = pickle.load(open("data/my_data/nytimes_ter
 
 all_terms = list(nytimes_term_to_deg_dict.keys())
 all_terms.extend( list(nytimes_term_to_normalized_deg_dict.keys()))
-
+all_terms = list(set(all_terms))
 my_str = " ["
 #term: "Raymond",
 #score1: 10,
