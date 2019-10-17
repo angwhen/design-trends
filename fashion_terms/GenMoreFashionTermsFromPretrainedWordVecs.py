@@ -2,13 +2,24 @@ import spacy
 import pickle
 nlp = spacy.load('en_core_web_md')
 
-style_related_words_list = pickle.load(open("../data/style_related_words_unigram_list.p","rb"))
-style_words_to_vec_dict = {}
-for w in style_related_words_list:
-    doc = nlp(w)
-    style_words_to_vec_dict[w] = doc[0].vector
+def idk():
+    style_related_words_list = pickle.load(open("../data/style_related_words_unigram_list.p","rb"))
+    style_words_to_vec_dict = {}
+    for w in style_related_words_list:
+        doc = nlp(w)
+        style_words_to_vec_dict[w] = doc[0].vector
 
-print (style_words_to_vec_dict)
+    print (style_words_to_vec_dict)
+
+
+def get_distance_from_center_of_unigram_terms_in_nytimes_style_dataset():
+    d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
+    words = d[0]
+    style_words_to_vec_dict = {}
+    for w in words:
+        if len(w.split()) == 1:
+            doc = nlp(w)
+            style_words_to_vec_dict[w] = doc[0].vector
 
 """import io
 

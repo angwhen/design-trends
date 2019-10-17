@@ -42,6 +42,7 @@ def visualize_matrix():
     G = nx.from_numpy_matrix(mat)
     G = nx.relabel_nodes(G,{v: k for v, k in enumerate(labels)})
     deg_centrality_of_words = nx.degree_centrality(G)
+    print (deg_centrality_of_words)
     nx.draw_spring(G)
     plt.show()
 
@@ -70,7 +71,13 @@ def save_deg_and_weighted_deg_centrality():
         total_occurrences = occurences_dict[term]
         term_to_normalized_deg_dict[term] = weighted_deg_sum/total_occurrences
 
+    G = nx.from_numpy_matrix(mat)
+    G = nx.relabel_nodes(G,{v: k for v, k in enumerate(labels)})
+    term_to_deg_dict = nx.degree_centrality(G)
+    term_to_eig_centrality_dict = nx.eigenvector_centrality(G)
+
     pickle.dump(term_to_deg_dict,open("../fashion_terms/data/my_data/nytimes_term_to_deg_dict.p","wb"))
+    pickle.dump(term_to_eig_centrality_dict,open("../fashion_terms/data/my_data/nytimes_term_to_eig_centrality_dict.p","wb"))
     pickle.dump(term_to_normalized_deg_dict,open("../fashion_terms/data/my_data/nytimes_term_to_normalized_deg_dict.p","wb"))
 
 def make_react_code_for_graph():
