@@ -42,7 +42,7 @@ def make_style_words_df():
         first = False
 
     human_labels_dict = {}
-    with open('data/my_data/human_labelled_fashion_terms.csv', 'rb') as f:
+    with open('data/my_data/human_labelled_fashion_terms.csv', 'r') as f:
         reader = csv.reader(f)
         human_labels = list(reader)
     for w in human_labels:
