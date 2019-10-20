@@ -11,7 +11,7 @@ def make_style_words_df():
     style_related_words_unigram = set([])
 
     style_related_words_speak_fashion = pickle.load(open("../nytimes/data/speak_fashion_fashion_terms.p","rb"))
-    style_related_words_zalora = pickle.load(open("data/zalora_fashion_terms.p","rb"))
+    style_related_words_zalora = pickle.load(open("../nytimes/data/zalora_fashion_terms.p","rb"))
     for w in style_related_words_speak_fashion.union(style_related_words_zalora):
         if " " in w:
             style_related_words.add(w.strip())
@@ -47,9 +47,14 @@ def make_style_words_df():
         all_words.append([word,1,p,1])
     for word in style_related_words:
         p = pos_tag(word.split())
-        all_words.append([word,0,p,1]) # setting all human edited labels to 1, unless otherwise edited
+        if "homepage" in word or ".com" in word:
+            all_words.append([word,0,p,0])
+        else:
+            all_words.append([word,0,p,1]) # setting all human edited labels to 1, unless otherwise edited
 
     # columns of the dataframe should be: WORD, Unigram or not, POS tagged
     df=pd.DataFrame(all_words)
     df.columns = ["word","unigram","pos_tags","human_edited_label"]
     df.to_csv("data/my_data/fashion_terms.csv")
+
+make_style_words_df()
