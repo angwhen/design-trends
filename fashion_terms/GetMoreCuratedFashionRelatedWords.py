@@ -59,16 +59,8 @@ def make_style_words_df():
         if word in human_labels_dict:
             label = human_labels_dict[word]
 
-        proper = 0
-        if len(p) >=2:
-            all_proper = True
-            for el in p:
-                if el[1] != "NNP":
-                    all_proper = False
-            if all_proper:
-                proper = 1
-
         all_words.append([word,1,label,proper,p])
+
     for word in style_related_words:
         p = pos_tag(word.split())
 
@@ -84,6 +76,13 @@ def make_style_words_df():
             for el in p:
                 if el[1] != "NNP":
                     all_proper = False
+                    continue
+            if all_proper:
+                # check that noe of the words are in Unigram
+                for w in word.lower().split():
+                    if w in style_related_words_unigram:
+                        all_proper = False
+                        continue
             if all_proper:
                 proper = 1
 
