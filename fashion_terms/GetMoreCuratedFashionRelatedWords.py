@@ -44,10 +44,13 @@ def make_style_words_df():
     all_words = []
     for word in style_related_words_unigram:
         p = pos_tag(word.split())
-        all_words.append([word,1,p,1])
+        if "homepage" in word.lower() or ".com" in word.lower():
+            all_words.append([word,1,p,0])
+        else:
+            all_words.append([word,1,p,1])
     for word in style_related_words:
         p = pos_tag(word.split())
-        if "homepage" in word or ".com" in word:
+        if "homepage" in word.lower() or ".com" in word.lower():
             all_words.append([word,0,p,0])
         else:
             all_words.append([word,0,p,1]) # setting all human edited labels to 1, unless otherwise edited
