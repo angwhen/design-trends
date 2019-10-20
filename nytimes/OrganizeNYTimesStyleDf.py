@@ -78,13 +78,13 @@ def pub_date(row):
 
 def get_main_parts(row):
     txt = ""
-    if row.headline != None:
+    if type(row.headline) == str:
         txt += row.headline + " "
-    if row.abstract != None:
-        txt += row.abstract + " "
-    if row.snippet != None:
+    if type(row.abstract) == str:
+        txt += str(row.abstract) + " "
+    if type(row.snippet) == str:
         txt += row.snippet + " "
-    if row.lead_paragraph != None:
+    if type(row.lead_paragraph) == str:
         txt += row.lead_paragraph + " "
     return txt
 
