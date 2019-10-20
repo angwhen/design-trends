@@ -67,6 +67,9 @@ def make_style_words_df():
         label = 1
         if "homepage" in word.lower() or ".com" in word.lower():
             label = 0
+        if ("university" in word.lower() or "college" in word.lower()):
+            if "fashion" not in word.lower() and "style" not in word.lower() and "design" not in word.lower() and "art" not in word.lower():
+                label = 0 #  do not keep schools not explicitly called a fashion school
         if word in human_labels_dict:
             label = human_labels_dict[word]
 
