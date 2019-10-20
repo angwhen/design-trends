@@ -75,7 +75,9 @@ def pub_date(row):
     return None
 
 def unparsed_to_parsed():
+    print ("Starting from unparsed")
     df = pd.read_csv("%s/data/nytimes_style_articles/unparsed_articles_df.csv"%DATA_PATH)
+    print ("Read unparsed")
 
     df["type_of_material"] = df.apply(type_of_material, axis = 1)
     df["web_url"] = df.apply(web_url, axis = 1)
@@ -90,12 +92,12 @@ def unparsed_to_parsed():
     df["pub_date"] = df.head(5).apply(pub_date, axis = 1)
 
     df.to_csv("%s/data/nytimes_style_articles/parsed_articles_df.csv"%DATA_PATH)
+    print ("All done parsing")
 
 def parsed_to_parsed_without_unparsed_text():
     df = pd.read_csv("data/nytimes_style_articles/parsed_articles_df.csv"%DATA_PATH)
     df = df.drop(["unparsed_text"],axis=1)
     df.to_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
-
 
 
 unparsed_to_parsed()
