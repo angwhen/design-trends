@@ -59,7 +59,7 @@ def make_style_words_df():
         if word in human_labels_dict:
             label = human_labels_dict[word]
 
-        all_words.append([word,1,label,proper,p])
+        all_words.append([word,1,label,0,p])
 
     for word in style_related_words:
         p = pos_tag(word.split())
