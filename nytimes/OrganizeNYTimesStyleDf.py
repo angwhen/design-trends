@@ -4,7 +4,7 @@ import json
 DATA_PATH = ""
 try:
     f=open("data_location.txt", "r")
-    DATA_PATH  = f.read()
+    DATA_PATH  = f.read().strip()
 except:
     print ("data is right here")
 
@@ -89,12 +89,12 @@ def unparsed_to_parsed():
     df["subsection_name"] = df.apply(subsection_name, axis = 1)
     df["pub_date"] = df.head(5).apply(pub_date, axis = 1)
 
-    df.to_csv("data/nytimes_style_articles/parsed_articles_df.csv")
+    df.to_csv("%s/data/nytimes_style_articles/parsed_articles_df.csv"%DATA_PATH)
 
 def parsed_to_parsed_without_unparsed_text():
-    df = pd.read_csv("data/nytimes_style_articles/parsed_articles_df.csv")
+    df = pd.read_csv("data/nytimes_style_articles/parsed_articles_df.csv"%DATA_PATH)
     df = df.drop(["unparsed_text"],axis=1)
-    df.to_csv("data/nytimes_style_articles/parsed_only_articles_df.csv")
+    df.to_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
 
 
 
