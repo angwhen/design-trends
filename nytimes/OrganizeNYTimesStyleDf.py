@@ -135,14 +135,29 @@ def parsed_to_parsed_without_unparsed_text():
     df.to_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
 
 
-def add_tokenage_to_parsed():
+def get_hand_curated_style_terms_articles_df():
+    # load allowable fashion terms with labels for noun
+    print ("TODO")
+
+
+def add_tokenage_to_parsed(starter = "parsed_only_articles_df.csv"):
     print ("Starting from parsed only data")
-    df = pd.read_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
+    fin_df = pd.DataFrame(columns=['year','month','main_parts_text','nouns_in_main_parts','adjectives_in_main_parts','matched_keywords','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date'])
+    for chunk in pd.read_csv('Check1_900.csv', header=None, names=['year','month','matched_keywords','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date'], chunksize=1000):
+        df = chunk
+        df["main_parts_text"] = df.apply(get_main_parts, axis = 1)
+        df["noun_phrases_in_main_parts"] = df.apply(get_noun_phrases, axis = 1) # headline, abstract, snipper, lead paragraph
+        df["nouns_in_main_parts"] = df.apply(get_nouns, axis = 1)
+        df["adjectives_in_main_parts"] = df.apply(get_adjectives, axis = 1)
+        pd.concat([fin_df,df], ignore_index=True)
+    """
+    df = pd.read_csv("%s/data/nytimes_style_articles/%s"%)DATA_PATH,starter))
     df["main_parts_text"] = df.apply(get_main_parts, axis = 1)
     df["noun_phrases_in_main_parts"] = df.apply(get_noun_phrases, axis = 1) # headline, abstract, snipper, lead paragraph
     df["nouns_in_main_parts"] = df.apply(get_nouns, axis = 1)
     df["adjectives_in_main_parts"] = df.apply(get_adjectives, axis = 1)
-    df.to_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
+    """
+    fin_df.to_csv("%s/data/nytimes_style_articles/tokenaged_%s"%(DATA_PATH,starter))
 
 #unparsed_to_parsed()
 #parsed_to_parsed_without_unparsed_text()

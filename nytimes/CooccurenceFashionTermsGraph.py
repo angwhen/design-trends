@@ -107,8 +107,32 @@ def make_react_code_for_graph():
     text_file.write(my_str)
     text_file.close()
 
+def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
+    d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
+    labels = d[0]
+    #style_words_indexer = {v:i for i,v in enumerate(labels)}
+    mat = d[1]
+    my_str = "{\n"
+    for i in range(0,len(mat)):
+        my_str += "\"%s\":["%labels[i]
+        most_common_ids = np.argpartition(mat[i], -(top+1))[-(top+1):]
+        if len(most_common_ids) != 1:
+            for j in most_common_ids:
+                if j == i:
+                    continue
+                my_str += "\"%s\", "%labels[j]
+            my_str = my_str[:-2] + "], "
+        else:
+            my_str+="], "
+    my_str = my_str[:-2] + "}"
+    text_file = open("data/react_nytimes_fashion_terms_most_common_cooccurs.txt", "w")
+    text_file.write(my_str)
+    text_file.close()
+
+
 
 #make_cooccurence_matrix()
 #visualize_matrix()
 #make_react_code_for_graph()
-save_deg_and_weighted_deg_centrality()
+#save_deg_and_weighted_deg_centrality()
+make_react_dictionary_for_what_words_others_cooccur_with_most()
