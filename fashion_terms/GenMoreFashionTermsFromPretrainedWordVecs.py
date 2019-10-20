@@ -19,9 +19,9 @@ def get_distance_from_center_of_unigram_terms_in_nytimes_style_dataset():
     words = d[0]
     style_words_to_vec_dict = {}
     for w in words:
-        if len(w.split()) == 1:
-            doc = nlp(w)
-            style_words_to_vec_dict[w] = doc[0].vector
+        doc = nlp(w)
+        style_words_to_vec_dict[w] = doc.vector
+
     vecs_list = np.array(list(style_words_to_vec_dict.values()))
     mean_vec = np.mean(vecs_list,axis=0)
 

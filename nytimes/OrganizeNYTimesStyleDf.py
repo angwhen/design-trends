@@ -1,6 +1,13 @@
 import pandas as pd
 import json
 
+DATA_PATH = ""
+try:
+    f=open("data_location.txt", "r")
+    DATA_PATH  = f.read()
+except:
+    print ("data is right here")
+
 def type_of_material(row):
     j =  json.loads(row.unparsed_text)
     if "type_of_material" in j:
@@ -68,7 +75,7 @@ def pub_date(row):
     return None
 
 def unparsed_to_parsed():
-    df = pd.read_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
+    df = pd.read_csv("%s/data/nytimes_style_articles/unparsed_articles_df.csv"%DATA_PATH)
 
     df["type_of_material"] = df.apply(type_of_material, axis = 1)
     df["web_url"] = df.apply(web_url, axis = 1)
@@ -89,7 +96,7 @@ def parsed_to_parsed_without_unparsed_text():
     df = df.drop(["unparsed_text"],axis=1)
     df.to_csv("data/nytimes_style_articles/parsed_only_articles_df.csv")
 
-    
+
 
 unparsed_to_parsed()
 parsed_to_parsed_without_unparsed_text()
