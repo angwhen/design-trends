@@ -95,7 +95,7 @@ def unparsed_to_parsed():
     print ("All done parsing")
 
 def parsed_to_parsed_without_unparsed_text():
-    df = pd.read_csv("data/nytimes_style_articles/parsed_articles_df.csv"%DATA_PATH)
+    df = pd.read_csv("%s/data/nytimes_style_articles/parsed_articles_df.csv"%DATA_PATH)
     df = df.drop(["unparsed_text"],axis=1)
     df.to_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
 
