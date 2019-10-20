@@ -76,13 +76,25 @@ def pub_date(row):
         return j["pub_date"]
     return None
 
+def get_main_parts(row):
+    txt = ""
+    if row.headline != None:
+        txt += row.headline + " "
+    if row.abstract != None:
+        txt += row.abstract + " "
+    if row.snippet != None:
+        txt += row.snippet + " "
+    if row.lead_paragraph != None:
+        txt += row.lead_paragraph + " "
+    return txt
+
 def get_noun_phrases(row):
-    txt = row.headline + " " + row.abstract + " " + row.snippet + " " + row.lead_paragraph
+    txt = row.main_parts_text
     blob = TextBlob(txt)
     return blob.noun_phrases
 
 def get_nouns(row):
-    txt = row.headline + " " + row.abstract + " " + row.snippet + " " + row.lead_paragraph
+    txt = row.main_parts_text
     nouns = []
     for word,pos in nltk.pos_tag(nltk.word_tokenize(txt)):
          if (pos == 'NN' or pos == 'NNP' or pos == 'NNS' or pos == 'NNPS'):
@@ -90,7 +102,7 @@ def get_nouns(row):
     return nouns
 
 def get_adjectives(row):
-    txt = row.headline + " " + row.abstract + " " + row.snippet + " " + row.lead_paragraph
+    txt = row.main_parts_text
     adjs = []
     for word,pos in nltk.pos_tag(nltk.word_tokenize(txt)):
          if (pos == 'JJ' or pos == 'JJR' or pos == 'JJS'):
@@ -126,10 +138,11 @@ def parsed_to_parsed_without_unparsed_text():
 def add_tokenage_to_parsed():
     print ("Starting from parsed only data")
     df = pd.read_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
+    df["main_parts_text"] = df.apply(get_main_parts, axis = 1)
     df["noun_phrases_in_main_parts"] = df.apply(get_noun_phrases, axis = 1) # headline, abstract, snipper, lead paragraph
     df["nouns_in_main_parts"] = df.apply(get_nouns, axis = 1)
     df["adjectives_in_main_parts"] = df.apply(get_adjectives, axis = 1)
-    df.to_csv("%s/data/nytimes_style_articles/parsed_only_articles_with_tokenage_df.csv"%DATA_PATH)
+    df.to_csv("%s/data/nytimes_style_articles/parsed_only_articles_df.csv"%DATA_PATH)
 
 #unparsed_to_parsed()
 #parsed_to_parsed_without_unparsed_text()
