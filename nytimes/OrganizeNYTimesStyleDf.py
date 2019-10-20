@@ -2,6 +2,7 @@ import pandas as pd
 import json
 from textblob import TextBlob
 import nltk
+import gc
 
 DATA_PATH = ""
 try:
@@ -142,7 +143,7 @@ def get_hand_curated_style_terms_articles_df():
 
 def add_tokenage_to_parsed(starter = "parsed_only_articles_df.csv"):
     print ("Starting from parsed only data")
-    fin_df = pd.DataFrame(columns=['year','month','main_parts_text','nouns_in_main_parts','adjectives_in_main_parts','matched_keywords','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date'])
+    fin_df = pd.DataFrame(columns=['year','month','main_parts_text','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','nouns_in_main_parts','adjectives_in_main_parts','matched_keywords'])
     for chunk in pd.read_csv("%s/data/nytimes_style_articles/%s"%(DATA_PATH,starter), chunksize=50000):
         df = chunk
         df["main_parts_text"] = df.apply(get_main_parts, axis = 1)
