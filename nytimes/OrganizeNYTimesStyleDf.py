@@ -172,7 +172,7 @@ def get_hand_curated_style_terms_articles_df():
         FASHION_DATA_PATH  = f.read().strip()
     except:
         print ("data is right here")
-    fashion_df = pd.read_csv("%s/data/my_data/fashion_terms.csv"%(FASHION_DATA_PATH)
+    fashion_df = pd.read_csv("%s/data/my_data/fashion_terms.csv"%(FASHION_DATA_PATH))
     fashion_list = fashion_df[['word','human_edited_label']].apply(list).values.tolist()
     allowable_fashion_terms = [r[0] for r in fashion_list if r[1] != 0]
 
