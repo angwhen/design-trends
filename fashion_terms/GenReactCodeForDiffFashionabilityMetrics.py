@@ -10,8 +10,11 @@ except:
 nytimes_term_to_deg_dict = pickle.load(open("%s/data/my_data/nytimes_term_to_deg_dict.p"%FASHION_DATA_PATH,"rb"))
 nytimes_term_to_normalized_deg_dict = pickle.load(open("%s/data/my_data/nytimes_term_to_normalized_deg_dict.p"%FASHION_DATA_PATH,"rb"))
 nytimes_term_to_eig_centrality_dict = pickle.load(open("%s/data/my_data/nytimes_term_to_eig_centrality_dict.p"%FASHION_DATA_PATH,"rb"))
-terms_to_distance_from_vector_center_dict = pickle.load(open("%s/data/my_data/terms_to_distance_from_vector_center_dict.p"%FASHION_DATA_PATH,"rb"))
-
+try:
+    terms_to_distance_from_vector_center_dict = pickle.load(open("%s/data/my_data/terms_to_distance_from_vector_center_dict.p"%FASHION_DATA_PATH,"rb"))
+except:
+    terms_to_distance_from_vector_center_dict = {}
+    
 all_terms = list(nytimes_term_to_deg_dict.keys())
 all_terms.extend( list(nytimes_term_to_normalized_deg_dict.keys()))
 all_terms.extend( list(nytimes_term_to_eig_centrality_dict.keys()))
