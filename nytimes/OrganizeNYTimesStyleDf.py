@@ -137,7 +137,7 @@ def parsed_to_parsed_without_unparsed_text():
 
 def add_tokenage_to_parsed(starter = "parsed_only_articles_df.csv"):
     print ("Starting from parsed only data")
-    fin_df = pd.DataFrame(columns=['year','month','main_parts_text','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','nouns_in_main_parts','adjectives_in_main_parts','matched_keywords'])
+    fin_df = pd.DataFrame(columns=['year','month','main_parts_text','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','nouns_in_main_parts',"noun_phrases_in_main_parts",'adjectives_in_main_parts','matched_keywords'])
     count = 0
     for chunk in pd.read_csv("%s/data/nytimes_style_articles/%s"%(DATA_PATH,starter), chunksize=50000):
         print ("starting with chunk %d"%count)
@@ -158,7 +158,7 @@ def to_keep_based_on_fashion_labels(row):
     nouns_phrases_in_main_parts= [el.strip()[1:-1].lower() for el in row.noun_phrases_in_main_parts[1:-1].split(",")]
     matched = []
     for term in allowable_fashion_terms:
-        if term.lower() in nouns_in_main_parts or term.lower() in nouns_phrases_in_main_parts:
+        if term in nouns_in_main_parts or term in nouns_phrases_in_main_parts:
             matched.append(term.lower())
     return matched
 
@@ -171,7 +171,7 @@ def get_hand_curated_style_terms_articles_df():
     #  filter out bad rows in df that are not fashiony
     fin_df = pd.DataFrame(columns=['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','curated_matched_keyords'])
     count = 0
-    for chunk in pd.read_csv("%s/data/nytimes_style_articles/tokenaged_parsed_only_articles_df.csv"%(DATA_PATH), chunksize=50000):
+    for chunk in pd.read_csv("%s/data/nytimes_style_articles/tokenaged_parsed_only_articles_df.csv"%(DATA_PATH), chunksize=50000, low_memory=False):
         print ("starting with chunk %d"%count)
         df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','matched_keywords']]
         # keep only rows that have appropriate style words OR that are style section
