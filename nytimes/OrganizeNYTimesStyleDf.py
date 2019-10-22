@@ -154,7 +154,7 @@ def add_tokenage_to_parsed(starter = "parsed_only_articles_df.csv"):
 
 def to_keep_based_on_fashion_labels(row):
     global allowable_fashion_terms
-    nouns_in_main_parts= [row.nouns_in_main_parts[1:-1].split(",")]
+    nouns_in_main_parts= row.nouns_in_main_parts[1:-1].split(",")
     nouns_in_main_parts =[el.strip()[1:-1].lower() for el in nouns_in_main_parts]
     nouns_phrases_in_main_parts= [el.strip()[1:-1].lower() for el in row.noun_phrases_in_main_parts[1:-1].split(",")]
     matched = []
