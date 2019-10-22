@@ -156,7 +156,7 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=100):
             print (curr_term)
             # FIND RELATED ADJS
             curr_adjs_before = []
-            pos_tagged = nltk.pos_tag(nltk.word_tokenize(texts_in_same_order[i]))
+            pos_tagged = nltk.pos_tag(nltk.word_tokenize(texts_in_same_order[i][0]))
             my_inds = []
             for j in range(pos_tagged):
                 if pos_tagged[0].lower() == curr_term:
