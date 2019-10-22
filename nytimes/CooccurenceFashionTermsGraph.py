@@ -141,10 +141,56 @@ def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
     text_file.write(my_str)
     text_file.close()
 
+def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=100):
+    import nltk
+    df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
+    fashion_terms_occurrences= df[["curated_matched_keywords"]].apply(list).values.tolist()
+    texts_in_same_order = df[["main_parts_text"]].apply(list).values.tolist()
+
+    style_related_words_to_adjs_dict = {}
+    for i in range(0,fashion_terms_occurrences):
+        r = fashion_terms_occurrences[i]
+        terms = r[0].replace("'",'').strip('][').split(', ')
+        for curr_term in terms:
+            # FIND RELATED ADJS
+            curr_adjs_before = []
+            pos_tagged = nltk.pos_tag(nltk.word_tokenize(text_in_same_order[i]))
+            my_inds = []
+            for j in range(pos_tagged):
+                if pos_tagged[0].lower() == curr_term:
+                    my_inds.append(j)
+            for j in my_inds:
+                curr_adj_ind_tester = j-1
+                while pos_tagged[curr_adj_ind_tester][1] in ['JJ','JJR','JJS']:
+                    curr_adjs_before.append( pos_tagged[curr_adj_ind_tester].lower())
+            # ADD RELATED ADJS TO DICT
+            if curr_term not in  style_related_words_to_adjs_dict:
+                style_related_words_to_adjs_dict[curr_term] = {}
+            for adj in curr_adjs_before:
+                if adj not in style_related_words_to_adjs_dict[curr_term]:
+                    style_related_words_to_adjs_dict[curr_term][adj] = 0
+                style_related_words_to_adjs_dict[curr_term][adj] += 1
+    pickle.dump(style_related_words_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"wb"))
+
+    my_str = "{\n"
+    for term in fashion_terms_occurrences:
+        my_str += "\"%s\":["%term
+        related_adjs = sorted([(adjs,count) for k in style_related_words_to_adjs_dict[term].keys()],key=lambda x: x[1])
+        if len(related_adjs) != 0:
+            for adj,cnt in related_adjs:
+                my_str += "\"%s\", "%adj
+            my_str = my_str[:-2] + "], "
+        else:
+            my_str+="], "
+    my_str = my_str[:-2] + "}"
+    text_file = open("%s/data/react-codes/react_nytimes_fashion_terms_related_adjs.txt"%DATA_PATH, "w")
+    text_file.write(my_str)
+    text_file.close()
 
 
 #make_cooccurence_matrix()
 #visualize_matrix()
 #save_deg_and_weighted_deg_centrality()
-make_react_code_for_graph()
+#make_react_code_for_graph()
 #make_react_dictionary_for_what_words_others_cooccur_with_most()
+make_react_dictionary_for_what_adjs_other_cooccur_with_most()
