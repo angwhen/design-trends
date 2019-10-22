@@ -164,7 +164,7 @@ def to_keep_based_on_fashion_labels(row,allowable_fashion_terms):
 def style_sec_true(row): #temporary measure before fixing section column
     if row.matched_keywords == None or len(row.matched_keywords) == 0:
         return False
-    return "Style" in [el.strip()[1:-1] for el in df.iloc[0].matched_keywords[1:-1].split(",")]
+    return "Style" in [el.strip()[1:-1] for el in row.matched_keywords[1:-1].split(",")]
 
 def get_hand_curated_style_terms_articles_df():
     # load allowable fashion terms with labels for noun
