@@ -177,7 +177,7 @@ def get_hand_curated_style_terms_articles_df():
         df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','matched_keywords']]
         # keep only rows that have appropriate style words OR that are style section
         df["style_sec_true"] = df.apply(style_sec_true, axis = 1) # TODO: rn the section name data is missing, need to debug, note that section_name can in fact be accessed thru json loads unparsed...
-        df["curated_matched_keyords"] = df.apply(to_keep_based_on_fashion_labels, axis = 1)
+        df["curated_matched_keywords"] = df.apply(to_keep_based_on_fashion_labels, axis = 1)
         df =df[(df.astype(str)['curated_matched_keywords'] != '[]') | df["style_sec_true"] | (df['section_name'] == 'Style')]
         df.drop(['matched_keywords', 'style_sec_true'], axis=1)
         fin_df = pd.concat([fin_df,df], ignore_index=True)
