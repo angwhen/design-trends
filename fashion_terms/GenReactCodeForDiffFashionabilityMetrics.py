@@ -35,6 +35,6 @@ for t in all_terms:
     my_str = my_str[:-2] + "},\n"
 my_str = my_str[:-2] + "];"
 
-text_file = open("data/react-codes/react_fashion_terms_fashionability_scores.txt", "w")
+text_file = open("%s/data/react-codes/react_fashion_terms_fashionability_scores.txt"%FASHION_DATA_PATH, "w")
 text_file.write(my_str)
 text_file.close()
