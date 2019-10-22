@@ -152,7 +152,7 @@ def add_tokenage_to_parsed(starter = "parsed_only_articles_df.csv"):
         count +=1
     fin_df.to_csv("%s/data/nytimes_style_articles/tokenaged_%s"%(DATA_PATH,starter))
 
-def to_keep_based_on_fashion_labels(row,allowable_fashion_terms):
+def to_keep_based_on_fashion_labels(row,**allowable_fashion_terms):
     nouns_in_main_parts= [el.strip()[1:-1].lower() for el in row.nouns_in_main_parts[1:-1].split(",")]
     nouns_phrases_in_main_parts= [el.strip()[1:-1].lower() for el in row.noun_phrases_in_main_parts[1:-1].split(",")]
     matched = []
