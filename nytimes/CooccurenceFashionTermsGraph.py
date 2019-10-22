@@ -148,10 +148,12 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=100):
     texts_in_same_order = df[["main_parts_text"]].apply(list).values.tolist()
 
     style_related_words_to_adjs_dict = {}
-    for i in range(0,fashion_terms_occurrences):
+    for i in range(0,len(fashion_terms_occurrences)):
         r = fashion_terms_occurrences[i]
         terms = r[0].replace("'",'').strip('][').split(', ')
+        print (terms)
         for curr_term in terms:
+            print (curr_term)
             # FIND RELATED ADJS
             curr_adjs_before = []
             pos_tagged = nltk.pos_tag(nltk.word_tokenize(text_in_same_order[i]))
@@ -164,6 +166,7 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=100):
                 while curr_adj_ind_tester >= 0 and pos_tagged[curr_adj_ind_tester][1] in ['JJ','JJR','JJS']:
                     curr_adjs_before.append( pos_tagged[curr_adj_ind_tester].lower())
                     curr_adj_ind_tester-1
+            print (curr_adjs_before)
             # ADD RELATED ADJS TO DICT
             if curr_term not in  style_related_words_to_adjs_dict:
                 style_related_words_to_adjs_dict[curr_term] = {}
