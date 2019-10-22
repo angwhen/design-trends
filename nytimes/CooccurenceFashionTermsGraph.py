@@ -97,7 +97,7 @@ def make_react_code_for_graph():
     labels = d[0]
     #style_words_indexer = {v:i for i,v in enumerate(labels)}
     mat = d[1]
-    RAND_SEL = 20
+    RAND_SEL = 10
     my_str = "  this.state = { data: {\n"
     my_str +=  "nodes: ["
     for i in range(0,len(labels)):
@@ -111,7 +111,7 @@ def make_react_code_for_graph():
         for j in range(i,len(mat)): #don't duplicate, undirected graph
             if i % RAND_SEL == 0 and j % RAND_SEL == 0 and mat[i][j] >= 1:
                 my_str += "{ source: \"%s\",target: \"%s\" },"%(labels[i],labels[j])
-    my_str = my_str[:-1]+"],\n},   currentChartNum: 0}"
+    my_str = my_str[:-1]+"],\n},  "
     print (my_str)
     # nodes: [{ id: "Harry" }, { id: "Sally" }, { id: "Alice" }],
     #links: [{ source: "Harry", target: "Sally" }, { source: "Harry", target: "Alice" }],
@@ -146,5 +146,5 @@ def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
 #make_cooccurence_matrix()
 #visualize_matrix()
 #save_deg_and_weighted_deg_centrality()
-#make_react_code_for_graph()
-make_react_dictionary_for_what_words_others_cooccur_with_most()
+make_react_code_for_graph()
+#make_react_dictionary_for_what_words_others_cooccur_with_most()
