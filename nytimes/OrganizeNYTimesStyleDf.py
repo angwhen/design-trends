@@ -197,6 +197,7 @@ def get_allowable_fashion_terms():
     fashion_df = pd.read_csv("%s/data/my_data/fashion_terms.csv"%(FASHION_DATA_PATH))
     fashion_list = fashion_df[['word','human_edited_label']].apply(list).values.tolist()
     allowable_fashion_terms = [r[0] for r in fashion_list if r[1] != 0]
+    return allowable_fashion_terms
 
 #unparsed_to_parsed()
 #parsed_to_parsed_without_unparsed_text()
