@@ -153,8 +153,8 @@ def add_tokenage_to_parsed(starter = "parsed_only_articles_df.csv"):
     fin_df.to_csv("%s/data/nytimes_style_articles/tokenaged_%s"%(DATA_PATH,starter))
 
 def to_keep_based_on_fashion_labels(row,allowable_fashion_terms):
-    nouns_in_main_parts= [el.lower() for el in json.loads(row.nouns_in_main_parts)]
-    nouns_phrases_in_main_parts= [el.lower() for el in json.loads(row.noun_phrases_in_main_parts)]
+    nouns_in_main_parts= [el.strip()[1:-1].lower() for el in row.nouns_in_main_parts[1:-1].split(",")]
+    nouns_phrases_in_main_parts= [el.strip()[1:-1].lower() for el in row.noun_phrases_in_main_parts[1:-1].split(",")]
     matched = []
     for term in allowable_fashion_terms:
         if term.lower() in nouns_in_main_parts or term.lower() in nouns_phrases_in_main_parts:
@@ -164,7 +164,7 @@ def to_keep_based_on_fashion_labels(row,allowable_fashion_terms):
 def style_sec_true(row): #temporary measure before fixing section column
     if row.matched_keywords == None or len(row.matched_keywords) == 0:
         return False
-    return "Style" in json.loads(row.matched_keywords)
+    return "Style" in [el.strip()[1:-1] for el in df.iloc[0].matched_keywords[1:-1].split(",")]
 
 def get_hand_curated_style_terms_articles_df():
     # load allowable fashion terms with labels for noun
