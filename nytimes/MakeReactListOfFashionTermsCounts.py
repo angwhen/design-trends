@@ -42,6 +42,6 @@ for row in month_keywords_list:
 my_str = my_str[:-2]+"],\n"
 """
 
-text_file = open("%s/data/react_key_fashion_terms_by_date.txt"%DATA_PATH, "w")
+text_file = open("%s/data/react-codes/react_key_fashion_terms_by_date.txt"%DATA_PATH, "w")
 text_file.write(my_str)
 text_file.close()
