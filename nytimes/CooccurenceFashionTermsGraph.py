@@ -120,7 +120,7 @@ def make_react_code_for_graph():
     text_file.close()
 
 def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
-    d = pickle.load(open("%s/data/react-codes/curated_style_related_words_cooccurence_matrix.p"%DATA_PATH,"rb"))
+    d = pickle.load(open("%s/data/nytimes_style_articles/curated_style_related_words_cooccurence_matrix.p"%DATA_PATH,"rb"))
     labels = d[0]
     #style_words_indexer = {v:i for i,v in enumerate(labels)}
     mat = d[1]
@@ -143,8 +143,8 @@ def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
 
 
 
-make_cooccurence_matrix()
+#make_cooccurence_matrix()
 #visualize_matrix()
-save_deg_and_weighted_deg_centrality()
-make_react_code_for_graph()
+#save_deg_and_weighted_deg_centrality()
+#make_react_code_for_graph()
 make_react_dictionary_for_what_words_others_cooccur_with_most()
