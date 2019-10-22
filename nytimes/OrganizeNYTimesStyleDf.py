@@ -152,7 +152,8 @@ def add_tokenage_to_parsed(starter = "parsed_only_articles_df.csv"):
         count +=1
     fin_df.to_csv("%s/data/nytimes_style_articles/tokenaged_%s"%(DATA_PATH,starter))
 
-def to_keep_based_on_fashion_labels(row,**allowable_fashion_terms):
+def to_keep_based_on_fashion_labels(row):
+    global allowable_fashion_terms
     nouns_in_main_parts= [el.strip()[1:-1].lower() for el in row.nouns_in_main_parts[1:-1].split(",")]
     nouns_phrases_in_main_parts= [el.strip()[1:-1].lower() for el in row.noun_phrases_in_main_parts[1:-1].split(",")]
     matched = []
@@ -167,7 +168,25 @@ def style_sec_true(row): #temporary measure before fixing section column
     return "Style" in [el.strip()[1:-1] for el in row.matched_keywords[1:-1].split(",")]
 
 def get_hand_curated_style_terms_articles_df():
-    # load allowable fashion terms with labels for noun
+    #  filter out bad rows in df that are not fashiony
+    fin_df = pd.DataFrame(columns=['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','adjectives_in_main_parts','curated_matched_keyords'])
+    count = 0
+    for chunk in pd.read_csv("%s/data/nytimes_style_articles/tokenaged_parsed_only_articles_df.csv"%(DATA_PATH), chunksize=50000):
+        print ("starting with chunk %d"%count)
+        df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','adjectives_in_main_parts','matched_keywords']]
+        # keep only rows that have appropriate style words OR that are style section
+        df["style_sec_true"] = df.apply(style_sec_true, axis = 1) # TODO: rn the section name data is missing, need to debug, note that section_name can in fact be accessed thru json loads unparsed...
+        df["curated_matched_keyords"] = df.apply(to_keep_based_on_fashion_labels, axis = 1)
+        df =df[(df.astype(str)['curated_matched_keywords'] != '[]') | df["style_sec_true"] | (df['section_name'] == 'Style')]
+        df.drop(['matched_keywords', 'style_sec_true'], axis=1)
+        fin_df = pd.concat([fin_df,df], ignore_index=True)
+        del df
+        gc.collect()
+        count +=1
+
+    fin_df.to_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%(DATA_PATH))
+
+def get_allowable_fashion_terms():
     FASHION_DATA_PATH = ""
     try:
         f=open("fashion_data_location.txt", "r")
@@ -178,25 +197,9 @@ def get_hand_curated_style_terms_articles_df():
     fashion_list = fashion_df[['word','human_edited_label']].apply(list).values.tolist()
     allowable_fashion_terms = [r[0] for r in fashion_list if r[1] != 0]
 
-    #  filter out bad rows in df that are not fashiony
-    fin_df = pd.DataFrame(columns=['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','adjectives_in_main_parts','curated_matched_keyords'])
-    count = 0
-    for chunk in pd.read_csv("%s/data/nytimes_style_articles/tokenaged_parsed_only_articles_df.csv"%(DATA_PATH), chunksize=50000):
-        print ("starting with chunk %d"%count)
-        df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','adjectives_in_main_parts','matched_keywords']]
-        # keep only rows that have appropriate style words OR that are style section
-        df["style_sec_true"] = df.apply(style_sec_true, axis = 1) # TODO: rn the section name data is missing, need to debug, note that section_name can in fact be accessed thru json loads unparsed...
-        df["curated_matched_keyords"] = df.apply(to_keep_based_on_fashion_labels, axis = 1,args=(allowable_fashion_terms))
-        df =df[(df.astype(str)['curated_matched_keywords'] != '[]') | df["style_sec_true"] | (df['section_name'] == 'Style')]
-        df.drop(['matched_keywords', 'style_sec_true'], axis=1)
-        fin_df = pd.concat([fin_df,df], ignore_index=True)
-        del df
-        gc.collect()
-        count +=1
-
-    fin_df.to_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%(DATA_PATH))
-
 #unparsed_to_parsed()
 #parsed_to_parsed_without_unparsed_text()
 #add_tokenage_to_parsed()
+# load allowable fashion terms with labels for noun
+allowable_fashion_terms = get_allowable_fashion_terms()
 get_hand_curated_style_terms_articles_df()
