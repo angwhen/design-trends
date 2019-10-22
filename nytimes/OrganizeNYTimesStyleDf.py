@@ -197,3 +197,4 @@ def get_hand_curated_style_terms_articles_df():
 #unparsed_to_parsed()
 #parsed_to_parsed_without_unparsed_text()
 #add_tokenage_to_parsed()
+get_hand_curated_style_terms_articles_df()
