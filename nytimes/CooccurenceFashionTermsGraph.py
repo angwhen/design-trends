@@ -159,7 +159,7 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=100):
             pos_tagged = nltk.pos_tag(nltk.word_tokenize(texts_in_same_order[i][0]))
             my_inds = []
             for j in range(0,len(pos_tagged)):
-                if pos_tagged[0].lower() == curr_term:
+                if pos_tagged[i][0].lower() == curr_term:
                     my_inds.append(j)
             for j in my_inds:
                 curr_adj_ind_tester = j-1
