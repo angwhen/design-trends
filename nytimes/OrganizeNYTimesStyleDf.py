@@ -174,7 +174,7 @@ def get_hand_curated_style_terms_articles_df():
     count = 0
     for chunk in pd.read_csv("%s/data/nytimes_style_articles/tokenaged_parsed_only_articles_df.csv"%(DATA_PATH), chunksize=50000, low_memory=False):
         print ("starting with chunk %d"%count)
-        df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','matched_keywords']]
+        df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','matched_keywords']]
         # keep only rows that have appropriate style words OR that are style section
         df["style_sec_true"] = df.apply(style_sec_true, axis = 1) # TODO: rn the section name data is missing, need to debug, note that section_name can in fact be accessed thru json loads unparsed...
         df["curated_matched_keyords"] = df.apply(to_keep_based_on_fashion_labels, axis = 1)
