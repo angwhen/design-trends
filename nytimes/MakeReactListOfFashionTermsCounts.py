@@ -3,14 +3,19 @@ import pickle
 import numpy as np
 from collections import Counter
 
-df = pd.read_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
-date_and_fashion_terms = df[["year","month","matched_keywords"]]
-year_keywords_df = df.groupby('year')['matched_keywords'].apply(list).reset_index()
-month_keywords_df = df.groupby(['year','month'])['matched_keywords'].apply(list).reset_index()
-year_keywords_list = year_keywords_df[['year',"matched_keywords"]].values.tolist()
+DATA_PATH = "."
+try:
+    f=open("data_location.txt", "r")
+    DATA_PATH  = f.read().strip()
+except:
+    print ("data is right here")
+
+df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
+date_and_fashion_terms = df[["year","month","curated_matched_keywords"]]
+year_keywords_df = df.groupby('year')['curated_matched_keywords'].apply(list).reset_index()
+month_keywords_df = df.groupby(['year','month'])['curated_matched_keywords'].apply(list).reset_index()
+year_keywords_list = year_keywords_df[['year',"curated_matched_keywords"]].values.tolist()
 year_keywords_list.sort(key=lambda x: x[0])
-#month_keywords_list = month_keywords_df[['month',"matched_keywords"]].values.tolist()
-#month_keywords_list.sort(key=lambda x: x[0])
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
@@ -37,6 +42,6 @@ for row in month_keywords_list:
 my_str = my_str[:-2]+"],\n"
 """
 
-text_file = open("data/react_key_fashion_terms_by_date.txt", "w")
+text_file = open("%s/data/react_key_fashion_terms_by_date.txt"%DATA_PATH, "w")
 text_file.write(my_str)
 text_file.close()

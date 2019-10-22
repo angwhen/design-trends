@@ -1,9 +1,16 @@
 import pickle
 
-nytimes_term_to_deg_dict = pickle.load(open("data/my_data/nytimes_term_to_deg_dict.p","rb"))
-nytimes_term_to_normalized_deg_dict = pickle.load(open("data/my_data/nytimes_term_to_normalized_deg_dict.p","rb"))
-nytimes_term_to_eig_centrality_dict = pickle.load(open("data/my_data/nytimes_term_to_eig_centrality_dict.p","rb"))
-terms_to_distance_from_vector_center_dict = pickle.load(open("data/my_data/terms_to_distance_from_vector_center_dict.p","rb"))
+FASHION_DATA_PATH = "."
+try:
+    f=open("fashion_data_location.txt", "r")
+    FASHION_DATA_PATH  = f.read().strip()
+except:
+    print ("data is right here")
+
+nytimes_term_to_deg_dict = pickle.load(open("%s/data/my_data/nytimes_term_to_deg_dict.p"%FASHION_DATA_PATH,"rb"))
+nytimes_term_to_normalized_deg_dict = pickle.load(open("%s/data/my_data/nytimes_term_to_normalized_deg_dict.p"%FASHION_DATA_PATH,"rb"))
+nytimes_term_to_eig_centrality_dict = pickle.load(open("%s/data/my_data/nytimes_term_to_eig_centrality_dict.p"%FASHION_DATA_PATH,"rb"))
+terms_to_distance_from_vector_center_dict = pickle.load(open("%s/data/my_data/terms_to_distance_from_vector_center_dict.p"%FASHION_DATA_PATH,"rb"))
 
 all_terms = list(nytimes_term_to_deg_dict.keys())
 all_terms.extend( list(nytimes_term_to_normalized_deg_dict.keys()))
@@ -28,6 +35,6 @@ for t in all_terms:
     my_str = my_str[:-2] + "},\n"
 my_str = my_str[:-2] + "];"
 
-text_file = open("data/my_data/react_fashion_terms_fashionability_scores.txt", "w")
+text_file = open("data/react-codes/react_fashion_terms_fashionability_scores.txt", "w")
 text_file.write(my_str)
 text_file.close()

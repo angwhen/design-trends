@@ -4,7 +4,7 @@ from textblob import TextBlob
 import nltk
 import gc
 
-DATA_PATH = ""
+DATA_PATH = "."
 try:
     f=open("data_location.txt", "r")
     DATA_PATH  = f.read().strip()
@@ -188,7 +188,7 @@ def get_hand_curated_style_terms_articles_df():
     fin_df.to_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%(DATA_PATH))
 
 def get_allowable_fashion_terms():
-    FASHION_DATA_PATH = ""
+    FASHION_DATA_PATH = "."
     try:
         f=open("fashion_data_location.txt", "r")
         FASHION_DATA_PATH  = f.read().strip()

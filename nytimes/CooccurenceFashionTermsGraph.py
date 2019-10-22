@@ -7,11 +7,23 @@ import matplotlib.pyplot as plt
 import math
 from collections import Counter
 
-def make_cooccurence_matrix():
-    df = pd.read_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
-    #style_related_words_list = pickle.load(open("../data/style_related_words_unigram_list.p","rb"))
+DATA_PATH = ""
+try:
+    f=open("data_location.txt", "r")
+    DATA_PATH  = f.read().strip()
+except:
+    print ("data is right here")
 
-    fashion_terms_occurrences = df[["matched_keywords"]].apply(list).values.tolist()
+FASHION_DATA_PATH = "."
+try:
+    f=open("fashion_data_location.txt", "r")
+    FASHION_DATA_PATH  = f.read().strip()
+except:
+    print ("data is right here")
+
+def make_cooccurence_matrix():
+    df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
+    fashion_terms_occurrences = df[["curated_matched_keywords"]].apply(list).values.tolist()
 
     style_related_words_list = []
     for r in fashion_terms_occurrences:
@@ -32,11 +44,11 @@ def make_cooccurence_matrix():
                 if el2 not in style_words_indexer:
                     continue
                 mat[style_words_indexer[el1]][style_words_indexer[el2]] +=1
-    pickle.dump([style_related_words_list,mat],open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","wb"))
+    pickle.dump([style_related_words_list,mat],open("%s/data/nytimes_style_articles/curated_style_related_words_cooccurence_matrix.p"%DATA_PATH,"wb"))
     return mat
 
 def visualize_matrix():
-    d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
+    d = pickle.load(open("%s/data/nytimes_style_articles/curated_style_related_words_cooccurence_matrix.p"%DATA_PATH,"rb"))
     labels = d[0]
     mat = d[1]
     G = nx.from_numpy_matrix(mat)
@@ -47,9 +59,9 @@ def visualize_matrix():
     plt.show()
 
 def save_deg_and_weighted_deg_centrality():
-    d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
-    df = pd.read_csv("data/nytimes_style_articles/unparsed_articles_df.csv")
-    fashion_terms_occurrences = df[["matched_keywords"]].apply(list).values.tolist()
+    d = pickle.load(open("%s/data/nytimes_style_articles/curated_style_related_words_cooccurence_matrix.p"%DATA_PATH,"rb"))
+    df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
+    fashion_terms_occurrences = df[["curated_matched_keywords"]].apply(list).values.tolist()
     style_related_words_list = []
     for r in fashion_terms_occurrences:
         terms = r[0].replace("'",'').strip('][').split(', ')
@@ -76,12 +88,12 @@ def save_deg_and_weighted_deg_centrality():
     term_to_deg_dict = nx.degree_centrality(G)
     term_to_eig_centrality_dict = nx.eigenvector_centrality(G)
 
-    pickle.dump(term_to_deg_dict,open("../fashion_terms/data/my_data/nytimes_term_to_deg_dict.p","wb"))
-    pickle.dump(term_to_eig_centrality_dict,open("../fashion_terms/data/my_data/nytimes_term_to_eig_centrality_dict.p","wb"))
-    pickle.dump(term_to_normalized_deg_dict,open("../fashion_terms/data/my_data/nytimes_term_to_normalized_deg_dict.p","wb"))
+    pickle.dump(term_to_deg_dict,open("%s/data/my_data/nytimes_term_to_deg_dict.p"%FASHION_DATA_PATH,"wb"))
+    pickle.dump(term_to_eig_centrality_dict,open("%s/data/my_data/nytimes_term_to_eig_centrality_dict.p"%FASHION_DATA_PATH,"wb"))
+    pickle.dump(term_to_normalized_deg_dict,open("%s/data/my_data/nytimes_term_to_normalized_deg_dict.p"%FASHION_DATA_PATH,"wb"))
 
 def make_react_code_for_graph():
-    d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
+    d = pickle.load(open("%s/data/nytimes_style_articles/curated_style_related_words_cooccurence_matrix.p"%DATA_PATH,"rb"))
     labels = d[0]
     #style_words_indexer = {v:i for i,v in enumerate(labels)}
     mat = d[1]
@@ -103,12 +115,12 @@ def make_react_code_for_graph():
     print (my_str)
     # nodes: [{ id: "Harry" }, { id: "Sally" }, { id: "Alice" }],
     #links: [{ source: "Harry", target: "Sally" }, { source: "Harry", target: "Alice" }],
-    text_file = open("data/react_fashion_terms_graph.txt", "w")
+    text_file = open("%s/data/react-codes/react_fashion_terms_graph.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
 def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
-    d = pickle.load(open("data/nytimes_style_articles/style_related_words_cooccurence_matrix.p","rb"))
+    d = pickle.load(open("%s/data/react-codes/curated_style_related_words_cooccurence_matrix.p"%DATA_PATH,"rb"))
     labels = d[0]
     #style_words_indexer = {v:i for i,v in enumerate(labels)}
     mat = d[1]
@@ -125,14 +137,14 @@ def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
         else:
             my_str+="], "
     my_str = my_str[:-2] + "}"
-    text_file = open("data/react_nytimes_fashion_terms_most_common_cooccurs.txt", "w")
+    text_file = open("%s/data/react-codes/react_nytimes_fashion_terms_most_common_cooccurs.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
 
 
-#make_cooccurence_matrix()
+make_cooccurence_matrix()
 #visualize_matrix()
-#make_react_code_for_graph()
-#save_deg_and_weighted_deg_centrality()
+save_deg_and_weighted_deg_centrality()
+make_react_code_for_graph()
 make_react_dictionary_for_what_words_others_cooccur_with_most()
