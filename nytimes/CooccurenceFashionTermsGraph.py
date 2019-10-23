@@ -173,13 +173,13 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper()
                 style_related_words_to_adjs_dict[curr_term][adj] += 1
     pickle.dump(style_related_words_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"wb"))
 
-def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
+def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=20):
     style_related_words_to_adjs_dict= pickle.load(open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"rb"))
 
     my_str = "{\n"
     for term in style_related_words_to_adjs_dict.keys():
         my_str += "\"%s\":["%term
-        related_adjs = sorted([(k,style_related_words_to_adjs_dict[term][k]) for k in style_related_words_to_adjs_dict[term].keys()],key=lambda x: x[1])
+        related_adjs = sorted([(k,style_related_words_to_adjs_dict[term][k]) for k in style_related_words_to_adjs_dict[term].keys()],key=lambda x: x[1], reverse=True)[:top]
         if len(related_adjs) != 0:
             for adj,cnt in related_adjs:
                 my_str += "\"%s\", "%adj
