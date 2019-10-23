@@ -174,7 +174,7 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper()
     pickle.dump(style_related_words_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"wb"))
 
 def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
-    style_related_words_to_adjs_dict= pickle.load(style_related_words_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"rb"))
+    style_related_words_to_adjs_dict= pickle.load(open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"rb"))
 
     my_str = "{\n"
     for term in fashion_terms_occurrences:
