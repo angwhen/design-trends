@@ -151,7 +151,6 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
     for i in range(0,len(fashion_terms_occurrences)):
         r = fashion_terms_occurrences[i]
         terms = r[0].replace("'",'').strip('][').split(', ')
-        print (terms)
         for curr_term in terms:
             # FIND RELATED ADJS
             curr_adjs_before = []
