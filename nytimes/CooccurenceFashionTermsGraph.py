@@ -146,11 +146,15 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper()
     df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
     fashion_terms_occurrences= df[["curated_matched_keywords"]].apply(list).values.tolist()
     texts_in_same_order = df[["main_parts_text"]].apply(list).values.tolist()
+    years_in_same_order = df[["year"]].values.tolist()
 
     style_related_words_to_adjs_dict = {}
+    years_to_adjs_dict = {}
     for i in range(0,len(fashion_terms_occurrences)):
         r = fashion_terms_occurrences[i]
         terms = r[0].replace("'",'').strip('][').split(', ')
+        year = (int)years_in_same_order[i][0]
+        years_to_adjs_dict[year] = {}
         for curr_term in terms:
             # FIND RELATED ADJS
             curr_adjs_before = []
@@ -176,7 +180,11 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper()
                 if adj not in style_related_words_to_adjs_dict[curr_term]:
                     style_related_words_to_adjs_dict[curr_term][adj] = 0
                 style_related_words_to_adjs_dict[curr_term][adj] += 1
+                if adj not in years_to_adjs_dict[year]:
+                    years_to_adjs_dict[year][adj] = 0
+                years_to_adjs_dict[year][adj] += 1
     pickle.dump(style_related_words_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"wb"))
+    pickle.dump(years_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"wb"))
 
 def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=20):
     style_related_words_to_adjs_dict= pickle.load(open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"rb"))
