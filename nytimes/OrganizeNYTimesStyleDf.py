@@ -161,6 +161,10 @@ def to_keep_based_on_fashion_labels(row):
     for term in allowable_fashion_terms:
         if term in nouns_in_main_parts or term in nouns_phrases_in_main_parts:
             matched.append(term.lower())
+        elif len(term.split()) != 1: #accounts for if noun phrases in main parts has eg. "red bow tie" rather than just "bow tie"
+            for np in noun_phrases_in_main_parts:
+                if term.lower() in np:
+                    matched.append(term.lower())
     return matched
 
 def style_sec_true(row): #temporary measure before fixing section column
