@@ -156,8 +156,13 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper()
             curr_adjs_before = []
             pos_tagged = nltk.pos_tag(nltk.word_tokenize(texts_in_same_order[i][0]))
             my_inds = []
+            curr_term_word_list = curr_terms.split()
             for j in range(0,len(pos_tagged)):
-                if pos_tagged[j][0].lower() == curr_term:
+                matched = True
+                for k in range(0,len(curr_term_word_list)):
+                    if j+k >= len(pos_tagged) or pos_tagged[j+k][0].lower() != curr_term[k]:
+                        matched = False
+                if matched:
                     my_inds.append(j)
             for j in my_inds:
                 curr_adj_ind_tester = j-1
@@ -197,4 +202,5 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=20):
 #save_deg_and_weighted_deg_centrality()
 #make_react_code_for_graph()
 #make_react_dictionary_for_what_words_others_cooccur_with_most()
+make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper()
 make_react_dictionary_for_what_adjs_other_cooccur_with_most()
