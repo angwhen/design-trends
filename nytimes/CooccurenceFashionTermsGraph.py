@@ -177,7 +177,7 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
     style_related_words_to_adjs_dict= pickle.load(open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"rb"))
 
     my_str = "{\n"
-    for term in fashion_terms_occurrences:
+    for term in style_related_words_to_adjs_dict.keys():
         my_str += "\"%s\":["%term
         related_adjs = sorted([(k,style_related_words_to_adjs_dict[term][k]) for k in style_related_words_to_adjs_dict[term].keys()],key=lambda x: x[1])
         if len(related_adjs) != 0:
