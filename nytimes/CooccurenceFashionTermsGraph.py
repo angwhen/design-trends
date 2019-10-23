@@ -164,8 +164,6 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
                 while curr_adj_ind_tester >= 0 and pos_tagged[curr_adj_ind_tester][1] in ['JJ','JJR','JJS']:
                     curr_adjs_before.append( pos_tagged[curr_adj_ind_tester][0].lower())
                     curr_adj_ind_tester-=1
-            if len(curr_adjs_before) != 0:
-                print (curr_adjs_before)
             # ADD RELATED ADJS TO DICT
             if curr_term not in  style_related_words_to_adjs_dict:
                 style_related_words_to_adjs_dict[curr_term] = {}
