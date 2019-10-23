@@ -141,7 +141,7 @@ def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
     text_file.write(my_str)
     text_file.close()
 
-def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
+def make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper():
     import nltk
     df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
     fashion_terms_occurrences= df[["curated_matched_keywords"]].apply(list).values.tolist()
@@ -173,10 +173,13 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
                 style_related_words_to_adjs_dict[curr_term][adj] += 1
     pickle.dump(style_related_words_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"wb"))
 
+def make_react_dictionary_for_what_adjs_other_cooccur_with_most():
+    style_related_words_to_adjs_dict= pickle.load(style_related_words_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_style_words_to_adjectives_dict.p"%DATA_PATH,"rb"))
+
     my_str = "{\n"
     for term in fashion_terms_occurrences:
         my_str += "\"%s\":["%term
-        related_adjs = sorted([(adjs,count) for k in style_related_words_to_adjs_dict[term].keys()],key=lambda x: x[1])
+        related_adjs = sorted([(k,style_related_words_to_adjs_dict[term][k]) for k in style_related_words_to_adjs_dict[term].keys()],key=lambda x: x[1])
         if len(related_adjs) != 0:
             for adj,cnt in related_adjs:
                 my_str += "\"%s\", "%adj
