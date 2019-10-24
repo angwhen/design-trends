@@ -141,7 +141,7 @@ def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
     text_file.write(my_str)
     text_file.close()
 
-def make__adjs_cooccur_helper():
+def make_adjs_cooccur_helper():
     import nltk
     df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
     fashion_terms_occurrences= df[["curated_matched_keywords"]].apply(list).values.tolist()
