@@ -208,20 +208,13 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=20):
 def make_react_word_cloud_data_for_adjs():
     years_to_adjs_dict = pickle.load(open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"rb"))
 
-    total_adjs_counts_dict = {}
-    for y in years_to_adjs_dict.keys():
-        for adj in years_to_adjs_dict[y]:
-            if adj not in total_adjs_counts_dict:
-                total_adjs_counts_dict[adj] = 0
-            total_adjs_counts_dict[adj] +=  years_to_adjs_dict[y][adj]
-
     my_str = "yearly_adjectives:["
     for year in range(1800,2020):
         if year not in years_to_adjs_dict or len(years_to_adjs_dict[year]) == 0:
             my_str += "[%s, []],\n"%(year)
             continue
         adjs_counts = years_to_adjs_dict[year]
-        cnts = [[tup[0],tup[1]/total_adjs_counts_dict[tup[0]]] for tup in Counter(adjs_counts).most_common(50)]
+        cnts = [[tup[0],tup[1]] for tup in Counter(adjs_counts).most_common(50)]
         my_str += "[%s, %s],\n"%(year,cnts)
     my_str = my_str[:-2]+"],\n"
 
