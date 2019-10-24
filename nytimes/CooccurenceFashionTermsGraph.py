@@ -205,7 +205,7 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=20):
     text_file.close()
 
 def make_react_word_cloud_data_for_adjs():
-    years_to_adjs_dict = pickle.dump(years_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"wb"))
+    years_to_adjs_dict = pickle.load(open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"rb"))
 
     total_adjs_counts_dict = {}
     for y in years_to_adjs_dict.keys():
@@ -231,6 +231,6 @@ def make_react_word_cloud_data_for_adjs():
 #save_deg_and_weighted_deg_centrality()
 #make_react_code_for_graph()
 #make_react_dictionary_for_what_words_others_cooccur_with_most()
-make_adjs_cooccur_helper()
-make_react_dictionary_for_what_adjs_other_cooccur_with_most()
+#make_adjs_cooccur_helper()
+#make_react_dictionary_for_what_adjs_other_cooccur_with_most()
 make_react_word_cloud_data_for_adjs()
