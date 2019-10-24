@@ -218,6 +218,7 @@ def make_react_word_cloud_data_for_adjs():
     my_str = "yearly_adjectives:["
     for year in range(1800,2020):
         if year not in years_to_adjs_dict or len(years_to_adjs_dict[year]) == 0:
+            my_str += "[%s, []],\n"%(year)
             continue
         adjs_counts = years_to_adjs_dict[year]
         cnts = [[tup[0],tup[1]/total_adjs_counts_dict[tup[0]]] for tup in Counter(adjs_counts).most_common(50)]
@@ -232,6 +233,6 @@ def make_react_word_cloud_data_for_adjs():
 #save_deg_and_weighted_deg_centrality()
 #make_react_code_for_graph()
 #make_react_dictionary_for_what_words_others_cooccur_with_most()
-make_adjs_cooccur_helper()
+#make_adjs_cooccur_helper()
 #make_react_dictionary_for_what_adjs_other_cooccur_with_most()
 make_react_word_cloud_data_for_adjs()
