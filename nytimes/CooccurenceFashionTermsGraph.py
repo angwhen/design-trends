@@ -141,7 +141,7 @@ def make_react_dictionary_for_what_words_others_cooccur_with_most(top=5):
     text_file.write(my_str)
     text_file.close()
 
-def make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper():
+def make__adjs_cooccur_helper():
     import nltk
     df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
     fashion_terms_occurrences= df[["curated_matched_keywords"]].apply(list).values.tolist()
@@ -204,11 +204,33 @@ def make_react_dictionary_for_what_adjs_other_cooccur_with_most(top=20):
     text_file.write(my_str)
     text_file.close()
 
+def make_react_word_cloud_data_for_adjs():
+    years_to_adjs_dict = pickle.dump(years_to_adjs_dict ,open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"wb"))
 
+    total_adjs_counts_dict = {}
+    for y in years_to_adjs_dict.keys():
+        for adj in years_to_adjs_dict[y]:
+            if adj not in total_adjs_counts_dict:
+                total_adjs_counts_dict[adj] = 0
+            total_adjs_counts_dict[adj] +=  years_to_adjs_dict[y][adj]
+
+    my_str = "yearly_adjectives:["
+    for year in range(1800,2020):
+        if year not in years_to_adjs_dict or len(years_to_adjs_dict[year]) == 0:
+            continue
+        adjs_counts = years_to_adjs_dict[year]
+        cnts = [[tup[0],tup[1]/total_adjs_counts_dict[tup[0]]] for tup in Counter(adjs_counts).most_common(50)]
+        my_str += "[%s, %s],\n"%(year,cnts)
+    my_str = my_str[:-2]+"],\n"
+
+    text_file = open("%s/data/react-codes/react_nytimes_fashion_terms_related_adjs_for_word_cloud.txt"%DATA_PATH, "w")
+    text_file.write(my_str)
+    text_file.close()
 #make_cooccurence_matrix()
 #visualize_matrix()
 #save_deg_and_weighted_deg_centrality()
 #make_react_code_for_graph()
 #make_react_dictionary_for_what_words_others_cooccur_with_most()
-make_react_dictionary_for_what_adjs_other_cooccur_with_most_counter_helper()
+make_adjs_cooccur_helper()
 make_react_dictionary_for_what_adjs_other_cooccur_with_most()
+make_react_word_cloud_data_for_adjs()
