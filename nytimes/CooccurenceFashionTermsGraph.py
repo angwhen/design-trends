@@ -154,7 +154,8 @@ def make_adjs_cooccur_helper():
         r = fashion_terms_occurrences[i]
         terms = r[0].replace("'",'').strip('][').split(', ')
         year = int(years_in_same_order[i][0])
-        years_to_adjs_dict[year] = {}
+        if year not in years_to_adjs_dict:
+            years_to_adjs_dict[year] = {}
         for curr_term in terms:
             # FIND RELATED ADJS
             curr_adjs_before = []
@@ -231,6 +232,6 @@ def make_react_word_cloud_data_for_adjs():
 #save_deg_and_weighted_deg_centrality()
 #make_react_code_for_graph()
 #make_react_dictionary_for_what_words_others_cooccur_with_most()
-#make_adjs_cooccur_helper()
+make_adjs_cooccur_helper()
 #make_react_dictionary_for_what_adjs_other_cooccur_with_most()
 make_react_word_cloud_data_for_adjs()
