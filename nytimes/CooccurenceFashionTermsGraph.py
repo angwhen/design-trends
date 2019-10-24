@@ -153,7 +153,7 @@ def make__adjs_cooccur_helper():
     for i in range(0,len(fashion_terms_occurrences)):
         r = fashion_terms_occurrences[i]
         terms = r[0].replace("'",'').strip('][').split(', ')
-        year = (int)years_in_same_order[i][0]
+        year = int(years_in_same_order[i][0])
         years_to_adjs_dict[year] = {}
         for curr_term in terms:
             # FIND RELATED ADJS
