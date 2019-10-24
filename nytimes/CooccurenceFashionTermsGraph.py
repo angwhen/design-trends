@@ -160,7 +160,7 @@ def make_adjs_cooccur_helper():
             curr_adjs_before = []
             pos_tagged = nltk.pos_tag(nltk.word_tokenize(texts_in_same_order[i][0]))
             my_inds = []
-            curr_term_word_list = curr_terms.split()
+            curr_term_word_list = curr_term.split()
             for j in range(0,len(pos_tagged)):
                 matched = True
                 for k in range(0,len(curr_term_word_list)):
