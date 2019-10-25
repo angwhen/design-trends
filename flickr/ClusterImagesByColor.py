@@ -10,11 +10,18 @@ import pandas as pd
 import pickle
 from time import time
 
+DATA_PATH = ""
+try:
+    f=open("data_location.txt", "r")
+    DATA_PATH  = f.read().strip()
+except:
+    print ("data is right here")
+
 def make_clusters(num_clusters=7):
     n_colors = 20
 
     # Load all of my "dom_col_images"
-    df =  pd.read_csv("data/url_title_and_file_data.csv")
+    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
     palettes = pickle.load(open("data/color_palettes.p","rb"))
 

@@ -4,10 +4,17 @@ import pandas as pd
 import pickle
 import os
 
-SAVE_SPACE = True 
-df =  pd.read_csv("data/url_title_and_file_data.csv")
+DATA_PATH = ""
+try:
+    f=open("data_location.txt", "r")
+    DATA_PATH  = f.read().strip()
+except:
+    print ("data is right here")
+
+SAVE_SPACE = True
+df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
 fnames_list = df[["file_name"]].values.tolist()
-finished_ims =set(os.listdir("data/images/mask_rcnn_results"))
+finished_ims =set(os.listdir("%s/data/images/mask_rcnn_results"%DATA_PATH))
 
 net = model_zoo.get_model('mask_rcnn_resnet50_v1b_coco', pretrained=True)
 
@@ -33,11 +40,11 @@ for fname in fnames_list:
         ax = fig.add_subplot(1, 1, 1)
         ax = utils.viz.plot_bbox(orig_img, bboxes, scores, ids,
                              class_names=net.classes, ax=ax)
-        plt.savefig("data/images/mask_rcnn_results/%d.png"%fname_num, bbox_inches = 'tight', pad_inches = 0)
+        plt.savefig("%s/data/images/mask_rcnn_results/%d.png"%(DATA_PATH,fname_num), bbox_inches = 'tight', pad_inches = 0)
         plt.clf()
         plt.close(fig)
     if SAVE_SPACE:
         orig_img = [] #set it to empty, no need for it
         bboxes = []
     res = [orig_img, masks, ids, scores, bboxes]
-    pickle.dump(res,open("data/images/mask_rcnn_results/res_%d.p"%(fname_num),"wb"))
+    pickle.dump(res,open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fname_num),"wb"))
