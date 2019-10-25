@@ -48,7 +48,6 @@ def get_pixels_in_file(fname_num,every_few = 20):
 
 def make_clusters(num_clusters=7):
     n_colors = 20
-
     # Load all of my "dom_col_images"
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
@@ -115,7 +114,18 @@ def make_clusters(num_clusters=7):
         fname_num_list = color_cluster_to_year_dict[year]
         color_cluster_to_year_dict[cc] = [fname_nums_to_year_dict[fn] for fn in fnames_num_list]
     pickle.dump(cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
-
+    years_to_most_common_cluster_dict = {}
+    for el in fnames_list:
+        year = int(fname[0])
+        fname_num = fname[1].split("/")[-1]
+        fname_num = (int) (fname_num.split(".jpg")[0])
+        curr_cluster = fname_to_cluster_dict[fname_num]
+        if year not in years_to_most_common_cluster_dict:
+            years_to_most_common_cluster_dict[year] = []
+        years_to_most_common_cluster_dict[year].append(curr_cluster)
+    for year in years_to_most_common_cluster_dict:
+        years_to_most_common_cluster_dict[year] = Counter(years_to_most_common_cluster_dict[year]).most_common(1)[0][0]
+    pickle.dump(years_to_most_common_cluster_dict,open("%s/data/years_to_most_common_color_cluster_dict.p"%DATA_PATH,"wb"))
 
 def make_react_codes(num_clusters=7):
     # Make as many lists of 7 images (one for each cluster) as we can to show
