@@ -10,11 +10,18 @@ import math
 import numpy as np
 import cv2
 
+DATA_PATH = ""
+try:
+    f=open("data_location.txt", "r")
+    DATA_PATH  = f.read().strip()
+except:
+    print ("data is right here")
+
 def make_df():
-    df =  pd.read_csv("data/url_title_and_file_data.csv")
+    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
 
-    palettes = pickle.load(open("data/color_palettes.p","rb"))
+    palettes = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
 
     results = []
     count = 0
@@ -25,7 +32,7 @@ def make_df():
             print ("already done with %d"%fname_num)
             continue
         try:
-            res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
+            res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fname_num),"rb"))
         except:
             continue
         masks = res[1]
@@ -43,7 +50,7 @@ def make_df():
         print (fname_num)
         my_pixels = []
         inner_count = 0
-        im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
+        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fname_num))
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
             print ("some dimensional problem with the mask and image for this one")
             continue
@@ -59,65 +66,13 @@ def make_df():
         palettes[fname_num] = color_list
 
         if count % 5 == 0: #save frequently to avoid having to rerun too often
-            pickle.dump(palettes,open("data/color_palettes.p","wb"))
+            pickle.dump(palettes,open("%s/data/color_palettes.p"%DATA_PATH,"wb"))
             print ("current part saved")
         count +=1
 
     if len(results) != 0:
-        pickle.dump(palettes,open("data/color_palettes.p","wb"))
+        pickle.dump(palettes,open("%s/data/color_palettes.p"%DATA_PATH,"wb"))
 
-"""
-# not really done yet maybe dont need
-def save_yearly_palettes():
-    df =  pd.read_csv("data/url_title_and_file_data.csv")
-    fnames_list = df[["file_name"]].values.tolist()
-
-    palettes = pickle.load(open("data/yearly_color_palettes.p","rb"))
-
-    results = []
-    count = 0
-    for fname in fnames_list:
-        fname_num = fname[0].split("/")[-1]
-        fname_num = (int) (fname_num.split(".jpg")[0])
-        if fname_num in palettes:
-            print ("already done with %d"%fname_num)
-            continue
-        try:
-            res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
-        except:
-            continue
-        orig_img = res[0]
-        masks = res[1]
-        ids = res[2]
-        scores = res[3]
-
-        people_indices = []
-        for i in range(0,masks.shape[0]): #the masks we have for people
-            if ids[i] == 0:
-                people_indices.append(i)
-
-        if len(people_indices) == 0:
-            continue
-
-        print (fname_num)
-        my_pixels = []
-        inner_count = 0
-        for ind in people_indices:
-            curr_mask =  masks[ind]
-            for row in range(0,curr_mask.shape[0]):
-                for col in range(0,curr_mask.shape[1]):
-                    if inner_count % 10 == 0:
-                        my_pixels.append(orig_img[row][col])
-                    inner_count +=1
-        ct = ColorThief(my_pixels)
-        color_list = ct.get_palette()
-        palettes[fname_num] = color_list
-
-        pickle.dump(palettes,open("data/yearly_color_palettes.p","wb"))
-
-
-    if len(results) != 0:
-        pickle.dump(palettes,open("data/yearly_color_palettes.p","wb"))"""
 
 def diff_score(prev_row,curr_row):
     sum_dist = 0
@@ -159,10 +114,10 @@ def sort_colors_lists(all_colors_list):
     return new_all_colors_list
 
 def convert_df_into_list_for_react():
-    df =  pd.read_csv("data/url_title_and_file_data.csv")
+    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     years_list = df[["file_name","year"]].values.tolist()
     years_list.sort(key=lambda x: x[1])
-    palettes = pickle.load(open("data/color_palettes.p","rb"))
+    palettes = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
 
     used_years_list = []
     all_colors_list = []
@@ -241,10 +196,9 @@ def convert_df_into_list_for_react():
     my_str = my_str[:-2] + "],"
 
 
-    text_file = open("data/react_colors_list_for_colors_slides.txt", "w")
+    text_file = open("%s/data/react_colors_list_for_colors_slides.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
-
+make_df()
 convert_df_into_list_for_react()
-#make_df()
