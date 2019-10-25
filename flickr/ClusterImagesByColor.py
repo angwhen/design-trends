@@ -1,4 +1,4 @@
-# get k groups of images, with the 10 most dominant colors being the criteria for clustering
+# get k groups of images
 # https://scikit-learn.org/stable/auto_examples/cluster/plot_color_quantization.html
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,26 +17,51 @@ try:
 except:
     print ("data is right here")
 
+def get_pixels_in_file(fname_num,every_few = 20):
+    try:
+        res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
+    except:
+        return []
+    masks = res[1]
+    ids = res[2]
+
+    people_indices = []
+    for i in range(0,masks.shape[0]): #the masks we have for people
+        if ids[i] == 0:
+            people_indices.append(i)
+
+    if len(people_indices) == 0:
+        return []
+    im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
+    if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
+        print ("some dimensional problem")
+        return []
+
+    print (fname_num)
+    my_pixels = []
+    for ind in people_indices:
+        curr_mask =  masks[ind]
+        for row in range(0,curr_mask.shape[0]):
+            for col in range(0,curr_mask.shape[1]):
+                my_pixels.append(im[row][col])
+    return shuffle(my_pixels, random_state=0)[:max(36000,int(len(my_pixels)/every_few))] #dont let any image return too many pixels
+
 def make_clusters(num_clusters=7):
     n_colors = 20
 
     # Load all of my "dom_col_images"
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
-    palettes = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
 
     all_colors = []
     for fname in fnames_list:
-        fname_num = fname[0].split("/")[-1]
-        fname_num = (int) (fname_num.split(".jpg")[0])
-        if fname_num in palettes:
-            all_colors.extend(palettes[fname_num])
+        all_colors.extend(get_pixels_in_file(fname_num))
     all_colors = np.array(all_colors)
     image_array = all_colors
 
     print("Fitting model on a small sub-sample of the data")
     t0 = time()
-    image_array_sample = shuffle(image_array, random_state=0)[:1000]
+    image_array_sample = shuffle(image_array, random_state=0)[:500000]
     kmeans = KMeans(n_clusters=n_colors, random_state=0).fit(image_array_sample)
     print("done in %0.3fs." % (time() - t0))
 
@@ -55,15 +80,16 @@ def make_clusters(num_clusters=7):
             fnames_in_order_list.append(fname_num)
             color_labels_one_hots.append(one_hot_ver)
 
-    print ("Clustering on those one hot labels")
-    from kmodes.kmodes import KModes
+    pickle.dump(color_labels_one_hots,open("%s/data/per_image_color_labels_one_hots.p"%DATA_PATH,"wb"))
+    print ("Clustering on those counts per color labels")
+    from sklearn.cluster import KMeans
 
     # random categorical data
     #data = np.random.choice(20, (100, 10))
     #print (data)
-    kmodes = KModes(n_clusters=num_clusters, init='Huang', n_init=5, verbose=0)
+    kmeans = KMeans(n_clusters=num_clusters,random_state=0).fit(color_labels_one_hots)
 
-    clusters = kmodes.fit_predict(color_labels_one_hots)
+    clusters = kmeans.predict(color_labels_one_hots)
     fname_to_cluster_dict = {}
     cluster_to_fnames_dict = {}
     for i in range(0,len(fnames_in_order_list)):
@@ -78,10 +104,10 @@ def make_clusters(num_clusters=7):
 
 
 def make_react_codes(num_clusters=7):
-    # make as many lists of 7 images (one for each cluster) as we can to show
+    # Make as many lists of 7 images (one for each cluster) as we can to show
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     my_urls_list = df[["url","year","file_name"]].values.tolist()
-    #make filename num to url dict
+    # Make filename num to url dict
     fnum_to_url_dict = {}
     for el in my_urls_list:
         url = el[0]
@@ -90,22 +116,19 @@ def make_react_codes(num_clusters=7):
         fname_num = el[2].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
-
+    # Make react code
     cluster_to_fnames_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
     min_len = min(len(cluster_to_fnames_dict[0]),len(cluster_to_fnames_dict[1]),len(cluster_to_fnames_dict[2]),len(cluster_to_fnames_dict[3]),len(cluster_to_fnames_dict[4]),len(cluster_to_fnames_dict[5]),len(cluster_to_fnames_dict[6]))
     my_str = "images: [\n"
     for i in range(0, min_len):
-
         my_str += "['%s','%s','%s','%s','%s','%s','%s'],\n"%(fnum_to_url_dict[cluster_to_fnames_dict[0][i]],fnum_to_url_dict[cluster_to_fnames_dict[1][i]],
         fnum_to_url_dict[cluster_to_fnames_dict[2][i]],fnum_to_url_dict[cluster_to_fnames_dict[3][i]],fnum_to_url_dict[cluster_to_fnames_dict[4][i]],
         fnum_to_url_dict[cluster_to_fnames_dict[5][i]],fnum_to_url_dict[cluster_to_fnames_dict[6][i]]) # need to make number of these variable based on num clusters
     my_str = my_str[:-2]+"\n],"
-
-    # make bar chart (7 bars for each year)
-
     text_file = open("%s/data/react-codes/react_color_clustering_page_codes.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
-#make_clusters()
+
+make_clusters()
 make_react_codes()
