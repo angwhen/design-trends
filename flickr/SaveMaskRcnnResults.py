@@ -25,7 +25,7 @@ for fname in fnames_list:
         print ("finished with %d previously"%fname_num)
         continue
     print ("working on %d"%fname_num)
-    im_fname = "data/images/smaller_images/%d.jpg"%fname_num
+    im_fname = "%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fname_num)
     x, orig_img = data.transforms.presets.rcnn.load_test(im_fname)
     ids, scores, bboxes, masks = [xx[0].asnumpy() for xx in net(x)]
 
