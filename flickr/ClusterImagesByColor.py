@@ -47,7 +47,7 @@ def get_pixels_in_file(fname_num,every_few = 20):
     return shuffle(my_pixels, random_state=0)[:max(36000,int(len(my_pixels)/every_few))] #dont let any image return too many pixels
 
 def make_clusters(num_clusters=7):
-    n_colors = 20
+    n_colors = 21
     # Load all of my "dom_col_images"
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
