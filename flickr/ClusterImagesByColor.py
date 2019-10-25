@@ -67,7 +67,7 @@ def make_clusters(num_clusters=7):
 
     # Get labels for all points
     print("Predicting color indices on each image")
-    fnames_in_order_list = []
+    fname_nums_in_order_list = []
     color_labels_one_hots= []
     for fname in fnames_list:
         fname_num = fname[0].split("/")[-1]
@@ -77,7 +77,7 @@ def make_clusters(num_clusters=7):
             one_hot_ver = [0]*n_colors
             for el in list_ver:
                 one_hot_ver[el] +=1
-            fnames_in_order_list.append(fname_num)
+            fname_nums_in_order_list.append(fname_num)
             color_labels_one_hots.append(one_hot_ver)
 
     pickle.dump(color_labels_one_hots,open("%s/data/per_image_color_labels_one_hots.p"%DATA_PATH,"wb"))
@@ -92,15 +92,29 @@ def make_clusters(num_clusters=7):
     clusters = kmeans.predict(color_labels_one_hots)
     fname_to_cluster_dict = {}
     cluster_to_fnames_dict = {}
-    for i in range(0,len(fnames_in_order_list)):
-        fname_to_cluster_dict[fnames_in_order_list[i]] = clusters[i]
+    for i in range(0,len(fname_nums_in_order_list)):
+        fname_to_cluster_dict[fname_nums_in_order_list[i]] = clusters[i]
         if clusters[i] not in cluster_to_fnames_dict:
             cluster_to_fnames_dict[clusters[i]] = []
-        cluster_to_fnames_dict[clusters[i]].append(fnames_in_order_list[i])
+        cluster_to_fnames_dict[clusters[i]].append(fname_nums_in_order_list[i])
     pickle.dump(fname_to_cluster_dict,open("%s/data/file_num_to_cluster_number_dict.p"%DATA_PATH,"wb"))
     pickle.dump(cluster_to_fnames_dict,open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"wb"))
     # Print the cluster centroids
     #print(km.cluster_centroids_)
+
+    #make dictionary of cluster number to related years
+    year_and_fname = df[["year","file_name"]].values.tolist()
+    fname_nums_to_year_dict = {}
+    for el in fnames_list:
+        year = int(fname[0])
+        fname_num = fname[1].split("/")[-1]
+        fname_num = (int) (fname_num.split(".jpg")[0])
+        fname_nums_to_year_dict[fname_num] = year
+    color_cluster_to_year_dict = {}
+    for cc in color_cluster_to_year_dict.keys():
+        fname_num_list = color_cluster_to_year_dict[year]
+        color_cluster_to_year_dict[cc] = [fname_nums_to_year_dict[fn] for fn in fnames_num_list]
+    pickle.dump(cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
 
 
 def make_react_codes(num_clusters=7):
