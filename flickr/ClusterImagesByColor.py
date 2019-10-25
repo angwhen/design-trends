@@ -23,7 +23,7 @@ def make_clusters(num_clusters=7):
     # Load all of my "dom_col_images"
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
-    palettes = pickle.load(open("data/color_palettes.p","rb"))
+    palettes = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
 
     all_colors = []
     for fname in fnames_list:
@@ -71,15 +71,15 @@ def make_clusters(num_clusters=7):
         if clusters[i] not in cluster_to_fnames_dict:
             cluster_to_fnames_dict[clusters[i]] = []
         cluster_to_fnames_dict[clusters[i]].append(fnames_in_order_list[i])
-    pickle.dump(fname_to_cluster_dict,open("data/file_num_to_cluster_number_dict.p","wb"))
-    pickle.dump(cluster_to_fnames_dict,open("data/cluster_number_to_file_num_dict.p","wb"))
+    pickle.dump(fname_to_cluster_dict,open("%s/data/file_num_to_cluster_number_dict.p"%DATA_PATH,"wb"))
+    pickle.dump(cluster_to_fnames_dict,open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"wb"))
     # Print the cluster centroids
     #print(km.cluster_centroids_)
 
 
 def make_react_codes(num_clusters=7):
     # make as many lists of 7 images (one for each cluster) as we can to show
-    df =  pd.read_csv("data/url_title_and_file_data.csv")
+    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     my_urls_list = df[["url","year","file_name"]].values.tolist()
     #make filename num to url dict
     fnum_to_url_dict = {}
@@ -91,7 +91,7 @@ def make_react_codes(num_clusters=7):
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
 
-    cluster_to_fnames_dict = pickle.load(open("data/cluster_number_to_file_num_dict.p","rb"))
+    cluster_to_fnames_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
     min_len = min(len(cluster_to_fnames_dict[0]),len(cluster_to_fnames_dict[1]),len(cluster_to_fnames_dict[2]),len(cluster_to_fnames_dict[3]),len(cluster_to_fnames_dict[4]),len(cluster_to_fnames_dict[5]),len(cluster_to_fnames_dict[6]))
     my_str = "images: [\n"
     for i in range(0, min_len):
@@ -103,7 +103,7 @@ def make_react_codes(num_clusters=7):
 
     # make bar chart (7 bars for each year)
 
-    text_file = open("data/react_color_clustering_page_codes.txt", "w")
+    text_file = open("%s/data/react-codes/react_color_clustering_page_codes.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
