@@ -38,7 +38,7 @@ def get_pixels_in_file(fname_num,every_few = 20):
         print ("some dimensional problem")
         return []
 
-    print (fname_num)
+    #print (fname_num)
     my_pixels = []
     for ind in people_indices:
         curr_mask =  masks[ind]
