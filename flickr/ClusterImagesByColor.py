@@ -54,6 +54,8 @@ def make_clusters(num_clusters=7):
 
     all_colors = []
     for fname in fnames_list:
+        fname_num = fname[0].split("/")[-1]
+        fname_num = (int) (fname_num.split(".jpg")[0])
         all_colors.extend(get_pixels_in_file(fname_num))
     all_colors = np.array(all_colors)
     image_array = all_colors
