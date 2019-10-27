@@ -19,7 +19,7 @@ except:
 
 def get_pixels_in_file(fname_num,every_few = 20):
     try:
-        res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
+        res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fname_num),"rb"))
     except:
         return []
     masks = res[1]
