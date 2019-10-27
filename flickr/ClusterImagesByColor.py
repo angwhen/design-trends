@@ -54,10 +54,14 @@ def make_clusters(num_clusters=7):
     fnames_list = df[["file_name"]].values.tolist()
 
     all_colors = []
+    palettes = {}
     for fname in fnames_list:
         fname_num = fname[0].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
-        all_colors.extend(get_pixels_in_file(fname_num))
+        all_pixels_curr = get_pixels_in_file(fname_num)
+        all_colors.extend(all_pixels_curr)
+        if len(all_pixels_curr) != 0:
+            palettes[fname_num] = all_pixels_curr
     all_colors = np.array(all_colors)
     image_array = all_colors
 
