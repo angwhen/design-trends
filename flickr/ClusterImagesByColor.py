@@ -37,7 +37,7 @@ def get_pixels_in_file(fname_num,every_few = 20):
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
         print ("some dimensional problem")
         return []
-    print (im.shape)
+
     print (fname_num)
     my_pixels = []
     for ind in people_indices:
@@ -60,7 +60,7 @@ def make_clusters(num_clusters=7):
         all_colors.extend(get_pixels_in_file(fname_num))
     all_colors = np.array(all_colors)
     image_array = all_colors
-    print (image_array)
+
     print("Fitting model on a small sub-sample of the data")
     t0 = time()
     image_array_sample = shuffle(image_array, random_state=0)[:500000]
