@@ -83,7 +83,6 @@ def make_clusters(num_clusters=7):
 
     pickle.dump(color_labels_one_hots,open("%s/data/per_image_color_labels_one_hots.p"%DATA_PATH,"wb"))
     print ("Clustering on those counts per color labels")
-    from sklearn.cluster import KMeans
 
     # random categorical data
     #data = np.random.choice(20, (100, 10))
