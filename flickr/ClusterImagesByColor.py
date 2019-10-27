@@ -9,6 +9,7 @@ from sklearn.utils import shuffle
 import pandas as pd
 import pickle
 from time import time
+import cv2
 
 DATA_PATH = "."
 try:
