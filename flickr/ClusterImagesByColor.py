@@ -33,7 +33,7 @@ def get_pixels_in_file(fname_num,every_few = 20):
 
     if len(people_indices) == 0:
         return []
-    im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
+    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fname_num))
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
         print ("some dimensional problem")
         return []
