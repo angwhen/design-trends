@@ -77,7 +77,7 @@ def make_clusters(num_clusters=7):
     print("Fitting model on a small sub-sample of the data")
     t0 = time()
     image_array_sample = shuffle(image_array, random_state=0)[:500000]
-    kmeans = KMeans(n_clusters=n_colors, random_state=0).fit(image_array_sample)
+    kmeans = KMeans(n_clusters=n_colors, max_iter=100,random_state=0).fit(image_array_sample)
     print("done in %0.3fs." % (time() - t0))
 
     # Get labels for all points
