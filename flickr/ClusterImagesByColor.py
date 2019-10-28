@@ -42,22 +42,22 @@ def get_pixels_in_file(fname_num,every_few = 10):
 
     #print (fname_num)
     my_pixels = []
-    all_grey = True
+    not_greys = 0
     for ind in people_indices:
         curr_mask =  masks[ind]
         for row in range(0,curr_mask.shape[0]):
             for col in range(0,curr_mask.shape[1]):
                 my_pixels.append(im[row][col])
                 # if it is grayscale do not return
-                if not all_grey or abs(im[row][col][0] - im[row][col][1]) > 1 or abs(im[row][col][0] - im[row][col][2]) > 1 or  abs(im[row][col][1] - im[row][col][2]) > 1:
-                    all_grey =False
+                if abs(im[row][col][0] - im[row][col][1]) > 5 or abs(im[row][col][0] - im[row][col][2]) > 5 or  abs(im[row][col][1] - im[row][col][2]) > 5:
+                    not_greys +=1
     # if it is grayscale do not return
-    if all_grey:
+    if not_greys < 100: #allow for a few non grays in case photo bad or something
         return []
     return shuffle(my_pixels, random_state=0)[:max(36000,int(len(my_pixels)/every_few))] #dont let any image return too many pixels
 
 def make_clusters(num_clusters=7):
-    n_colors = 14
+    n_colors = 7
     # Load all of my "dom_col_images"
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
@@ -179,6 +179,6 @@ def make_react_codes(num_clusters=7):
     text_file.close()
 
 
-#make_clusters()
-#make_dict_of_cluster_to_year()
+make_clusters()
+make_dict_of_cluster_to_year()
 make_react_codes()
