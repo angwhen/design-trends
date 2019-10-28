@@ -107,6 +107,9 @@ def make_clusters(num_clusters=7):
     # Print the cluster centroids
     #print(km.cluster_centroids_)
 
+def make_dict_of_cluster_to_year():
+    fname_to_cluster_dict = pickle.load(open("%s/data/file_num_to_cluster_number_dict.p"%DATA_PATH,"rb"))
+    cluster_to_fnames_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
     #make dictionary of cluster number to related years
     year_and_fname = df[["year","file_name"]].values.tolist()
     fname_nums_to_year_dict = {}
@@ -115,11 +118,13 @@ def make_clusters(num_clusters=7):
         fname_num = el[1].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         fname_nums_to_year_dict[fname_num] = year
-    color_cluster_to_year_dict = {}
-    for cc in color_cluster_to_year_dict.keys():
-        fname_num_list = color_cluster_to_year_dict[year]
-        color_cluster_to_year_dict[cc] = [fname_nums_to_year_dict[fn] for fn in fnames_num_list]
-    pickle.dump(cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
+
+    color_cluster_to_years_dict = {}
+    for cc in cluster_to_fnames_dict.keys():
+        fname_num_list = cluster_to_fnames_dict[cc]
+        color_cluster_to_years_dict[cc] = [fname_nums_to_year_dict[fn] for fn in fnames_num_list]
+    pickle.dump(color_cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
+    
     years_to_most_common_cluster_dict = {}
     for el in fnames_list:
         year = int(el[0])
@@ -161,4 +166,5 @@ def make_react_codes(num_clusters=7):
 
 
 make_clusters()
+make_dict_of_cluster_to_year()
 make_react_codes()
