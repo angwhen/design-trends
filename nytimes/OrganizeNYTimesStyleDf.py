@@ -3,6 +3,7 @@ import json
 from textblob import TextBlob
 import nltk
 import gc
+from geotext import GeoText
 
 DATA_PATH = "."
 try:
@@ -203,9 +204,28 @@ def get_allowable_fashion_terms():
     allowable_fashion_terms = [r[0] for r in fashion_list if r[1] != 0]
     return allowable_fashion_terms
 
+def get_cities(row):
+    return GeoText(row.main_parts_text).cities
+
+def get_countries(row):
+    return list(GeoText(row.main_parts_text).country_mentions.keys())
+
+def add_location_to_df():
+    fin_df = pd.DataFrame(columns=['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','curated_matched_keywords','cities','countries'])
+    count = 0
+    for chunk in pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%(DATA_PATH)), chunksize=50000, low_memory=False):
+        df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','curated_matched_keywords','cities','countries']]
+        # keep only rows that have appropriate style words OR that are style section
+        df["cities"] = df.apply(get_cities, axis = 1)
+        df["countries"] = df.apply(get_countries, axis = 1)
+        fin_df = pd.concat([fin_df,df], ignore_index=True)
+        count += 1
+    fin_df.to_csv("%s/data/nytimes_style_articles/locationed_curated_tokenaged_parsed_only_articles_df.csv"%(DATA_PATH))
+
 #unparsed_to_parsed()
 #parsed_to_parsed_without_unparsed_text()
 #add_tokenage_to_parsed()
 # load allowable fashion terms with labels for noun
-allowable_fashion_terms = get_allowable_fashion_terms()
-get_hand_curated_style_terms_articles_df()
+#allowable_fashion_terms = get_allowable_fashion_terms()
+#get_hand_curated_style_terms_articles_df()
+add_location_to_df()
