@@ -124,7 +124,7 @@ def make_dict_of_cluster_to_year():
         fname_num_list = cluster_to_fnames_dict[cc]
         color_cluster_to_years_dict[cc] = [fname_nums_to_year_dict[fn] for fn in fnames_num_list]
     pickle.dump(color_cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
-    
+
     years_to_most_common_cluster_dict = {}
     for el in fnames_list:
         year = int(el[0])
@@ -165,6 +165,6 @@ def make_react_codes(num_clusters=7):
     text_file.close()
 
 
-make_clusters()
+#make_clusters()
 make_dict_of_cluster_to_year()
 make_react_codes()
