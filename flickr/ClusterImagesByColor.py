@@ -110,9 +110,9 @@ def make_clusters(num_clusters=7):
     #make dictionary of cluster number to related years
     year_and_fname = df[["year","file_name"]].values.tolist()
     fname_nums_to_year_dict = {}
-    for el in fnames_list:
-        year = int(fname[0])
-        fname_num = fname[1].split("/")[-1]
+    for el in  year_and_fname:
+        year = int(el[0])
+        fname_num = el[1].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         fname_nums_to_year_dict[fname_num] = year
     color_cluster_to_year_dict = {}
