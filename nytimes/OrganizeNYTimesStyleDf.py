@@ -214,7 +214,7 @@ def add_location_to_df():
     fin_df = pd.DataFrame(columns=['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','curated_matched_keywords','cities','countries'])
     count = 0
     for chunk in pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%(DATA_PATH), chunksize=50000, low_memory=False):
-        df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','curated_matched_keywords','cities','countries']]
+        df = chunk[['year','month','type_of_material','web_url','headline','word_count','abstract','snippet','lead_paragraph','keywords','section_name','subsection_name','pub_date','main_parts_text','nouns_in_main_parts','noun_phrases_in_main_parts','adjectives_in_main_parts','curated_matched_keywords']]
         # keep only rows that have appropriate style words OR that are style section
         df["cities"] = df.apply(get_cities, axis = 1)
         df["countries"] = df.apply(get_countries, axis = 1)
