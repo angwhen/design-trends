@@ -123,7 +123,7 @@ def make_dict_of_cluster_to_year():
     color_cluster_to_years_dict = {}
     for cc in cluster_to_fnames_dict.keys():
         fname_num_list = cluster_to_fnames_dict[cc]
-        color_cluster_to_years_dict[cc] = [fname_nums_to_year_dict[fn] for fn in fnames_num_list]
+        color_cluster_to_years_dict[cc] = [fname_nums_to_year_dict[fn] for fn in fname_num_list]
     pickle.dump(color_cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
 
     years_to_most_common_cluster_dict = {}
