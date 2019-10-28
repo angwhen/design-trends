@@ -221,6 +221,15 @@ def make_react_word_cloud_data_for_adjs():
     text_file = open("%s/data/react-codes/react_nytimes_fashion_terms_related_adjs_for_word_cloud.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
+
+#https://pythonprogramminglanguage.com/kmeans-text-clustering/
+def cluster_years_based_on_fashion_terms_and_related_adjs():
+    print ("TODO")
+    years_to_adjs_dict = pickle.load(open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"rb"))
+    year_to_fashion_terms_list_dict = pickle.load(open("%s/data/year_to_fashion_terms_list_dict.p"%DATA_PATH,"rb"))
+    
+
+
 #make_cooccurence_matrix()
 #visualize_matrix()
 #save_deg_and_weighted_deg_centrality()
@@ -228,4 +237,4 @@ def make_react_word_cloud_data_for_adjs():
 #make_react_dictionary_for_what_words_others_cooccur_with_most()
 #make_adjs_cooccur_helper()
 #make_react_dictionary_for_what_adjs_other_cooccur_with_most()
-make_react_word_cloud_data_for_adjs()
+#make_react_word_cloud_data_for_adjs()
