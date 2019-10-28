@@ -223,7 +223,7 @@ def make_react_word_cloud_data_for_adjs():
     text_file.close()
 
 #https://pythonprogramminglanguage.com/kmeans-text-clustering/
-def cluster_years_based_on_fashion_terms_and_related_adjs():
+def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
     from sklearn.feature_extraction.text import  CountVectorizer
     from sklearn.cluster import KMeans
     from sklearn.metrics import adjusted_rand_score
@@ -232,17 +232,36 @@ def cluster_years_based_on_fashion_terms_and_related_adjs():
     year_to_fashion_terms_list_dict = pickle.load(open("%s/data/year_to_fashion_terms_list_dict.p"%DATA_PATH,"rb"))
     all_years = []
     all_years_terms = []
+    year_to_str_terms_dict = {}
     for year in range(1800,2020):
         if year in years_to_adjs_dict or year in year_to_fashion_terms_list_dict:
             all_years.append(year)
             curr_str = ""
             if year in years_to_adjs_dict:
-                curr_str += ''.join(years_to_adjs_dict[year])
+                curr_str += ' '.join(years_to_adjs_dict[year])
             if year in year_to_fashion_terms_list_dict:
-                curr_str += ''.join(year_to_fashion_terms_list_dict[year])
+                curr_str += ' '.join(year_to_fashion_terms_list_dict[year])
             all_years_terms.append(curr_str)
+            year_to_str_terms_dict[year] = curr_str
     vectorizer = CountVectorizer(stop_words='english')
     X = vectorizer.fit_transform(all_years_terms)
+    model = KMeans(n_clusters=num_clusters, init='k-means++', max_iter=100, n_init=1)
+    model.fit(X)
+
+    print("Top terms per cluster:")
+    order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+    terms = vectorizer.get_feature_names()
+    for i in range(num_clusters):
+        print("Cluster %d:" % i),
+        for ind in order_centroids[i, :10]:
+            print(' %s' % terms[ind]),
+        print
+
+    year_to_cluster_dict = {}
+    cluster_to_years_dict = {}
+    for year in year_to_str_terms_dict.keys():
+        Y = vectorizer.transform([year_to_str_terms_dict[year]])
+        predicted_cluster = model.predict(Y)
 
 
 #make_cooccurence_matrix()
@@ -253,3 +272,4 @@ def cluster_years_based_on_fashion_terms_and_related_adjs():
 #make_adjs_cooccur_helper()
 #make_react_dictionary_for_what_adjs_other_cooccur_with_most()
 #make_react_word_cloud_data_for_adjs()
+cluster_years_based_on_fashion_terms_and_related_adjs()
