@@ -221,7 +221,7 @@ def add_location_to_df():
         fin_df = pd.concat([fin_df,df], ignore_index=True)
         count += 1
     fin_df.to_csv("%s/data/nytimes_style_articles/locationed_curated_tokenaged_parsed_only_articles_df.csv"%(DATA_PATH))
-
+    print ("Done")
 #unparsed_to_parsed()
 #parsed_to_parsed_without_unparsed_text()
 #add_tokenage_to_parsed()
