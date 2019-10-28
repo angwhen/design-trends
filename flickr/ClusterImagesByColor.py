@@ -10,6 +10,7 @@ import pandas as pd
 import pickle
 from time import time
 import cv2
+from collections import Counter
 
 DATA_PATH = "."
 try:
