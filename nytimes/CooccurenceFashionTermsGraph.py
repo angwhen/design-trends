@@ -262,6 +262,16 @@ def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
     for year in year_to_str_terms_dict.keys():
         Y = vectorizer.transform([year_to_str_terms_dict[year]])
         predicted_cluster = model.predict(Y)
+        year_to_cluster_dict[year] = predicted_cluster
+        if predicted_cluster not in cluster_to_years_dict:
+            cluster_to_years_dict[predicted_cluster] = []
+        cluster_to_years_dict[predicted_cluster].append(year)
+
+    pickle.dump(year_to_cluster_dict,open("%s/data/year_to_cluster_dict.p","wb"))
+    pickle.dump(cluster_to_years_dict,open("%s/data/cluster_to_years_dict.p","wb"))
+
+    # TODO: maybe interesting to check which cluster each specific article gets put in
+    # and whether or not it corresponds to the correct year
 
 
 #make_cooccurence_matrix()
