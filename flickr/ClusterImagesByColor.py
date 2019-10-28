@@ -131,6 +131,8 @@ def make_dict_of_cluster_to_year():
         year = int(el[0])
         fname_num = el[1].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
+        if fname_num not in fname_to_cluster_dict:
+            continue
         curr_cluster = fname_to_cluster_dict[fname_num]
         if year not in years_to_most_common_cluster_dict:
             years_to_most_common_cluster_dict[year] = []
