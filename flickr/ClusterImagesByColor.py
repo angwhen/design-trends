@@ -19,7 +19,7 @@ try:
 except:
     print ("data is right here")
 
-def get_pixels_in_file(fname_num,every_few = 20):
+def get_pixels_in_file(fname_num,every_few = 10):
     try:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fname_num),"rb"))
     except:
@@ -41,15 +41,22 @@ def get_pixels_in_file(fname_num,every_few = 20):
 
     #print (fname_num)
     my_pixels = []
+    all_grey = True
     for ind in people_indices:
         curr_mask =  masks[ind]
         for row in range(0,curr_mask.shape[0]):
             for col in range(0,curr_mask.shape[1]):
                 my_pixels.append(im[row][col])
+                # if it is grayscale do not return
+                if not all_grey or abs(im[row][col][0] - im[row][col][1]) > 1 or abs(im[row][col][0] - im[row][col][2]) > 1 or  abs(im[row][col][1] - im[row][col][2]) > 1:
+                    all_grey =False
+    # if it is grayscale do not return
+    if all_grey:
+        return []
     return shuffle(my_pixels, random_state=0)[:max(36000,int(len(my_pixels)/every_few))] #dont let any image return too many pixels
 
 def make_clusters(num_clusters=7):
-    n_colors = 21
+    n_colors = 14
     # Load all of my "dom_col_images"
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
