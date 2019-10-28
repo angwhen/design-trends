@@ -224,10 +224,25 @@ def make_react_word_cloud_data_for_adjs():
 
 #https://pythonprogramminglanguage.com/kmeans-text-clustering/
 def cluster_years_based_on_fashion_terms_and_related_adjs():
-    print ("TODO")
+    from sklearn.feature_extraction.text import  CountVectorizer
+    from sklearn.cluster import KMeans
+    from sklearn.metrics import adjusted_rand_score
+
     years_to_adjs_dict = pickle.load(open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"rb"))
     year_to_fashion_terms_list_dict = pickle.load(open("%s/data/year_to_fashion_terms_list_dict.p"%DATA_PATH,"rb"))
-    
+    all_years = []
+    all_years_terms = []
+    for year in range(1800,2020):
+        if year in years_to_adjs_dict or year in year_to_fashion_terms_list_dict:
+            all_years.append(year)
+            curr_str = ""
+            if year in years_to_adjs_dict:
+                curr_str += ''.join(years_to_adjs_dict[year])
+            if year in year_to_fashion_terms_list_dict:
+                curr_str += ''.join(year_to_fashion_terms_list_dict[year])
+            all_years_terms.append(curr_str)
+    vectorizer = CountVectorizer(stop_words='english')
+    X = vectorizer.fit_transform(all_years_terms)
 
 
 #make_cooccurence_matrix()
