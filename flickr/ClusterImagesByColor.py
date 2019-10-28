@@ -110,7 +110,8 @@ def make_clusters(num_clusters=7):
 def make_dict_of_cluster_to_year():
     fname_to_cluster_dict = pickle.load(open("%s/data/file_num_to_cluster_number_dict.p"%DATA_PATH,"rb"))
     cluster_to_fnames_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
-    #make dictionary of cluster number to related years
+
+    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     year_and_fname = df[["year","file_name"]].values.tolist()
     fname_nums_to_year_dict = {}
     for el in  year_and_fname:
