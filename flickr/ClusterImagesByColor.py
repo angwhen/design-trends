@@ -10,6 +10,7 @@ import pandas as pd
 import pickle
 from time import time
 import cv2
+import random
 from collections import Counter
 
 DATA_PATH = "."
@@ -165,6 +166,8 @@ def make_react_codes(num_clusters=7):
     # Make react code
     cluster_to_fnames_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
     min_len = min(len(cluster_to_fnames_dict[0]),len(cluster_to_fnames_dict[1]),len(cluster_to_fnames_dict[2]),len(cluster_to_fnames_dict[3]),len(cluster_to_fnames_dict[4]),len(cluster_to_fnames_dict[5]),len(cluster_to_fnames_dict[6]))
+    for i in range(0,num_clusters):
+        random.shuffle(cluster_to_fnames_dict[i])
     my_str = "images: [\n"
     for i in range(0, min_len):
         my_str += "['%s','%s','%s','%s','%s','%s','%s'],\n"%(fnum_to_url_dict[cluster_to_fnames_dict[0][i]],fnum_to_url_dict[cluster_to_fnames_dict[1][i]],
@@ -176,6 +179,6 @@ def make_react_codes(num_clusters=7):
     text_file.close()
 
 
-make_clusters()
-make_dict_of_cluster_to_year()
+#make_clusters()
+#make_dict_of_cluster_to_year()
 make_react_codes()
