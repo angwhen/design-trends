@@ -122,8 +122,8 @@ def make_clusters(num_clusters=7):
     pickle.dump(cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
     years_to_most_common_cluster_dict = {}
     for el in fnames_list:
-        year = int(fname[0])
-        fname_num = fname[1].split("/")[-1]
+        year = int(el[0])
+        fname_num = el[1].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         curr_cluster = fname_to_cluster_dict[fname_num]
         if year not in years_to_most_common_cluster_dict:
