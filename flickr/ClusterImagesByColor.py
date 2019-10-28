@@ -176,6 +176,6 @@ def make_react_codes(num_clusters=7):
     text_file.close()
 
 
-#make_clusters()
+make_clusters()
 make_dict_of_cluster_to_year()
 make_react_codes()
