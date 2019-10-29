@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import math
 from collections import Counter
 
-DATA_PATH = ""
+DATA_PATH = "."
 try:
     f=open("data_location.txt", "r")
     DATA_PATH  = f.read().strip()
