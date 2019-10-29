@@ -267,8 +267,8 @@ def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
             cluster_to_years_dict[predicted_cluster] = []
         cluster_to_years_dict[predicted_cluster].append(year)
 
-    pickle.dump(year_to_cluster_dict,open("%s/data/year_to_cluster_dict.p","wb"))
-    pickle.dump(cluster_to_years_dict,open("%s/data/cluster_to_years_dict.p","wb"))
+    pickle.dump(year_to_cluster_dict,open("%s/data/year_to_cluster_dict.p"%DATA_PATH,"wb"))
+    pickle.dump(cluster_to_years_dict,open("%s/data/cluster_to_years_dict.p"%DATA_PATH,"wb"))
 
     # TODO: maybe interesting to check which cluster each specific article gets put in
     # and whether or not it corresponds to the correct year
