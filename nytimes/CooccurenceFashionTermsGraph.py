@@ -261,7 +261,7 @@ def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
     cluster_to_years_dict = {}
     for year in year_to_str_terms_dict.keys():
         Y = vectorizer.transform([year_to_str_terms_dict[year]])
-        predicted_cluster = model.predict(Y)
+        predicted_cluster = model.predict(Y)[0]
         year_to_cluster_dict[year] = predicted_cluster
         if predicted_cluster not in cluster_to_years_dict:
             cluster_to_years_dict[predicted_cluster] = []
