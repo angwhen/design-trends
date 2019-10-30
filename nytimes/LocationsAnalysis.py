@@ -38,7 +38,7 @@ def make_map_from_years_to_locations():
     total_word_counts_dict = Counter(all_words_list)"""
 
     year_to_cities_list_dict = {}
-    my_str = "yearly_locations:["
+    my_str = "["
     for row in year_keywords_list:
         year = row[0]
         keywords = flatten([el[2:-2].split("', '" ) for el in row[1]])
@@ -46,7 +46,7 @@ def make_map_from_years_to_locations():
         my_str += "[%s, %s],\n"%(year,cnts)
         year_to_cities_list_dict[int(year)] = keywords
 
-    my_str = my_str[:-2]+"],\n"
+    my_str = my_str[:-2]+"]\n"
     text_file = open("%s/data/react-codes/react_locations_by_date.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
