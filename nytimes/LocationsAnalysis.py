@@ -38,7 +38,7 @@ def make_map_from_years_to_locations():
     total_word_counts_dict = Counter(all_words_list)"""
 
     year_to_cities_list_dict = {}
-    my_str = "yearly_fashion_terms:["
+    my_str = "yearly_locations:["
     for row in year_keywords_list:
         year = row[0]
         keywords = flatten([el[2:-2].split("', '" ) for el in row[1] if el != ""])
