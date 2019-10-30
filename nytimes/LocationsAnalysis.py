@@ -59,7 +59,8 @@ def make_map_from_years_to_locations():
 def make_map_from_terms_to_locations():
     df = pd.read_csv("%s/data/nytimes_style_articles/locationed_curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
     keywords_locations_list = df[["curated_matched_keywords","cities"]].values.tolist()
-
+    flatten = lambda l: [item for sublist in l for item in sublist]
+    
     terms_to_locations_dict = {}
     for row in keywords_locations_list:
         keywords = flatten([el[2:-2].split("', '" ) for el in row[0]])
