@@ -90,4 +90,4 @@ def make_map_from_terms_to_location():
     text_file.close()
 
 #make_map_from_years_to_locations()
-make_map_from_terms_to_locations()
+make_map_from_terms_to_location()
