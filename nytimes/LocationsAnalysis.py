@@ -65,6 +65,8 @@ def make_map_from_terms_to_locations():
     for row in keywords_locations_list:
         keywords = flatten([el[2:-2].split("', '" ) for el in row[0]])
         cities = flatten([[city for city in el[2:-2].split("', '" ) if city != ""] for el in row[1]])
+        print (keywords)
+        print (cities)
         for term in keywords:
             if term not in terms_to_locations_dict:
                 terms_to_locations_dict[term] = []
