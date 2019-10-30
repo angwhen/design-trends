@@ -56,5 +56,38 @@ def make_map_from_years_to_locations():
 
 # make map from terms to locations
 # add to table
+def make_map_from_terms_to_location():
+    df = pd.read_csv("%s/data/nytimes_style_articles/locationed_curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
+    keywords_locations_list = df[["curated_matched_keywords","cities"]].values.tolist()
 
-make_map_from_years_to_locations()
+    terms_to_locations_dict = {}
+    for row in keywords_locations_list:
+        keywords = flatten([el[2:-2].split("', '" ) for el in row[0]])
+        cities = flatten([[city for city in el[2:-2].split("', '" ) if city != ""] for el in row[1]])
+        for term in keywords:
+            if term not in terms_to_locations_dict:
+                terms_to_locations_dict = []
+            terms_to_locations_dict[term].extend(cities)
+    pickle.dump(terms_to_locations_dict,open("%s/data/terms_to_cities_dict.p"%DATA_PATH,"wb"))
+
+    my_str = "{\n"
+    for term in terms_to_locations_dict:
+        locations = terms_to_locations_dict[term]
+        locations_counter = Counter(locations).most_common(8)
+        locations_counter.sort(key=lambda x: x[1])
+        my_str += "\"%s\":["%term
+        most_common = [tup[0] for tup in locations_counter if tup[0] != ""]
+        if len(most_common) == 0:
+            my_str += "], "
+        else:
+            for loc in most_common:
+                my_str += "\"%s\", "%loc
+            my_str = my_str[:-2] + "], "
+
+    my_str = my_str[:-2] + "}"
+    text_file = open("%s/data/react-codes/react_terms_to_most_common_cities.txt"%DATA_PATH, "w")
+    text_file.write(my_str)
+    text_file.close()
+
+#make_map_from_years_to_locations()
+make_map_from_terms_to_locations()
