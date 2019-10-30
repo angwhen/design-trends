@@ -41,7 +41,7 @@ def make_map_from_years_to_locations():
     my_str = "yearly_fashion_terms:["
     for row in year_keywords_list:
         year = row[0]
-        keywords = flatten([el[2:-2].split("', '" ) for el in row[1] if el != "Style"])
+        keywords = flatten([el[2:-2].split("', '" ) for el in row[1] if el != ""])
         cnts = [[tup[0],tup[1]] for tup in Counter(keywords).most_common(50)]
         my_str += "[%s, %s],\n"%(year,cnts)
         year_to_cities_list_dict[int(year)] = keywords
