@@ -78,7 +78,7 @@ def make_map_from_terms_to_locations():
     for term in terms_to_locations_dict:
         locations = terms_to_locations_dict[term]
         locations_counter = Counter(locations).most_common(8)
-        locations_counter.sort(key=lambda x: x[1])
+        locations_counter.sort(key=lambda x: x[1], reverse=True)
         my_str += "\"%s\":["%term
         most_common = [tup[0] for tup in locations_counter if tup[0] != ""]
         if len(most_common) == 0:
