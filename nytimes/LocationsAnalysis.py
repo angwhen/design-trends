@@ -56,7 +56,7 @@ def make_map_from_years_to_locations():
 
 # make map from terms to locations
 # add to table
-def make_map_from_terms_to_location():
+def make_map_from_terms_to_locations():
     df = pd.read_csv("%s/data/nytimes_style_articles/locationed_curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
     keywords_locations_list = df[["curated_matched_keywords","cities"]].values.tolist()
 
@@ -90,4 +90,4 @@ def make_map_from_terms_to_location():
     text_file.close()
 
 #make_map_from_years_to_locations()
-make_map_from_terms_to_location()
+make_map_from_terms_to_locations()
