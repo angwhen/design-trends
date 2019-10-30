@@ -64,7 +64,7 @@ def make_map_from_terms_to_locations():
     terms_to_locations_dict = {}
     for row in keywords_locations_list:
         print (row)
-        keywords = jsons.loads(row[0])
+        keywords = json.loads(row[0])
         cities = json.loads(row[1])
         print (keywords)
         print (cities)
