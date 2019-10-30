@@ -63,6 +63,7 @@ def make_map_from_terms_to_locations():
 
     terms_to_locations_dict = {}
     for row in keywords_locations_list:
+        print (row)
         keywords = flatten([el[2:-2].split("', '" ) for el in row[0]])
         cities = flatten([[city for city in el[2:-2].split("', '" ) if city != ""] for el in row[1]])
         print (keywords)
