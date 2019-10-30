@@ -63,11 +63,9 @@ def make_map_from_terms_to_locations():
 
     terms_to_locations_dict = {}
     for row in keywords_locations_list:
-        print (row)
         keywords = json.loads(row[0].replace("'","\""))
         cities =json.loads(row[1].replace("'","\""))
-        print (keywords)
-        print (cities)
+
         for term in keywords:
             if term not in terms_to_locations_dict:
                 terms_to_locations_dict[term] = []
