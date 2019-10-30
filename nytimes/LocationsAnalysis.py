@@ -25,8 +25,8 @@ except:
 # make react word cloud for this
 def make_map_from_years_to_locations():
     df = pd.read_csv("%s/data/nytimes_style_articles/locationed_curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
-    year_keywords_df = df.groupby('year')['cites'].apply(list).reset_index()
-    year_keywords_list = year_keywords_df[['year',"cites"]].values.tolist()
+    year_keywords_df = df.groupby('year')['cities'].apply(list).reset_index()
+    year_keywords_list = year_keywords_df[['year',"cities"]].values.tolist()
     year_keywords_list.sort(key=lambda x: x[0])
 
     flatten = lambda l: [item for sublist in l for item in sublist]
