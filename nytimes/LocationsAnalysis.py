@@ -88,6 +88,7 @@ def make_map_from_terms_to_locations():
     text_file = open("%s/data/react-codes/react_terms_to_most_common_cities.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
+    print ("Done")
 
 #make_map_from_years_to_locations()
 make_map_from_terms_to_locations()
