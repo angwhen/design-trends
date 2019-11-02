@@ -168,7 +168,7 @@ def make_react_codes(num_clusters=7):
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
     # Make react code
-    cluster_to_fnames_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
+    cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
     min_len = min(len(cluster_to_fnames_dict[0]),len(cluster_to_fnames_dict[1]),len(cluster_to_fnames_dict[2]),len(cluster_to_fnames_dict[3]),len(cluster_to_fnames_dict[4]),len(cluster_to_fnames_dict[5]),len(cluster_to_fnames_dict[6]))
     for i in range(0,num_clusters):
         random.shuffle(cluster_to_fnames_dict[i])
@@ -178,20 +178,20 @@ def make_react_codes(num_clusters=7):
     for i in range(0, min_len):
         my_str += "["
         for k in range(0,num_clusters):
-            curr_fname = cluster_to_fnames_dict[k][i]
+            curr_fname = cluster_to_fnums_dict[k][i]
             my_str += "'%s',"%fnum_to_url_dict[curr_fname]
         my_str = my_str[:-1]+"],\n"
     my_str = my_str[:-2]+"\n],\n"
 
     # COLORS
-    fname_num_to_palettes_dict = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
+    fnum_to_palettes_dict = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
     my_str = "images: [\n"
     for i in range(0, min_len):
         my_str += "["
         for k in range(0,num_clusters):
             curr_fname = cluster_to_fnames_dict[k][i]
-            if curr_fname in fname_num_to_palettes_dict:
-                my_str += "%s,"%rgb_list_to_hex_list(fname_num_to_palettes_dict[curr_fname])
+            if curr_fname in fnum_to_palettes_dict:
+                my_str += "%s,"%rgb_list_to_hex_list(fnum_to_palettes_dict[curr_fname])
             else:
                 my_str += "[],"
         my_str = my_str[:-1]+"],\n"
