@@ -18,7 +18,10 @@ for file in os.listdir(directory):
     if filename.endswith(".jpg"): # and filename not in smaller_ims: #ADD BACK LATER
         print (filename)
         # RESIZE IMAGE
-        img = Image.open("%s/data/images/smaller_images/%s"%(DATA_PATH,filename)).convert('RGB')#Image.open("%s/data/images/%s"%(DATA_PATH,filename)).convert('RGB')
+        try:
+            img = Image.open("%s/data/images/smaller_images/%s"%(DATA_PATH,filename)).convert('RGB')#Image.open("%s/data/images/%s"%(DATA_PATH,filename)).convert('RGB')
+        except:
+            continue
         if img.size[0] <= 1000 and img.size[1] <= 1000: #temp, because technically already did them, erase in future
             continue
         # adjust width and height to your needs
