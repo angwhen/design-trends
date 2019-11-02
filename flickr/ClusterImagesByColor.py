@@ -79,7 +79,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     print ("Loading people pixels from images")
     all_colors = []
     fnum_to_pixels_dict = {}
-    for fnum in fnums_list[:1]:
+    for fnum in fnums_list[:10]:
         all_pixels_curr = get_pixels_in_file(fnum)
         all_colors.extend(all_pixels_curr)
         if len(all_pixels_curr) != 0:
