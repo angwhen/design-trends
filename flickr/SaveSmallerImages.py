@@ -15,7 +15,7 @@ smaller_ims =set(os.listdir("%s/data/images/smaller_images"%DATA_PATH))
 directory = os.fsencode("%s/data/images/"%DATA_PATH)
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".jpg"): # and filename not in smaller_ims:
+    if filename.endswith(".jpg"): # and filename not in smaller_ims: #ADD BACK LATER
         print (filename)
         # RESIZE IMAGE
         img = Image.open("%s/data/images/%s"%(DATA_PATH,filename)).convert('RGB')
@@ -46,3 +46,5 @@ for file in os.listdir(directory):
             img.save('%s/data/images/smaller_images/%s'%(DATA_PATH,filename))
     else:
         continue
+
+print ("Done resizing")
