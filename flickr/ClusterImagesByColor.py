@@ -79,7 +79,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     print ("Loading people pixels from images")
     all_colors = []
     fnum_to_pixels_dict = {}
-    for fnum in fnums_list[:30]:
+    for fnum in shuffle(np.array(fnums_list), random_state=0)[:100]:
         all_pixels_curr = get_pixels_in_file(fnum)
         all_colors.extend(all_pixels_curr)
         if len(all_pixels_curr) != 0:
@@ -106,7 +106,6 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     print ("Clustering on those counts per color labels")
     fnums_in_order_list = list(fnum_to_counts_of_each_color_in_image_dict.keys())
     counts_of_each_color_in_image_list = [fnum_to_counts_of_each_color_in_image_dict[fnum] for fnum in fnums_in_order_list]
-    print (fnums_in_order_list)
     kmeans = KMeans(n_clusters=num_clusters,random_state=0).fit(counts_of_each_color_in_image_list)
     clusters = kmeans.predict(counts_of_each_color_in_image_list)
     fnum_to_cluster_dict, cluster_to_fnums_dict = {}, {}
