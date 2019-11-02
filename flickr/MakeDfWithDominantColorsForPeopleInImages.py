@@ -17,12 +17,12 @@ try:
 except:
     print ("data is right here")
 
-def make_color_palettes(num_colors=10,fname="color_palettes"):
+def make_color_palettes(num_colors=10,output_fname="color_palettes"):
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
 
     try:
-        palettes = pickle.load(open("%s/data/%s.p"%(DATA_PATH,fname),"rb"))
+        palettes = pickle.load(open("%s/data/%s.p"%(DATA_PATH,output_fname),"rb"))
     except:
         palettes = {}
 
@@ -55,7 +55,7 @@ def make_color_palettes(num_colors=10,fname="color_palettes"):
         inner_count = 0
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fname_num))
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
-            print ("some dimensional problem with the mask and image for this one")
+            print ("some dimensional problem with the mask and image for this one: %d"%fname_num)
             continue
         for ind in people_indices:
             curr_mask =  masks[ind]
@@ -69,12 +69,12 @@ def make_color_palettes(num_colors=10,fname="color_palettes"):
         palettes[fname_num] = color_list
 
         if count % 5 == 0: #save frequently to avoid having to rerun too often
-            pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,fname),"wb"))
+            pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,output_fname),"wb"))
             print ("current part saved")
         count +=1
 
     if len(results) != 0:
-        pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,fname),"wb"))
+        pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,output_fname),"wb"))
     print ("Done")
 
 def diff_score(prev_row,curr_row):
