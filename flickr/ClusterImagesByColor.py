@@ -68,7 +68,7 @@ class QuantizedImageBreakdown():
         for fnum in self.fnum_to_counts_of_each_color_in_image_dict.keys():
             total_pixels = sum(self.fnum_to_counts_of_each_color_in_image_dict[fnum])
             hex_colors_proportions_dict = {}
-            for i,color in enumerate(colors_definitions):
+            for i,color in enumerate(self.colors_definitions):
                 hex_colors_proportions_dict[color] = self.fnum_to_counts_of_each_color_in_image_dict[fnum][i]/total_pixels
             fnums_to_hex_colors_proportions_dict[fnum] = hex_colors_proportions_dict
         return fnums_to_hex_colors_proportions_dict
