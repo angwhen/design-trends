@@ -155,7 +155,7 @@ def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(c[0],c[1],c[2]) for c in rgb_list]
 
 def make_react_codes(num_clusters=7):
-    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
+    """df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     my_urls_list = df[["url","year","file_name"]].values.tolist()
     # Make filename num to url dict
     fnum_to_url_dict = {}
@@ -165,14 +165,17 @@ def make_react_codes(num_clusters=7):
         url = p1+"_n.jpg"
         fname_num = el[2].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
-        fnum_to_url_dict[fname_num]=url
+        fnum_to_url_dict[fname_num]=url"""
 
+    fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
+    for i in range(0,num_clusters):
+        random.shuffle(cluster_to_fnums_dict[i])
+        
     min_len = len(cluster_to_fnums_dict[0])
     for k in range(1,num_clusters):
         min_len = min(len(cluster_to_fnums_dict[k]),min_len)
-    for i in range(0,num_clusters):
-        random.shuffle(cluster_to_fnums_dict[i])
+
 
     # IMAGES
     my_str = "images: [\n"
