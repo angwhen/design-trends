@@ -85,7 +85,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
 
     centroids = kmeans.cluster_centers_
     quantized_images_breakdown = QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
-    pickle.dump(quantized_images_breakdown,open("%s/data/quantized_images_breakdown.p"%DATA_PATH,"wb"))
+    pickle.dump(quantized_images_breakdown,open("%s/data/%d_quantized_images_breakdown.p"%(num_quantized_colors,DATA_PATH),"wb"))
 
     # Clustering images
     print ("Clustering on those counts per color labels")
@@ -130,7 +130,7 @@ def make_dict_of_cluster_and_year():
         years_to_most_common_cluster_dict[year] = Counter(years_to_most_common_cluster_dict[year]).most_common(1)[0][0]
     pickle.dump(years_to_most_common_cluster_dict,open("%s/data/years_to_most_common_color_cluster_dict.p"%DATA_PATH,"wb"))
 
-def make_react_codes(num_clusters=7):
+def make_react_codes(num_quantized_colors = 5, num_clusters=7):
     print ("Starting making React codes")
     fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict.p"%DATA_PATH,"rb"))
@@ -163,7 +163,7 @@ def make_react_codes(num_clusters=7):
     my_str = my_str[:-2]+"\n],\n"
 
     # QUANTIZED COLORS: each one gets a dict from hex color to proportion
-    quantized_images_breakdown = pickle.load(open("%s/data/quantized_images_breakdown.p"%DATA_PATH,"rb"))
+    quantized_images_breakdown = pickle.load(open("%s/data/%d_quantized_images_breakdown.p"%(num_quantized_colors,DATA_PATH),"rb"))
     fnums_to_hex_colors_proportions_dict = quantized_images_breakdown.get_fnums_to_hex_colors_proportions_dict()
     my_str += "quantized_colors: [\n"
     for i in range(0, min_len):
