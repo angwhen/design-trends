@@ -106,6 +106,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     print ("Clustering on those counts per color labels")
     fnums_in_order_list = list(fnum_to_counts_of_each_color_in_image_dict.keys())
     counts_of_each_color_in_image_list = [fnum_to_counts_of_each_color_in_image_dict[fnum] for fnum in fnums_in_order_list]
+    print (fnums_in_order_list)
     kmeans = KMeans(n_clusters=num_clusters,random_state=0).fit(counts_of_each_color_in_image_list)
     clusters = kmeans.predict(counts_of_each_color_in_image_list)
     fnum_to_cluster_dict, cluster_to_fnums_dict = {}, {}
