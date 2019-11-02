@@ -17,7 +17,7 @@ try:
 except:
     print ("data is right here")
 
-def make_df():
+def make_color_palettes():
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
 
@@ -200,5 +200,5 @@ def convert_df_into_list_for_react():
     text_file.write(my_str)
     text_file.close()
 
-make_df()
-convert_df_into_list_for_react()
+make_color_palettes()
+#convert_df_into_list_for_react()

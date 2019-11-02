@@ -150,6 +150,10 @@ def make_dict_of_cluster_to_year():
         years_to_most_common_cluster_dict[year] = Counter(years_to_most_common_cluster_dict[year]).most_common(1)[0][0]
     pickle.dump(years_to_most_common_cluster_dict,open("%s/data/years_to_most_common_color_cluster_dict.p"%DATA_PATH,"wb"))
 
+
+def rgb_list_to_hex_list(rgb_list):
+    return ["#%02x%02x%02x"%(c[0],c[1],c[2]) for c in rgb_list]
+
 def make_react_codes(num_clusters=7):
     # Make as many lists of 7 images (one for each cluster) as we can to show
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
@@ -168,17 +172,36 @@ def make_react_codes(num_clusters=7):
     min_len = min(len(cluster_to_fnames_dict[0]),len(cluster_to_fnames_dict[1]),len(cluster_to_fnames_dict[2]),len(cluster_to_fnames_dict[3]),len(cluster_to_fnames_dict[4]),len(cluster_to_fnames_dict[5]),len(cluster_to_fnames_dict[6]))
     for i in range(0,num_clusters):
         random.shuffle(cluster_to_fnames_dict[i])
+
+    # IMAGES
     my_str = "images: [\n"
     for i in range(0, min_len):
-        my_str += "['%s','%s','%s','%s','%s','%s','%s'],\n"%(fnum_to_url_dict[cluster_to_fnames_dict[0][i]],fnum_to_url_dict[cluster_to_fnames_dict[1][i]],
-        fnum_to_url_dict[cluster_to_fnames_dict[2][i]],fnum_to_url_dict[cluster_to_fnames_dict[3][i]],fnum_to_url_dict[cluster_to_fnames_dict[4][i]],
-        fnum_to_url_dict[cluster_to_fnames_dict[5][i]],fnum_to_url_dict[cluster_to_fnames_dict[6][i]]) # need to make number of these variable based on num clusters
-    my_str = my_str[:-2]+"\n],"
+        my_str += "["
+        for k in range(0,num_clusters):
+            curr_fname = cluster_to_fnames_dict[k][i]
+            my_str += "'%s',"%fnum_to_url_dict[curr_fname]
+        my_str = my_str[:-1]+"],\n"
+    my_str = my_str[:-2]+"\n],\n"
+
+    # COLORS
+    fname_num_to_palettes_dict = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
+    my_str = "images: [\n"
+    for i in range(0, min_len):
+        my_str += "["
+        for k in range(0,num_clusters):
+            curr_fname = cluster_to_fnames_dict[k][i]
+            if curr_fname in fname_num_to_palettes_dict:
+                my_str += "%s,"%rgb_list_to_hex_list(fname_num_to_palettes_dict[curr_fname])
+            else:
+                my_str += "[],"
+        my_str = my_str[:-1]+"],\n"
+    my_str = my_str[:-2]+"\n],\n"
+
     text_file = open("%s/data/react-codes/react_color_clustering_page_codes.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
 
-make_clusters()
-make_dict_of_cluster_to_year()
+#make_clusters(num_clusters=7)
+#make_dict_of_cluster_to_year(num_clusters=7)
 make_react_codes()
