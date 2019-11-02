@@ -12,7 +12,7 @@ except:
 #shorter size should be 600 px
 # but bigger side should be less than 1000px
 smaller_ims =set(os.listdir("%s/data/images/smaller_images"%DATA_PATH))
-directory = os.fsencode("%s/data/images/smaller_images"%DATA_PATH)) #"%s/data/images/"%DATA_PATH)
+directory = os.fsencode("%s/data/images/smaller_images"%DATA_PATH) #"%s/data/images/"%DATA_PATH)
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
     if filename.endswith(".jpg"): # and filename not in smaller_ims: #ADD BACK LATER
