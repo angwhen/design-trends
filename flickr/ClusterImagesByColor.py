@@ -171,10 +171,10 @@ def make_react_codes(num_clusters=7):
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
     min_len = len(cluster_to_fnums_dict[0])
     for k in range(1,num_clusters):
-        min(len(cluster_to_fnums_dict[i]),min_len)
+        min_len = min(len(cluster_to_fnums_dict[k]),min_len)
+
     for i in range(0,num_clusters):
         random.shuffle(cluster_to_fnames_dict[i])
-
     # IMAGES
     my_str = "images: [\n"
     for i in range(0, min_len):
