@@ -26,7 +26,7 @@ def make_fnum_to_year_dict(df):
     fnum_to_year_dict = {}
     for el in years_list:
         fname_num = int(el[0].split(".")[0].split("/")[-1])
-        year = (int)el[1]
+        year = int(el[1])
         fnum_to_year_dict[fname_num] = year
     pickle.dump(fnum_to_year_dict,open("%s/fnum_to_year_dict.p"%DATA_PATH,"wb"))
 
