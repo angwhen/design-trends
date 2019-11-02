@@ -57,7 +57,7 @@ def get_pixels_in_file(fnum,every_few = 10):
     return shuffle(my_pixels, random_state=0)[:max(36000,int(len(my_pixels)/every_few))] #dont let any image return too many pixels
 
 class QuantizedImageBreakdown():
-    def __init__(self,colors_definitions,,fnum_to_counts_of_each_color_in_image_dict):
+    def __init__(self,colors_definitions,fnum_to_counts_of_each_color_in_image_dict):
         self.colors_definitions = colors_definitions
         self.fnum_to_counts_of_each_color_in_image_dict = fnum_to_counts_of_each_color_in_image_dict
     def get_fnums_to_colors_proportions_dict(self):
