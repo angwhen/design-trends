@@ -85,7 +85,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
 
     centroids = kmeans.cluster_centers_
     quantized_images_breakdown = QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
-    pickle.dump(quantized_images_breakdown,open("%s/data/%d_quantized_images_breakdown.p"%(num_quantized_colors,DATA_PATH),"wb"))
+    pickle.dump(quantized_images_breakdown,open("%s/data/%d_quantized_images_breakdown.p"%(DATA_PATH,num_quantized_colors),"wb"))
 
     # Clustering images
     print ("Clustering on those counts per color labels")
@@ -163,7 +163,7 @@ def make_react_codes(num_quantized_colors = 5, num_clusters=7):
     my_str = my_str[:-2]+"\n],\n"
 
     # QUANTIZED COLORS: each one gets a dict from hex color to proportion
-    quantized_images_breakdown = pickle.load(open("%s/data/%d_quantized_images_breakdown.p"%(num_quantized_colors,DATA_PATH),"rb"))
+    quantized_images_breakdown = pickle.load(open("%s/data/%d_quantized_images_breakdown.p"%(DATA_PATH,num_quantized_colors),"rb"))
     fnums_to_hex_colors_proportions_dict = quantized_images_breakdown.get_fnums_to_hex_colors_proportions_dict()
     my_str += "quantized_colors: [\n"
     for i in range(0, min_len):
