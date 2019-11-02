@@ -203,5 +203,5 @@ def convert_df_into_list_for_react():
     text_file.write(my_str)
     text_file.close()
 
-make_color_palettes(num_colors=5,fname="5_color_fnum_to_palettes_dict")
+make_color_palettes(num_colors=5,output_fname="5_color_fnum_to_palettes_dict")
 #convert_df_into_list_for_react()
