@@ -83,7 +83,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     for fnum in fnums_list:
         if fnum in fnum_to_pixels_dict:
             list_of_colors =  kmeans.predict(fnum_to_pixels_dict[fnum])
-            counts_of_each_color_in_image = [0]*n_colors
+            counts_of_each_color_in_image = [0]*num_quantized_colors
             for color_ind in list_of_colors:
                 counts_of_each_color_in_image[color_ind] +=1
             fnum_to_counts_of_each_color_in_image_dict[fnum] = counts_of_each_color_in_image
@@ -181,4 +181,4 @@ def make_react_codes(num_clusters=7):
 
 num_clusters = 7
 make_clusters(num_clusters=num_clusters)
-make_react_codes(num_clusters=num_clusters)
+#make_react_codes(num_clusters=num_clusters)
