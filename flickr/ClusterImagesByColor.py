@@ -35,7 +35,7 @@ def get_pixels_in_file(fnum,every_few = 10):
 
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
-        print ("Dimensional problem: image: %d, %d vs masks: %d, %d"%(im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
+        print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
         return []
 
     sum_mask = masks[people_indices[0]]
@@ -136,7 +136,7 @@ def make_react_codes(num_quantized_colors = 5, num_clusters=7):
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict.p"%DATA_PATH,"rb"))
     for i in range(0,num_clusters):
         random.shuffle(cluster_to_fnums_dict[i])
-    min_len = reduce((lambda x, y: max(x,y)), [len(fnums) for fnums in cluster_to_fnums_dict.values()])
+    min_len = reduce((lambda x, y: min(x,y)), [len(fnums) for fnums in cluster_to_fnums_dict.values()])
 
     # IMAGES
     my_str = "images: [\n"
@@ -183,5 +183,5 @@ def make_react_codes(num_quantized_colors = 5, num_clusters=7):
     print ("Done with React codes")
 
 num_clusters = 7
-make_clusters(num_clusters=num_clusters)
+#make_clusters(num_clusters=num_clusters)
 make_react_codes(num_clusters=num_clusters)
