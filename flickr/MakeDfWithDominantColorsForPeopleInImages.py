@@ -17,12 +17,15 @@ try:
 except:
     print ("data is right here")
 
-def make_color_palettes():
+def make_color_palettes(num_colors=10,fname="color_palettes"):
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
 
-    palettes = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
-
+    try:
+        palettes = pickle.load(open("%s/data/%s.p"%(DATA_PATH,fname),"rb"))
+    except:
+        palettes = {}
+        
     results = []
     count = 0
     for fname in fnames_list:
@@ -62,17 +65,17 @@ def make_color_palettes():
                         my_pixels.append(im[row][col])
                     inner_count +=1
         ct = ColorThief(my_pixels)
-        color_list = ct.get_palette()
+        color_list = ct.get_palette(color_count=num_colors)
         palettes[fname_num] = color_list
 
         if count % 5 == 0: #save frequently to avoid having to rerun too often
-            pickle.dump(palettes,open("%s/data/color_palettes.p"%DATA_PATH,"wb"))
+            pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,fname),"wb"))
             print ("current part saved")
         count +=1
 
     if len(results) != 0:
-        pickle.dump(palettes,open("%s/data/color_palettes.p"%DATA_PATH,"wb"))
-
+        pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,fname),"wb"))
+    print ("Done")
 
 def diff_score(prev_row,curr_row):
     sum_dist = 0
@@ -200,5 +203,5 @@ def convert_df_into_list_for_react():
     text_file.write(my_str)
     text_file.close()
 
-make_color_palettes()
+make_color_palettes(num_colors=5,fname="5_color_fnum_to_palettes_dict")
 #convert_df_into_list_for_react()
