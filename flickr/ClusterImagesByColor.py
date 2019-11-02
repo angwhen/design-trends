@@ -174,7 +174,7 @@ def make_react_codes(num_clusters=7):
         min_len = min(len(cluster_to_fnums_dict[k]),min_len)
 
     for i in range(0,num_clusters):
-        random.shuffle(cluster_to_fnames_dict[i])
+        random.shuffle(cluster_to_fnums_dict[i])
     # IMAGES
     my_str = "images: [\n"
     for i in range(0, min_len):
