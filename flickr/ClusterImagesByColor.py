@@ -58,7 +58,7 @@ def get_pixels_in_file(fname_num,every_few = 10):
 
 def make_clusters(num_clusters=7):
     n_colors = 7
-    # Load all of my "dom_col_images"
+
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
 
@@ -155,7 +155,6 @@ def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(c[0],c[1],c[2]) for c in rgb_list]
 
 def make_react_codes(num_clusters=7):
-    # Make as many lists of 7 images (one for each cluster) as we can to show
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     my_urls_list = df[["url","year","file_name"]].values.tolist()
     # Make filename num to url dict
@@ -167,7 +166,7 @@ def make_react_codes(num_clusters=7):
         fname_num = el[2].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
-    # Make react code
+
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
     min_len = len(cluster_to_fnums_dict[0])
     for k in range(1,num_clusters):
