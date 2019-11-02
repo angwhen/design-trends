@@ -149,6 +149,7 @@ def make_react_codes(num_clusters=7):
     print ("Starting making React codes")
     fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict.p"%DATA_PATH,"rb"))
+    print (cluster_to_fnums_dict)
     for i in range(0,num_clusters):
         random.shuffle(cluster_to_fnums_dict[i])
     min_len = reduce((lambda x, y: max(x,y)), [len(fnums) for fnums in cluster_to_fnums_dict.values()])
