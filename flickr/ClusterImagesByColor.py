@@ -169,7 +169,9 @@ def make_react_codes(num_clusters=7):
         fnum_to_url_dict[fname_num]=url
     # Make react code
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_file_num_dict.p"%DATA_PATH,"rb"))
-    min_len = min(len(cluster_to_fnames_dict[0]),len(cluster_to_fnames_dict[1]),len(cluster_to_fnames_dict[2]),len(cluster_to_fnames_dict[3]),len(cluster_to_fnames_dict[4]),len(cluster_to_fnames_dict[5]),len(cluster_to_fnames_dict[6]))
+    min_len = len(cluster_to_fnums_dict[0])
+    for k in range(1,num_clusters):
+        min(len(cluster_to_fnums_dict[i]),min_len)
     for i in range(0,num_clusters):
         random.shuffle(cluster_to_fnames_dict[i])
 
@@ -200,6 +202,7 @@ def make_react_codes(num_clusters=7):
     text_file = open("%s/data/react-codes/react_color_clustering_page_codes.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
+    print ("Done")
 
 
 #make_clusters(num_clusters=7)
