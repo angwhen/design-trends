@@ -178,6 +178,19 @@ def make_react_codes(num_clusters=7):
     my_str = my_str[:-2]+"\n],\n"
 
     # QUANTIZED COLORS: each one gets a dict from hex color to proportion
+    quantized_images_breakdown = pickle.load(open("%s/data/quantized_images_breakdown.p"%DATA_PATH,"rb"))
+    fnums_to_hex_colors_proportions_dict = quantized_images_breakdown.get_fnums_to_hex_colors_proportions_dict()
+    my_str += "quantized_colors: [\n"
+    for i in range(0, min_len):
+        my_str += "["
+        for k in range(0,num_clusters):
+            curr_fnum = cluster_to_fnums_dict[k][i]
+            if curr_fnum in fnums_to_hex_colors_proportions_dict:
+                my_str += "%s,"%fnums_to_hex_colors_proportions_dict[curr_fnum]
+            else:
+                my_str += "[],"
+        my_str = my_str[:-1]+"],\n"
+    my_str = my_str[:-2]+"\n],\n"
 
     text_file = open("%s/data/react-codes/react_color_clustering_page_codes.txt"%DATA_PATH, "w")
     text_file.write(my_str)
@@ -186,4 +199,4 @@ def make_react_codes(num_clusters=7):
 
 num_clusters = 7
 make_clusters(num_clusters=num_clusters)
-#make_react_codes(num_clusters=num_clusters)
+make_react_codes(num_clusters=num_clusters)
