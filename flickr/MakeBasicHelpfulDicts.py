@@ -16,7 +16,7 @@ def make_fnum_to_flickr_url_dict(df):
         url = el[0]
         p1 = url.split("_o")[0]
         url = p1+"_n.jpg"
-        fname_num = el[2].split("/")[-1]
+        fname_num = el[1].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
     pickle.dump(fnum_to_url_dict,open("%s/fnum_to_flickr_url_dict.p"%DATA_PATH,"wb"))
