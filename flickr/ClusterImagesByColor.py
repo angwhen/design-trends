@@ -58,18 +58,18 @@ def get_pixels_in_file(fnum,every_few = 10):
 
 class QuantizedImageBreakdown():
     def __init__(self,colors_definitions,fnum_to_counts_of_each_color_in_image_dict):
-        self.colors_definitions = colors_definitions
+        self.colors_definitions = rgb_list_to_hex_list(colors_definitions)
         self.fnum_to_counts_of_each_color_in_image_dict = fnum_to_counts_of_each_color_in_image_dict
     def get_fnums_to_colors_proportions_dict(self):
         fnums_to_colors_proportions_dict = {}
-        return {}
+
 
 def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
 
     all_colors = []
     fnum_to_pixels_dict = {}
-    for fnum in fnums_list[:1]:
+    for fnum in fnums_list:
         all_pixels_curr = get_pixels_in_file(fnum)
         all_colors.extend(all_pixels_curr)
         if len(all_pixels_curr) != 0:
@@ -90,7 +90,6 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
 
     centroids = kmeans.cluster_centers_
     print (centroids)
-    return
     quantized_images_breakdown = QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
     pickle.dump(quantized_images_breakdown,open("%s/data/quantized_images_breakdown.p","wb"))
 
@@ -139,7 +138,7 @@ def make_dict_of_cluster_and_year():
 
 
 def rgb_list_to_hex_list(rgb_list):
-    return ["#%02x%02x%02x"%(c[0],c[1],c[2]) for c in rgb_list]
+    return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
 
 def make_react_codes(num_clusters=7):
     fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
