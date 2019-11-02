@@ -17,7 +17,7 @@ try:
 except:
     print ("data is right here")
 
-def make_color_palettes(num_colors=10,output_fname="color_palettes"):
+def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amount=1):
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
 
@@ -61,7 +61,7 @@ def make_color_palettes(num_colors=10,output_fname="color_palettes"):
             curr_mask =  masks[ind]
             for row in range(0,curr_mask.shape[0]):
                 for col in range(0,curr_mask.shape[1]):
-                    if inner_count % 10 == 0:
+                    if inner_count % sample_amount == 0: #sample
                         my_pixels.append(im[row][col])
                     inner_count +=1
         ct = ColorThief(my_pixels)
