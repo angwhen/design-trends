@@ -191,7 +191,7 @@ def make_react_codes(num_clusters=7):
     for i in range(0, min_len):
         my_str += "["
         for k in range(0,num_clusters):
-            curr_fname = cluster_to_fnames_dict[k][i]
+            curr_fname = cluster_to_fnums_dict[k][i]
             if curr_fname in fnum_to_palettes_dict:
                 my_str += "%s,"%rgb_list_to_hex_list(fnum_to_palettes_dict[curr_fname])
             else:
