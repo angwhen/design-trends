@@ -126,8 +126,8 @@ def make_dict_of_cluster_and_year():
 
     # Find all years associated with each color cluster
     color_cluster_to_years_dict = {}
-    for cc in cluster_to_fnames_dict.keys():
-        fnum_list = cluster_to_fnames_dict[cc]
+    for cc in cluster_to_fnums_dict.keys():
+        fnum_list = cluster_to_fnums_dict[cc]
         color_cluster_to_years_dict[cc] = [fnums_to_year_dict[fn] for fn in fnum_list]
     pickle.dump(color_cluster_to_years_dict,open("%s/data/color_cluster_number_to_years_dict.p"%DATA_PATH,"wb"))
 
