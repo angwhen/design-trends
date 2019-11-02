@@ -186,7 +186,7 @@ def make_react_codes(num_clusters=7):
     my_str = my_str[:-2]+"\n],\n"
 
     # COLORS
-    fnum_to_palettes_dict = pickle.load(open("%s/data/color_palettes.p"%DATA_PATH,"rb"))
+    fnum_to_palettes_dict = pickle.load(open("%s/data/5_color_fnum_to_palettes_dict.p"%DATA_PATH,"rb"))
     my_str += "dom_colors: [\n"
     for i in range(0, min_len):
         my_str += "["
