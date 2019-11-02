@@ -38,7 +38,7 @@ def make_fnums_list(df):
         fnums_list.append(fname_num)
     pickle.dump(fnums_list,open("%s/data/basics/fnums_list.p"%DATA_PATH,"wb"))
 
-df =  pd.read_csv("%s/data/basics/url_title_and_file_data.csv"%DATA_PATH)
+df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
 make_fnum_to_flickr_url_dict(df)
 make_fnum_to_year_dict(df)
 make_fnums_list(df)
