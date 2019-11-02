@@ -25,14 +25,14 @@ def make_color_palettes(num_colors=10,fname="color_palettes"):
         palettes = pickle.load(open("%s/data/%s.p"%(DATA_PATH,fname),"rb"))
     except:
         palettes = {}
-        
+
     results = []
     count = 0
     for fname in fnames_list:
         fname_num = fname[0].split("/")[-1]
         fname_num = (int) (fname_num.split(".jpg")[0])
         if fname_num in palettes:
-            print ("already done with %d"%fname_num)
+            #print ("already done with %d"%fname_num)
             continue
         try:
             res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fname_num),"rb"))
