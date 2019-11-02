@@ -103,12 +103,12 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     quantized_images_breakdown = QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
     print (quantized_images_breakdown.get_fnums_to_hex_colors_proportions_dict())
     pickle.dump(quantized_images_breakdown,open("%s/data/quantized_images_breakdown.p"%DATA_PATH,"wb"))
-    
+
     # Clustering images
     print ("Clustering on those counts per color labels")
-    kmeans = KMeans(n_clusters=num_clusters,random_state=0).fit(fnum_to_counts_of_each_color_in_image_dict)
     fnums_in_order_list = list(fnum_to_counts_of_each_color_in_image_dict.keys())
     counts_of_each_color_in_image_list = [fnum_to_counts_of_each_color_in_image_dict[fnum] for fnum in fnums_in_order_list]
+    kmeans = KMeans(n_clusters=num_clusters,random_state=0).fit(counts_of_each_color_in_image_list)
     clusters = kmeans.predict(counts_of_each_color_in_image_list)
     fnum_to_cluster_dict, cluster_to_fnums_dict = {}, {}
     for i in range(0,len(fnums_in_order_list)):
