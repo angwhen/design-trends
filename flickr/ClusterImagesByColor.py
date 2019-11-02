@@ -3,8 +3,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.metrics import pairwise_distances_argmin
-from sklearn.datasets import load_sample_image
 from sklearn.utils import shuffle
 import pandas as pd
 import pickle
@@ -29,34 +27,21 @@ def get_pixels_in_file(fnum,every_few = 10):
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
         return []
-    masks = res[1]
-    ids = res[2]
+    masks, ids = res[1], res[2]
 
-    people_indices = []
-    for i in range(0,masks.shape[0]): #the masks we have for people
-        if ids[i] == 0: # 0 means person
-            people_indices.append(i)
+    people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
     if len(people_indices) == 0:
         return []
 
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
-        print ("some dimensional problem")
+        print ("Dimensional problem: image: %d, %d vs masks: %d, %d"%(im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
         return []
 
-    my_pixels = []
-    not_greys = 0
-    for ind in people_indices:
-        curr_mask =  masks[ind]
-        for row in range(0,curr_mask.shape[0]):
-            for col in range(0,curr_mask.shape[1]):
-                my_pixels.append(im[row][col])
-                # if it is grayscale do not return
-                if abs(im[row][col][0] - im[row][col][1]) > 5 or abs(im[row][col][0] - im[row][col][2]) > 5 or  abs(im[row][col][1] - im[row][col][2]) > 5:
-                    not_greys +=1
-    # if it is grayscale do not return
-    if not_greys < 100: #allow for a few non grays in case photo bad or something
-        return []
+    sum_mask = masks[people_indices[0]]
+    for ind in people_indices[1:]:
+        sum_mask += masks[ind]
+    my_pixels = im[sum_mask!=0]
     return shuffle(my_pixels, random_state=0)[:max(36000,int(len(my_pixels)/every_few))] #dont let any image return too many pixels
 
 class QuantizedImageBreakdown():
