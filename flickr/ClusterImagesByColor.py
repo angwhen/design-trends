@@ -188,4 +188,4 @@ def make_react_codes(num_clusters=7):
 
 num_clusters = 7
 make_clusters(num_clusters=num_clusters)
-make_react_codes(num_clusters=num_clusters)
+#make_react_codes(num_clusters=num_clusters)
