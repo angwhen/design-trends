@@ -99,9 +99,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
             fnum_to_counts_of_each_color_in_image_dict[fnum] = counts_of_each_color_in_image
 
     centroids = kmeans.cluster_centers_
-    print (centroids)
     quantized_images_breakdown = QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
-    print (quantized_images_breakdown.get_fnums_to_hex_colors_proportions_dict())
     pickle.dump(quantized_images_breakdown,open("%s/data/quantized_images_breakdown.p"%DATA_PATH,"wb"))
 
     # Clustering images
