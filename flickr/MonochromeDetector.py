@@ -12,18 +12,19 @@ except:
 def save_monochrome_fnums_list(method = "hsv"):
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     monochrome_list = []
-    for fnum in fnums_list:
+    for fnum in [1765]:#fnums_list:
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
         if method == "hsv":
             hsv_im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
             hsv_im = hsv_im.reshape(hsv_im.shape[0]*hsv_im.shape[1],3)
             good_hues = [col[0] for col in hsv_im if col[2] > 50]
-            if (np.std(good_hues) < 2):#threshold
-                print ("fnum %d is monochrome" %fnum)
+            my_std = np.std(good_hues)
+            if (my_std < 10):#threshold
+                print ("fnum %d is monochrome with std %.2f" %(fnum,my_std))
                 monochrome_list.append(fnum)
             else:
-                print ("fnum %d is colored" %fnum)
-    pickle.dump(monochrome_list,open("%s/data/monochrom_list_%s.p"%(DATA_PATH,method),"wb"))
+                print ("fnum %d is colored with std %.2f" %(fnum,my_std))
+    #pickle.dump(monochrome_list,open("%s/data/monochrom_list_%s.p"%(DATA_PATH,method),"wb"))
 
 def make_react_code(method = "hsv"):
     fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
