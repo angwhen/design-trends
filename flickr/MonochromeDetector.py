@@ -12,7 +12,7 @@ except:
 def save_monochrome_fnums_list(method = "hsv"):
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     monochrome_list = []
-    for fnum in [1765]:#fnums_list:
+    for fnum in fnums_list:
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
         if method == "hsv":
             hsv_im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
