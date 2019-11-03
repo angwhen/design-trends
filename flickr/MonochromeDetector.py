@@ -38,7 +38,8 @@ def make_react_code(method = "hsv"):
     colored_list = [fnum for fnum in fnums_list if fnum not in set(monochrome_list)]
     my_str += "["
     for i in range(0,min(len(colored_list),len(monochrome_list))):
-        my_str += "['%s', '%s'],\n"%(monochrome_list[i],colored_list[i])
+        if monochrome_list[i] in fnum_to_url_dict and colored_list[i] in fnum_to_url_dict:
+        my_str += "['%s', '%s'],\n"%(fnum_to_url_dict[monochrome_list[i]],fnum_to_url_dict[colored_list[i]])
     my_str = my_str[:-2]+"]\n}\n"
 
     text_file = open("%s/data/react-codes/react_monochrome_detection_%s.txt"%(DATA_PATH,method), "w")
@@ -46,5 +47,5 @@ def make_react_code(method = "hsv"):
     text_file.close()
     print ("Done with React codes")
 
-save_monochrome_fnums_list()
+#save_monochrome_fnums_list()
 make_react_code()
