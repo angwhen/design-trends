@@ -1,12 +1,10 @@
 import pandas as pd
 import pickle
 
-DATA_PATH = "."
 try:
-    f=open("data_location.txt", "r")
-    DATA_PATH  = f.read().strip()
+    DATA_PATH  = open("data_location.txt", "r").read().strip()
 except:
-    print ("data is right here")
+    DATA_PATH = "."
 
 def make_fnum_to_flickr_url_dict(df):
     my_urls_list = df[["url","file_name"]].values.tolist()
