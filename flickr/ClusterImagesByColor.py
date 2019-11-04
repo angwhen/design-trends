@@ -60,11 +60,13 @@ class QuantizedImageBreakdown():
 
 def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-
+    monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,method),"rb")))
     print ("Loading people pixels from images")
     all_colors = []
     fnum_to_pixels_dict = {}
     for fnum in fnums_list:
+        if fnum in monochrome_list:
+            continue
         all_pixels_curr = get_pixels_in_file(fnum)
         all_colors.extend(all_pixels_curr)
         if len(all_pixels_curr) != 0:
@@ -183,5 +185,5 @@ def make_react_codes(num_quantized_colors = 5, num_clusters=7):
     print ("Done with React codes")
 
 num_clusters = 7
-#make_clusters(num_clusters=num_clusters)
+make_clusters(num_clusters=num_clusters)
 make_react_codes(num_clusters=num_clusters)
