@@ -115,7 +115,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
 def make_dict_of_cluster_and_year(Q=5,K=7):
     fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d.p"%(DATA_PATH,Q,K),"rb"))
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d.p"%(DATA_PATH,Q,K),"rb"))
-    fnums_to_year_dict = pickle.load(open("%s/data/basics/fnum_to_year_dict_Q%d_K%d.p"%(DATA_PATH,Q,K),"rb"))
+    fnums_to_year_dict = pickle.load(open("%s/data/basics/fnum_to_year_dict.p"%(DATA_PATH),"rb"))
 
     # Find all years associated with each color cluster
     color_cluster_to_years_dict = {}
