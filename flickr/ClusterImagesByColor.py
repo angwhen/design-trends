@@ -122,6 +122,9 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
     make_dict_of_cluster_and_year(Q=num_quantized_colors,K=num_clusters,use_hsv=use_hsv)
 
 def make_dict_of_cluster_and_year(Q=5,K=7,use_hsv=False):
+    hsv_add_str = ""
+    if use_hsv:
+        hsv_add_str = "_hsv"
     fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
     fnums_to_year_dict = pickle.load(open("%s/data/basics/fnum_to_year_dict.p"%(DATA_PATH),"rb"))
