@@ -58,7 +58,7 @@ class QuantizedImageBreakdown():
             fnums_to_hex_colors_proportions_dict[fnum] = hex_colors_proportions_dict
         return fnums_to_hex_colors_proportions_dict
 
-def make_clusters(num_quantized_colors = 5, num_clusters = 7):
+def get_all_colors_and_fnum_to_pixels_dict():
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,"hsv"),"rb")))
     print ("Loading people pixels from images")
@@ -71,6 +71,12 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
         all_colors.extend(all_pixels_curr)
         if len(all_pixels_curr) != 0:
             fnum_to_pixels_dict[fnum] = all_pixels_curr
+    return all_colors, fnum_to_pixels_dict
+
+def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None, fnum_to_pixels_dict = None):
+    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+    if all_colors == None or fnum_to_pixels_dict == None:
+        all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict()
     all_colors_array_sample = shuffle(np.array(all_colors), random_state=0)[:500000]
 
     print ("Quantization")
@@ -87,7 +93,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
 
     centroids = kmeans.cluster_centers_
     quantized_images_breakdown = QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
-    pickle.dump(quantized_images_breakdown,open("%s/data/%d_quantized_images_breakdown.p"%(DATA_PATH,num_quantized_colors),"wb"))
+    pickle.dump(quantized_images_breakdown,open("%s/data/quantized_images_breakdown_Q%d.p"%(DATA_PATH,num_quantized_colors),"wb"))
 
     # Clustering images
     print ("Clustering on those counts per color labels")
@@ -101,15 +107,15 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7):
         if clusters[i] not in cluster_to_fnums_dict:
             cluster_to_fnums_dict[clusters[i]] = []
         cluster_to_fnums_dict[clusters[i]].append(fnums_in_order_list[i])
-    pickle.dump(fnum_to_cluster_dict,open("%s/data/fnum_to_cluster_number_dict.p"%DATA_PATH,"wb"))
-    pickle.dump(cluster_to_fnums_dict,open("%s/data/cluster_number_to_fnum_dict.p"%DATA_PATH,"wb"))
+    pickle.dump(fnum_to_cluster_dict,open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d.p"%(DATA_PATH,num_quantized_colors,num_clusters),"wb"))
+    pickle.dump(cluster_to_fnums_dict,open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d.p"%(DATA_PATH,num_quantized_colors,num_clusters),"wb"))
 
-    make_dict_of_cluster_and_year()
+    make_dict_of_cluster_and_year(num_quantized_colors=num_quantized_colors,num_clusters=num_clusters)
 
-def make_dict_of_cluster_and_year():
-    fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict.p"%DATA_PATH,"rb"))
-    cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict.p"%DATA_PATH,"rb"))
-    fnums_to_year_dict = pickle.load(open("%s/data/basics/fnum_to_year_dict.p"%DATA_PATH,"rb"))
+def make_dict_of_cluster_and_year(num_quantized_colors=5,num_clusters=7):
+    fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d.p"%(DATA_PATH,num_quantized_colors,num_clusters),"rb"))
+    cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d.p"%(DATA_PATH,num_quantized_colors,num_clusters),"rb"))
+    fnums_to_year_dict = pickle.load(open("%s/data/basics/fnum_to_year_dict_Q%d_K%d.p"%(DATA_PATH,num_quantized_colors,num_clusters),"rb"))
 
     # Find all years associated with each color cluster
     color_cluster_to_years_dict = {}
@@ -135,7 +141,7 @@ def make_dict_of_cluster_and_year():
 def make_react_codes(num_quantized_colors = 5, num_clusters=7):
     print ("Starting making React codes")
     fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
-    cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict.p"%DATA_PATH,"rb"))
+    cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d.p"%(DATA_PATH,num_quantized_colors,num_clusters),"rb"))
     for i in range(0,num_clusters):
         random.shuffle(cluster_to_fnums_dict[i])
     min_len = reduce((lambda x, y: min(x,y)), [len(fnums) for fnums in cluster_to_fnums_dict.values()])
@@ -165,7 +171,7 @@ def make_react_codes(num_quantized_colors = 5, num_clusters=7):
     my_str = my_str[:-2]+"\n],\n"
 
     # QUANTIZED COLORS: each one gets a dict from hex color to proportion
-    quantized_images_breakdown = pickle.load(open("%s/data/%d_quantized_images_breakdown.p"%(DATA_PATH,num_quantized_colors),"rb"))
+    quantized_images_breakdown = pickle.load(open("%s/data/quantized_images_breakdown_Q%d.p"%(DATA_PATH,num_quantized_colors),"rb"))
     fnums_to_hex_colors_proportions_dict = quantized_images_breakdown.get_fnums_to_hex_colors_proportions_dict()
     my_str += "quantized_colors: [\n"
     for i in range(0, min_len):
@@ -179,11 +185,15 @@ def make_react_codes(num_quantized_colors = 5, num_clusters=7):
         my_str = my_str[:-1]+"],\n"
     my_str = my_str[:-2]+"\n],\n"
 
-    text_file = open("%s/data/react-codes/react_color_clustering_page_codes.txt"%DATA_PATH, "w")
+    text_file = open("%s/data/react-codes/react_color_clustering_page_codes_Q%d_K%d.txt"%(DATA_PATH,num_quantized_colors,num_clusters), "w")
     text_file.write(my_str)
     text_file.close()
     print ("Done with React codes")
 
-num_clusters = 7
-make_clusters(num_clusters=num_clusters)
-make_react_codes(num_clusters=num_clusters)
+#num_clusters = 7
+#num_quantized_colors = 5
+all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict()
+for num_clusters in [5,7,10]:
+    for num_quantized_colors in [5,7,10,20]:
+        make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict)
+        make_react_codes(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters)
