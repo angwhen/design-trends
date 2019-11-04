@@ -195,5 +195,6 @@ def make_react_codes(num_quantized_colors = 5, num_clusters=7):
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict()
 for num_clusters in [5,7,10]:
     for num_quantized_colors in [5,7,10,20]:
+        print ("working on Q=%d, K = %d"%num_quantized_colors,num_clusters)
         make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict)
         make_react_codes(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters)
