@@ -24,7 +24,7 @@ def save_monochrome_fnums_list(method = "hsv"):
                 monochrome_list.append(fnum)
             else:
                 print ("fnum %d is colored with std %.2f" %(fnum,my_std))
-    #pickle.dump(monochrome_list,open("%s/data/monochrom_list_%s.p"%(DATA_PATH,method),"wb"))
+    pickle.dump(monochrome_list,open("%s/data/monochrom_list_%s.p"%(DATA_PATH,method),"wb"))
 
 def make_react_code(method = "hsv"):
     fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
