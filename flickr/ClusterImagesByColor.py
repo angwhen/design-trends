@@ -60,7 +60,7 @@ class QuantizedImageBreakdown():
 
 def make_clusters(num_quantized_colors = 5, num_clusters = 7):
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-    monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,method),"rb")))
+    monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,"hsv"),"rb")))
     print ("Loading people pixels from images")
     all_colors = []
     fnum_to_pixels_dict = {}
