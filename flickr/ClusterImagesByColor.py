@@ -5,10 +5,9 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
 import pandas as pd
-import pickle
+import pickle, math, random
 from time import time
 import cv2
-import random
 from collections import Counter
 from functools import reduce
 import colorsys
@@ -120,6 +119,11 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
         if clusters[i] not in cluster_to_fnums_dict:
             cluster_to_fnums_dict[clusters[i]] = []
         cluster_to_fnums_dict[clusters[i]].append(fnums_in_order_list[i])
+    cluster_to_hex_colors_proportions_list = kmeans.cluster_centers_
+    for ind,cluster in enumerate(cluster_to_hex_colors_proportions_list):
+        total_pixels = sum(cluster)
+        cluster_to_hex_colors_proportions_list[ind] = {rgb_list_to_hex_list([quantized_images_breakdown.colors_definitions[i]])[0]:qcol_count/total_pixels for i,qcol_count in enumerate(cluster)}
+    pickle.dump(cluster_to_hex_colors_proportions_list,open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
     pickle.dump(fnum_to_cluster_dict,open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
     pickle.dump(cluster_to_fnums_dict,open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
 
@@ -165,8 +169,12 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
         random.shuffle(cluster_to_fnums_dict[i])
     min_len = reduce((lambda x, y: min(x,y)), [len(fnums) for fnums in cluster_to_fnums_dict.values()])
 
+    # CLUSTER LABELS
+    cluster_to_hex_colors_proportions_list = pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
+    my_str = "labels:  %s \n"%cluster_to_hex_colors_proportions_list
+
     # IMAGES
-    my_str = "images: [\n"
+    my_str += "images: [\n"
     for i in range(0, min_len):
         my_str += "["
         for k in range(0,num_clusters):
@@ -213,7 +221,7 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
 #num_quantized_colors = 5
 use_hsv = True
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
-for num_clusters in [7,10]:
+for num_clusters in [7]:
     for num_quantized_colors in [5,7,20]:
         print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
         make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict,use_hsv=use_hsv)
