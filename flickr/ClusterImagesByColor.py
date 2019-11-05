@@ -37,6 +37,10 @@ def get_pixels_in_file(fnum,every_few = 10,use_hsv=False):
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     if use_hsv:
         im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
+        #https://stackoverflow.com/questions/35113979/calculate-distance-between-colors-in-hsv-space
+        def project_to_hsv_cone(p):
+            return (p[1]*p[2]*math.sin(p[0]*2*math.pi), p[1]*p[2]*math.cos(p[0]*2*math.pi), p[2])
+        im = np.apply_along_axis(project_to_hsv_cone, 2, im)
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
         print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
         return []
