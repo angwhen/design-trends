@@ -111,7 +111,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
 
     all_colors_array_sample = shuffle(np.array(all_colors), random_state=0)[:500000]
     if use_hsv:
-        all_colors_array_sample = np.apply_along_axis(project_to_hsv_cone, 2, all_colors_array_sample)
+        all_colors_array_sample = np.apply_along_axis(project_to_hsv_cone, 1, all_colors_array_sample)
 
     print ("Quantization")
     kmeans = KMeans(n_clusters=num_quantized_colors, max_iter=100,random_state=0).fit(all_colors_array_sample)
@@ -120,7 +120,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
     for fnum in fnums_list:
         if fnum in fnum_to_pixels_dict:
             if use_hsv:
-                list_of_colors =  kmeans.predict(np.apply_along_axis(project_to_hsv_cone, 2, fnum_to_pixels_dict[fnum]))
+                list_of_colors =  kmeans.predict(np.apply_along_axis(project_to_hsv_cone, 1, fnum_to_pixels_dict[fnum]))
             else:
                 list_of_colors =  kmeans.predict(fnum_to_pixels_dict[fnum])
             counts_of_each_color_in_image = [0]*num_quantized_colors
