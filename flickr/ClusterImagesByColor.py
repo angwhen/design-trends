@@ -22,6 +22,32 @@ except:
 def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
 
+#https://stackoverflow.com/questions/35113979/calculate-distance-between-colors-in-hsv-space
+def project_to_hsv_cone(p): #input out of 255
+    return (p[1]/255*p[2]/255*math.sin(p[0]/255*2*math.pi), p[1]/255*p[2]/255*math.cos(p[0]/255*2*math.pi), p[2]/255)
+
+def hsv_cone_coords_to_hsv(p): #returns out of 255
+    val = p[2]
+    if val != 0:
+        sat = math.sqrt((p[0]*p[0]+p[1]*p[1])/(val*val))
+    else:
+        sat = 0
+    if sat!=0 and val != 0:
+        hue1 = math.asin(p[0]/sat/val) #figure out which result based on cosine
+        hue2 = math.acos(p[1]/sat/val)
+        if hue1 == hue2:
+            hue = hue1
+        elif hue1 < 0:
+            if hue2 <= math.pi/2:
+                hue = 2*math.pi+hue1
+            else:
+                hue = math.pi-hue1
+        else:
+            hue = hue2
+    else:
+        hue = 0
+    return (hue*255/(2*math.pi),sat*255,val*255)
+
 def get_pixels_in_file(fnum,every_few = 10,use_hsv=False):
     try:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
@@ -36,10 +62,6 @@ def get_pixels_in_file(fnum,every_few = 10,use_hsv=False):
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     if use_hsv:
         im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
-        #https://stackoverflow.com/questions/35113979/calculate-distance-between-colors-in-hsv-space
-        def project_to_hsv_cone(p):
-            return (p[1]*p[2]*math.sin(p[0]*2*math.pi), p[1]*p[2]*math.cos(p[0]*2*math.pi), p[2])
-        im = np.apply_along_axis(project_to_hsv_cone, 2, im)
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
         print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
         return []
@@ -86,7 +108,10 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     if all_colors == None or fnum_to_pixels_dict == None:
         all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
+
     all_colors_array_sample = shuffle(np.array(all_colors), random_state=0)[:500000]
+    if use_hsv:
+        all_colors_array_sample = np.apply_along_axis(project_to_hsv_cone, 2, all_colors_array_sample)
 
     print ("Quantization")
     kmeans = KMeans(n_clusters=num_quantized_colors, max_iter=100,random_state=0).fit(all_colors_array_sample)
@@ -94,7 +119,10 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
     fnum_to_counts_of_each_color_in_image_dict= {}
     for fnum in fnums_list:
         if fnum in fnum_to_pixels_dict:
-            list_of_colors =  kmeans.predict(fnum_to_pixels_dict[fnum])
+            if use_hsv:
+                list_of_colors =  kmeans.predict(np.apply_along_axis(project_to_hsv_cone, 2, fnum_to_pixels_dict[fnum]))
+            else:
+                list_of_colors =  kmeans.predict(fnum_to_pixels_dict[fnum])
             counts_of_each_color_in_image = [0]*num_quantized_colors
             for color_ind in list_of_colors:
                 counts_of_each_color_in_image[color_ind] +=1
@@ -102,6 +130,7 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
 
     centroids = kmeans.cluster_centers_
     if use_hsv:
+        centroids = [hsv_cone_coords_to_hsv(col) for col in centroids]
         centroids = [colorsys.hsv_to_rgb(col[0]/255,col[1]/255,col[2]/255) for col in centroids]
         centroids = [[col[0]*255,col[1]*255,col[2]*255] for col in centroids]
     quantized_images_breakdown = QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
