@@ -28,6 +28,17 @@ def make_fnum_to_year_dict(df):
         fnum_to_year_dict[fname_num] = year
     pickle.dump(fnum_to_year_dict,open("%s/data/basics/fnum_to_year_dict.p"%DATA_PATH,"wb"))
 
+def make_year_to_fnums_dict(df):
+    years_list = df[["file_name","year"]].values.tolist()
+    year_to_fnums_dict = {}
+    for el in years_list:
+        fnum = int(el[0].split(".")[0].split("/")[-1])
+        year = int(el[1])
+        if year not in year_to_fnums_dict:
+            year_to_fnums_dict[year] = []
+        year_to_fnums_dict[year].append(fnum)
+    pickle.dump(year_to_fnums_dict,open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"wb"))
+
 def make_fnums_list(df):
     my_list = df[["file_name"]].values.tolist()
     fnums_list = []
@@ -37,6 +48,7 @@ def make_fnums_list(df):
     pickle.dump(fnums_list,open("%s/data/basics/fnums_list.p"%DATA_PATH,"wb"))
 
 df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
-make_fnum_to_flickr_url_dict(df)
-make_fnum_to_year_dict(df)
-make_fnums_list(df)
+#make_fnum_to_flickr_url_dict(df)
+#make_fnum_to_year_dict(df)
+#make_fnums_list(df)
+make_year_to_fnums_dict(df)

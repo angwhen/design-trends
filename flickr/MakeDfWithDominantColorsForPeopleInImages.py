@@ -17,6 +17,18 @@ try:
 except:
     print ("data is right here")
 
+def get_all_pixels_in_fnums(fnums,sample_amount):
+    return []
+
+def make_yearly_color_palettes(num_colors=10,sample_amount=1):
+    year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
+    try:
+        palettes = pickle.load(open("%s/data/yearly_%dcolor_palettes.p"%(DATA_PATH,num_colors),"rb"))
+    except:
+        palettes = {}
+    for year in year_to_fnums_dict.keys():
+        get_all_pixels_in_fnums(year_to_fnums_dict[year],sample_amount)
+
 def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amount=1):
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     fnames_list = df[["file_name"]].values.tolist()
@@ -26,7 +38,6 @@ def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amoun
     except:
         palettes = {}
 
-    results = []
     count = 0
     for fname in fnames_list:
         fname_num = fname[0].split("/")[-1]
@@ -73,9 +84,12 @@ def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amoun
             print ("current part saved")
         count +=1
 
-    if len(results) != 0:
+    if len(palettes) != 0:
         pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,output_fname),"wb"))
     print ("Done")
+
+
+# STUFF RELATED TO REACT CODE
 
 def diff_score(prev_row,curr_row):
     sum_dist = 0
@@ -116,7 +130,7 @@ def sort_colors_lists(all_colors_list):
             new_all_colors_list.append( rotate_until_most_contig(new_all_colors_list[len(new_all_colors_list)-1],rgb_colors_list))
     return new_all_colors_list
 
-def convert_df_into_list_for_react():
+def make_colors_list_for_react():
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     years_list = df[["file_name","year"]].values.tolist()
     years_list.sort(key=lambda x: x[1])
@@ -164,7 +178,11 @@ def convert_df_into_list_for_react():
         my_str += "],\n"
     my_str = my_str[:-2] + "],\n"
 
+    text_file = open("%s/data/react_colors_list_for_colors_slides.txt"%DATA_PATH, "w")
+    text_file.write(my_str)
+    text_file.close()
 
+def make_yearly_colors_list_for_react():
     # make yearly colors
     yearly_colors = []
     yearly_years = []
@@ -183,7 +201,7 @@ def convert_df_into_list_for_react():
         hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in row]
         yearly_colors.append([x for _,x in sorted(zip(hue_colors_list,row))])
 
-    my_str += "yearly_colors:["
+    my_str = "yearly_colors:["
     for i in range(0,len(yearly_colors)):
         curr_colors = yearly_colors[i]
         curr_year = yearly_years[i]
@@ -198,10 +216,9 @@ def convert_df_into_list_for_react():
         my_str += "],\n"
     my_str = my_str[:-2] + "],"
 
-
-    text_file = open("%s/data/react_colors_list_for_colors_slides.txt"%DATA_PATH, "w")
+    text_file = open("%s/data/react_yearly_colors_list_for_colors_slides.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
 make_color_palettes(num_colors=5,output_fname="5_color_fnum_to_palettes_dict")
-#convert_df_into_list_for_react()
+#make_colors_list_for_react()
