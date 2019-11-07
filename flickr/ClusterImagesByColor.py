@@ -92,7 +92,7 @@ def get_all_colors_and_fnum_to_pixels_dict(use_hsv):
     print ("Loading people pixels from images")
     all_colors = []
     fnum_to_pixels_dict = {}
-    for fnum in fnums_list[:60]:
+    for fnum in fnums_list[:60]: #REMOVE
         if fnum in monochrome_list:
             continue
         all_pixels_curr = get_pixels_in_file(fnum,use_hsv=use_hsv)
@@ -148,10 +148,13 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
         if clusters[i] not in cluster_to_fnums_dict:
             cluster_to_fnums_dict[clusters[i]] = []
         cluster_to_fnums_dict[clusters[i]].append(fnums_in_order_list[i])
-    cluster_to_hex_colors_proportions_list = kmeans.cluster_centers_
-    for ind,cluster in enumerate(cluster_to_hex_colors_proportions_list):
+    cluster_to_hex_colors_proportions_list = [0]*len(kmeans.cluster_centers_)
+    for ind,cluster in enumerate(kmeans.cluster_centers_):
         total_pixels = sum(cluster)
         print (cluster)
+        print (total_pixels)
+        print (cluster[0]/total_pixels)
+        print (quantized_images_breakdown.colors_definitions[0])
         cluster_to_hex_colors_proportions_list[ind] = {quantized_images_breakdown.colors_definitions[i]:(qcol_count/total_pixels) for i,qcol_count in enumerate(cluster)}
     pickle.dump(cluster_to_hex_colors_proportions_list,open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
     pickle.dump(fnum_to_cluster_dict,open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
@@ -252,7 +255,7 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
 use_hsv = True
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
 for num_clusters in [7]:
-    for num_quantized_colors in [5]:#[5,7,20]:
+    for num_quantized_colors in [5]:#[5,7,20]: #REMOVE
         print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
         make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict,use_hsv=use_hsv)
         make_react_codes(Q =num_quantized_colors,K=num_clusters,use_hsv=use_hsv)
