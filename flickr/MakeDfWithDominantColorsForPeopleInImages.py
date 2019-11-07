@@ -209,7 +209,7 @@ def make_colors_list_for_react():
     text_file.close()
 
 def make_yearly_colors_list_for_react(num_colors=10):
-    year_to_color_palettes_dict=pickle.dump(open("%s/data/year_to_%d_color_palettes_dict.p"%(DATA_PATH,num_colors),"rb"))
+    year_to_color_palettes_dict=pickle.load(open("%s/data/year_to_%d_color_palettes_dict.p"%(DATA_PATH,num_colors),"rb"))
 
     my_str = "yearly_colors:["
     for curr_year in year_to_color_palettes_dict.keys():
