@@ -92,7 +92,7 @@ def get_all_colors_and_fnum_to_pixels_dict(use_hsv):
     print ("Loading people pixels from images")
     all_colors = []
     fnum_to_pixels_dict = {}
-    for fnum in fnums_list:
+    for fnum in fnums_list[:60]:
         if fnum in monochrome_list:
             continue
         all_pixels_curr = get_pixels_in_file(fnum,use_hsv=use_hsv)
@@ -252,7 +252,7 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
 use_hsv = True
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
 for num_clusters in [7]:
-    for num_quantized_colors in [5,7,20]:
+    for num_quantized_colors in [5]:#[5,7,20]:
         print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
         make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict,use_hsv=use_hsv)
         make_react_codes(Q =num_quantized_colors,K=num_clusters,use_hsv=use_hsv)
