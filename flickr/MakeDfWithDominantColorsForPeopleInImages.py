@@ -144,7 +144,7 @@ def rotate_until_most_contig(prev_row,curr_row):
     return list(d)
     #return curr_row
 
-def sort_colors_lists(all_colors_list):
+def sort_colors_lists(all_colors_list): #  sort list of rgb colors by hue
     new_all_colors_list = []
     for rgb_colors_list in all_colors_list:
         hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in rgb_colors_list]
@@ -213,7 +213,7 @@ def make_yearly_colors_list_for_react(num_colors=10):
 
     my_str = "yearly_colors:["
     for curr_year in sorted(list(year_to_color_palettes_dict.keys())):
-        curr_colors = year_to_color_palettes_dict[curr_year]
+        curr_colors =  sort_colors_lists(year_to_color_palettes_dict[curr_year])
         my_str += "["
         for i in range(0,len(curr_colors)):
             c = curr_colors[i]
