@@ -212,7 +212,7 @@ def make_yearly_colors_list_for_react(num_colors=10):
     year_to_color_palettes_dict=pickle.load(open("%s/data/year_to_%d_color_palettes_dict.p"%(DATA_PATH,num_colors),"rb"))
 
     my_str = "yearly_colors:["
-    for curr_year in year_to_color_palettes_dict.keys():
+    for curr_year in sorted(list(year_to_color_palettes_dict.keys())):
         curr_colors = year_to_color_palettes_dict[curr_year]
         my_str += "["
         for i in range(0,len(curr_colors)):
