@@ -17,17 +17,42 @@ try:
 except:
     print ("data is right here")
 
-def get_all_pixels_in_fnums(fnums,sample_amount):
-    return []
+def get_pixels_in_fnums(fnums,sample_amount):
+    all_pixels = []
+    for fnum in fnums:
+        try:
+            res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
+        except:
+            continue
+        masks, ids = res[1], res[2]
+        people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
+        if len(people_indices) == 0:
+            continue
 
-def make_yearly_color_palettes(num_colors=10,sample_amount=1):
+        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+        if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
+            print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
+            continue
+
+        sum_mask = masks[people_indices[0]]
+        for ind in people_indices[1:]:
+            sum_mask += masks[ind]
+        my_pixels = im[sum_mask!=0]
+        all_pixels.extend(shuffle(my_pixels, random_state=0)[:int(len(my_pixels)/sample_amount))])
+
+    return shuffle(all_pixels,random_state=0)[:360000]
+
+def make_yearly_color_palettes(num_colors=10,sample_amount=5):
     year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
-    try:
-        palettes = pickle.load(open("%s/data/yearly_%dcolor_palettes.p"%(DATA_PATH,num_colors),"rb"))
-    except:
-        palettes = {}
+    year_to_color_palettes_dict = {}
     for year in year_to_fnums_dict.keys():
-        get_all_pixels_in_fnums(year_to_fnums_dict[year],sample_amount)
+        if year in year_to_color_palettes_dict:
+            continue
+        year_pixels = get_pixels_in_fnums(year_to_fnums_dict[year],sample_amount)
+        ct = ColorThief(year_pixels)
+        color_list = ct.get_palette(color_count=num_colors)
+        year_to_color_palettes_dict[year] = color_list
+    pickle.dump(year_to_color_palettes_dict,open("%s/data/year_to_%d_color_palettes_dict.p"%(DATA_PATH,num_colors),"wb"))
 
 def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amount=1):
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
@@ -182,43 +207,25 @@ def make_colors_list_for_react():
     text_file.write(my_str)
     text_file.close()
 
-def make_yearly_colors_list_for_react():
-    # make yearly colors
-    yearly_colors = []
-    yearly_years = []
-    for year in range(1800,2020):
-        if year not in years_start_and_end:
-            continue
-        colors_range = all_colors_list[years_start_and_end[year][0]:years_start_and_end[year][1]]
-        flat_colors_range = [item for sublist in colors_range for item in sublist]
-        ct = ColorThief(flat_colors_range)
-        yearly_colors.append(ct.get_palette(color_count=10))
-        yearly_years.append(year)
-
-    yearly_colors_hold = yearly_colors
-    yearly_colors = []
-    for row in yearly_colors_hold:
-        hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in row]
-        yearly_colors.append([x for _,x in sorted(zip(hue_colors_list,row))])
+def make_yearly_colors_list_for_react(num_colors=10):
+    year_to_color_palettes_dict-pickle.dump(open("%s/data/year_to_%d_color_palettes_dict.p"%(DATA_PATH,num_colors),"rb"))
 
     my_str = "yearly_colors:["
-    for i in range(0,len(yearly_colors)):
-        curr_colors = yearly_colors[i]
-        curr_year = yearly_years[i]
+    for curr_year in year_to_color_palettes_dict.keys():
+        curr_colors = year_to_color_palettes_dict[curr_year]
         my_str += "["
-        for i in range(0,9):
-            if i < len(curr_colors):
-                c = curr_colors[i]
-                my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
-            else:
-                my_str+="'#ffffff',"
+        for i in range(0,len(curr_colors)):
+            c = curr_colors[i]
+            my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
         my_str +="%d"%curr_year
         my_str += "],\n"
     my_str = my_str[:-2] + "],"
 
-    text_file = open("%s/data/react_yearly_colors_list_for_colors_slides.txt"%DATA_PATH, "w")
+    text_file = open("%s/data/react-codes/react_yearly_colors_for_colors_slides.txt"%DATA_PATH, "w")
     text_file.write(my_str)
     text_file.close()
 
-make_color_palettes(num_colors=5,output_fname="5_color_fnum_to_palettes_dict")
+#make_color_palettes(num_colors=5,output_fname="5_color_fnum_to_palettes_dict")
 #make_colors_list_for_react()
+make_yearly_color_palettes(num_colors=10)
+make_yearly_colors_list_for_react(num_colors=10)

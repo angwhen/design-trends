@@ -204,7 +204,7 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
 
     # CLUSTER LABELS
     cluster_to_hex_colors_proportions_list = pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
-    my_str = "labels:  %s \n"%cluster_to_hex_colors_proportions_list
+    my_str = "labels:  %s ,\n"%cluster_to_hex_colors_proportions_list
 
     # IMAGES
     my_str += "images: [\n"
