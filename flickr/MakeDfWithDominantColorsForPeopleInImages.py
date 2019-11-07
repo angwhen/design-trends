@@ -1,14 +1,12 @@
 from matplotlib import pyplot as plt
 import pandas as pd
-import pickle
-import os
+import os, re, pickle,math
 from ColorThiefModified import ColorThief
-import re
 import colorsys
 from collections import deque
-import math
 import numpy as np
 import cv2
+from sklearn.utils import shuffle
 
 DATA_PATH = ""
 try:
