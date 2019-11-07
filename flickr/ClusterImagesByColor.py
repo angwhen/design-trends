@@ -151,7 +151,8 @@ def make_clusters(num_quantized_colors = 5, num_clusters = 7, all_colors = None,
     cluster_to_hex_colors_proportions_list = kmeans.cluster_centers_
     for ind,cluster in enumerate(cluster_to_hex_colors_proportions_list):
         total_pixels = sum(cluster)
-        cluster_to_hex_colors_proportions_list[ind] = {quantized_images_breakdown.colors_definitions[i]:qcol_count/total_pixels for i,qcol_count in enumerate(cluster)}
+        print (cluster)
+        cluster_to_hex_colors_proportions_list[ind] = {quantized_images_breakdown.colors_definitions[i]:(qcol_count/total_pixels) for i,qcol_count in enumerate(cluster)}
     pickle.dump(cluster_to_hex_colors_proportions_list,open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
     pickle.dump(fnum_to_cluster_dict,open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
     pickle.dump(cluster_to_fnums_dict,open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,num_quantized_colors,num_clusters,hsv_add_str),"wb"))
