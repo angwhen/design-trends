@@ -38,7 +38,7 @@ def get_pixels_in_fnums(fnums,sample_amount):
         for ind in people_indices[1:]:
             sum_mask += masks[ind]
         my_pixels = im[sum_mask!=0]
-        all_pixels.extend(shuffle(my_pixels, random_state=0)[:int(len(my_pixels)/sample_amount))])
+        all_pixels.extend(shuffle(my_pixels, random_state=0)[:int(len(my_pixels)/sample_amount)])
 
     return shuffle(all_pixels,random_state=0)[:360000]
 
