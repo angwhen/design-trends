@@ -6,6 +6,9 @@ from ColorThiefModified import ColorThief
 import colorsys
 from collections import deque
 from sklearn.utils import shuffle
+from sklearn.cluster import KMeans
+from collections import Counter
+from functools import reduce
 import HSVHelpers
 
 DATA_PATH = ""
