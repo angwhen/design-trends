@@ -257,14 +257,18 @@ def make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
     fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
     year_to_fnums_dict = pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%(DATA_PATH),"rb"))
 
-
+    return {}
+    
 def make_react_codes_for_cluster_area_charts():
     print ("Starting React Codes for Cluster Area Charts")
     year_to_cluster_props_dict = make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=True)
-    my_str = ""
+    my_str = "color_clustering_data:[ \n"
+    # loop through cluster
+    # for each cluster loop through year
+
     for year in year_to_cluster_props_dict.keys():
         my_str += "{ x: '1-Jan-13', y: 8 },"
-        
+
 
 make_react_codes_for_cluster_area_charts()
 """use_hsv = True

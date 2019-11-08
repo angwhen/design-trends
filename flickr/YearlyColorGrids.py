@@ -85,7 +85,7 @@ def get_all_colors_and_year_to_pixels_dict():
 
 def make_yearly_quantization_based_color_palettes(num_quantized_colors=20):
     all_colors, year_to_pixels_dict = get_all_colors_and_year_to_pixels_dict()
-    print ("all colors pixels shape is":)
+    print ("all colors pixels shape is:")
     print (all_colors.shape)
 
     all_colors_array_sample = shuffle(np.array(all_colors), random_state=0)[:500000]
