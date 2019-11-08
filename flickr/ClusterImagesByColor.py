@@ -265,6 +265,8 @@ def make_dict_of_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
         for cluster in clusters_list:
             year_to_cluster_prop_dict[year][cluster] = 0
         for fnum in fnums:
+            if fnum not in  fnum_to_cluster_dict:
+                continue
             cluster = fnum_to_cluster_dict[fnum]
             year_to_cluster_prop_dict[year][cluster]+=1/len(fnums)
     return year_to_cluster_prop_dict
