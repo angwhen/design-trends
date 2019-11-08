@@ -286,8 +286,10 @@ def make_react_codes_for_cluster_area_charts():
 
     years_sum_so_far_dict = {} #react does not stack itself, so manually stacking
     my_str = "color_clustering_data:[ \n"
+    count = 1
     for cluster in clusters_list:
-        my_str += "\t  {\"name\":\"Cluster %d\",\"data\": {\n"%cluster
+        my_str += "\t  {\"name\":\"Color Cluster %d\",\"data\": {\n"%count
+        count +=1
         for year in range(1800,2020):
             if year not in year_to_cluster_props_dict:
                 continue
@@ -295,8 +297,9 @@ def make_react_codes_for_cluster_area_charts():
             if year not in years_sum_so_far_dict:
                  years_sum_so_far_dict[year] = 0
             years_sum_so_far_dict[year] += current_prop
-            my_str += "\t\t '%d': %f ,"%(year,years_sum_so_far_dict[year])
+            my_str += " '%d': %f ,"%(year,years_sum_so_far_dict[year])
         my_str = my_str[:-1]+"\t}},\n"
+
     my_str = my_str[:-2]+"],\n"
     text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes.txt"%(DATA_PATH), "w")
     text_file.write(my_str)
