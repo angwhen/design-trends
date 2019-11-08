@@ -297,7 +297,7 @@ def make_react_codes_for_cluster_area_charts():
             if year not in years_sum_so_far_dict:
                  years_sum_so_far_dict[year] = 0
             years_sum_so_far_dict[year] += current_prop
-            if (years_sum_so_far_dict[year]==0):
+            if cluster != clusters_list[0] and years_sum_so_far_dict[year]==0:
                 my_str += " "
                 continue
             my_str += " '%d': %f ,"%(year,years_sum_so_far_dict[year])
