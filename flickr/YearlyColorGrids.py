@@ -94,7 +94,7 @@ def make_yearly_quantization_based_color_palettes(num_quantized_colors=20):
     year_to_counts_of_each_color_in_image_dict= {}
     for year in range(1800,2020):
         if year in year_to_pixels_dict:
-            list_of_colors =  kmeans.predict(np.apply_along_axis(HSVHelpers.project_hsv_to_hsv_cone, 1, fnum_to_pixels_dict[fnum]))
+            list_of_colors =  kmeans.predict(np.apply_along_axis(HSVHelpers.project_hsv_to_hsv_cone, 1, year_to_pixels_dict[year]))
             counts_of_each_color_in_image = [0]*num_quantized_colors
             for color_ind in list_of_colors:
                 counts_of_each_color_in_image[color_ind] +=1
