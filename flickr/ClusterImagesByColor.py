@@ -245,7 +245,7 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
         my_str = my_str[:-1]+"],\n"
     my_str = my_str[:-2]+"\n],\n"
 
-    text_file = open("%s/data/react-codes/react_color_clustering_page_codes_Q%d_K%d%s.txt"%(DATA_PATH,Q,K,hsv_add_str), "wb")
+    text_file = open("%s/data/react-codes/react_color_clustering_page_codes_Q%d_K%d%s.txt"%(DATA_PATH,Q,K,hsv_add_str), "w")
     text_file.write(my_str)
     text_file.close()
     print ("Done with React codes")
@@ -298,7 +298,7 @@ def make_react_codes_for_cluster_area_charts():
             my_str += "{ x: '%d', y: %f },\n"%(year,years_sum_so_far_dict[year])
         my_str = my_str[:-2]+"],\n"
     my_str = my_str[:-2]+"],\n"
-    text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes.txt"%(DATA_PATH), "wb")
+    text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes.txt"%(DATA_PATH), "w")
     text_file.write(my_str)
     text_file.close()
     print ("Done with Area Chart Color React codes")
