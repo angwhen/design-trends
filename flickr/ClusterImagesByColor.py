@@ -258,16 +258,36 @@ def make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
     year_to_fnums_dict = pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%(DATA_PATH),"rb"))
 
     return {}
-    
+def get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False):
+    hsv_add_str = ""
+    if use_hsv:
+        hsv_add_str = "_hsv"
+    cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
+    tup_list = []
+    for cluster in cluster_to_fnums_dict.keys():
+        tup_list.append([cluster,len(cluster_to_fnums_dict[cluster])])
+    return [tup[0] for tup in sorted(tup_list, key = lamda x: x[1])]
+
 def make_react_codes_for_cluster_area_charts():
     print ("Starting React Codes for Cluster Area Charts")
     year_to_cluster_props_dict = make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=True)
-    my_str = "color_clustering_data:[ \n"
-    # loop through cluster
+    clusters_list = get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False)
+
+    # loop through clusters, sorted by on average least popular to most popular
     # for each cluster loop through year
 
-    for year in year_to_cluster_props_dict.keys():
-        my_str += "{ x: '1-Jan-13', y: 8 },"
+    years_sum_so_far_dict = {}
+    my_str = "color_clustering_data:[ \n"
+    for cluster in clusters_list:
+        my_str += "[\n"
+        for year in year_to_cluster_props_dict.keys():
+            current_prop = year_to_cluster_props_dict[year][cluster]
+            if year not in years_sum_so_far_dict:
+                 years_sum_so_far_dict[year] = 0
+            years_sum_so_far_dict[year] += current_prop
+            my_str += "{ x: '%d', y: %f },\n"%(year,years_sum_so_far_dict[year])
+        my_str = my_str[:-2]+"],\n"
+    my_str = my_str[:-2]+"],\n"
 
 
 make_react_codes_for_cluster_area_charts()
