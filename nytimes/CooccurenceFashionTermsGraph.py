@@ -337,7 +337,10 @@ def make_react_codes_for_cluster_area_charts():
         for year in range(1800,2020):
             if year not in year_to_cluster_props_dict:
                 continue
-            current_prop = year_to_cluster_props_dict[year][cluster]
+            if cluster in year_to_cluster_props_dict[year]:
+                current_prop = year_to_cluster_props_dict[year][cluster]
+            else:
+                current_prop = 0
             if year not in years_sum_so_far_dict:
                  years_sum_so_far_dict[year] = 0
             years_sum_so_far_dict[year] += current_prop
