@@ -261,6 +261,7 @@ def make_dict_of_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
     year_to_cluster_prop_dict = {}
     for year in year_to_fnums_dict.keys():
         fnums = year_to_fnums_dict[year]
+        total_elements = functools.reduce(lambda:a,b:1+b if a in fnum_to_cluster_dict else 0+b,fnums)
         year_to_cluster_prop_dict[year] = {}
         for cluster in clusters_list:
             year_to_cluster_prop_dict[year][cluster] = 0
@@ -268,7 +269,7 @@ def make_dict_of_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
             if fnum not in  fnum_to_cluster_dict:
                 continue
             cluster = fnum_to_cluster_dict[fnum]
-            year_to_cluster_prop_dict[year][cluster]+=1/len(fnums)
+            year_to_cluster_prop_dict[year][cluster]+=1/total_elements
     return year_to_cluster_prop_dict
 
 def get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False):
@@ -289,7 +290,7 @@ def make_react_codes_for_cluster_area_charts():
     years_sum_so_far_dict = {} #react does not stack itself, so manually stacking
     my_str = "color_clustering_data:[ \n"
     for cluster in clusters_list:
-        my_str += "[\n"
+        my_str += "\t[\n"
         for year in range(1800,2020):
             if year not in year_to_cluster_props_dict:
                 continue
@@ -297,8 +298,8 @@ def make_react_codes_for_cluster_area_charts():
             if year not in years_sum_so_far_dict:
                  years_sum_so_far_dict[year] = 0
             years_sum_so_far_dict[year] += current_prop
-            my_str += "{ x: '%d', y: %f },\n"%(year,years_sum_so_far_dict[year])
-        my_str = my_str[:-2]+"],\n"
+            my_str += "\t\t{ x: '%d', y: %f },\n"%(year,years_sum_so_far_dict[year])
+        my_str = my_str[:-2]+"\t],\n"
     my_str = my_str[:-2]+"],\n"
     text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes.txt"%(DATA_PATH), "w")
     text_file.write(my_str)
