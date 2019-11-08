@@ -250,12 +250,27 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
     text_file.close()
     print ("Done with React codes")
 
-#num_clusters = 7
-#num_quantized_colors = 5
-use_hsv = True
+def make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
+    hsv_add_str = ""
+    if use_hsv:
+        hsv_add_str = "_hsv"
+    fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
+    year_to_fnums_dict = pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%(DATA_PATH),"rb"))
+
+
+def make_react_codes_for_cluster_area_charts():
+    print ("Starting React Codes for Cluster Area Charts")
+    year_to_cluster_props_dict = make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=True)
+    my_str = ""
+    for year in year_to_cluster_props_dict.keys():
+        my_str += "{ x: '1-Jan-13', y: 8 },"
+        
+
+make_react_codes_for_cluster_area_charts()
+"""use_hsv = True
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
 for num_clusters in [7]:
     for num_quantized_colors in [5,7,20]:
         print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
         make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict,use_hsv=use_hsv)
-        make_react_codes(Q =num_quantized_colors,K=num_clusters,use_hsv=use_hsv)
+        make_react_codes(Q =num_quantized_colors,K=num_clusters,use_hsv=use_hsv)"""

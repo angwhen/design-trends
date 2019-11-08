@@ -79,11 +79,14 @@ def get_all_colors_and_year_to_pixels_dict():
     for year in year_to_fnums_dict.keys():
         all_pixels_curr = get_pixels_in_fnums(year_to_fnums_dict[year],1)
         all_colors.extend(all_pixels_curr)
-        year_to_pixels_dict[year] = all_pixels_curr
+        if len(all_pixels_curr) != 0:
+            year_to_pixels_dict[year] = all_pixels_curr
     return all_colors, year_to_pixels_dict
 
 def make_yearly_quantization_based_color_palettes(num_quantized_colors=20):
     all_colors, year_to_pixels_dict = get_all_colors_and_year_to_pixels_dict()
+    print ("all colors pixels shape is":)
+    print (all_colors.shape)
 
     all_colors_array_sample = shuffle(np.array(all_colors), random_state=0)[:500000]
     all_colors_array_sample = np.apply_along_axis(HSVHelpers.project_hsv_to_hsv_cone, 1, all_colors_array_sample)
