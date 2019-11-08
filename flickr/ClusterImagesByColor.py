@@ -261,7 +261,7 @@ def make_dict_of_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
     year_to_cluster_prop_dict = {}
     for year in year_to_fnums_dict.keys():
         fnums = year_to_fnums_dict[year]
-        total_elements = functools.reduce(lambda a,b:1+b if a in fnum_to_cluster_dict else 0+b,fnums)
+        total_elements = reduce(lambda a,b:1+b if a in fnum_to_cluster_dict else 0+b,fnums)
         year_to_cluster_prop_dict[year] = {}
         for cluster in clusters_list:
             year_to_cluster_prop_dict[year][cluster] = 0
