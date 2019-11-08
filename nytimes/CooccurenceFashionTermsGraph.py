@@ -6,6 +6,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import math
 from collections import Counter
+from sklearn.feature_extraction.text import  CountVectorizer
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score
 
 DATA_PATH = "."
 try:
@@ -223,13 +226,10 @@ def make_react_word_cloud_data_for_adjs():
     text_file.close()
 
 #https://pythonprogramminglanguage.com/kmeans-text-clustering/
-def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
-    from sklearn.feature_extraction.text import  CountVectorizer
-    from sklearn.cluster import KMeans
-    from sklearn.metrics import adjusted_rand_score
-
+def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7): # REMOVE TODO not really in use
     years_to_adjs_dict = pickle.load(open("%s/data/nytimes_style_articles/curated_years_adjectives_dict.p"%DATA_PATH,"rb"))
     year_to_fashion_terms_list_dict = pickle.load(open("%s/data/year_to_fashion_terms_list_dict.p"%DATA_PATH,"rb"))
+
     all_years = []
     all_years_terms = []
     year_to_str_terms_dict = {}
@@ -255,13 +255,13 @@ def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
         print("Cluster %d:" % i),
         for ind in order_centroids[i, :10]:
             print(' %s' % terms[ind]),
-        print
 
     year_to_cluster_dict = {}
     cluster_to_years_dict = {}
     for year in year_to_str_terms_dict.keys():
         Y = vectorizer.transform([year_to_str_terms_dict[year]])
         predicted_cluster = model.predict(Y)[0]
+
         year_to_cluster_dict[year] = predicted_cluster
         if predicted_cluster not in cluster_to_years_dict:
             cluster_to_years_dict[predicted_cluster] = []
@@ -273,7 +273,85 @@ def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
     # TODO: maybe interesting to check which cluster each specific article gets put in
     # and whether or not it corresponds to the correct year
 
+def cluster_articles_and_years_based_on_fashion_terms(num_clusters=7):
+    df = pd.read_csv("%s/data/nytimes_style_articles/curated_tokenaged_parsed_only_articles_df.csv"%DATA_PATH)
+    fashion_terms_occurrences= df[["curated_matched_keywords"]].apply(list).values.tolist()
+    years_in_same_order = df[["year"]].values.tolist()
 
+    years_list = []
+    fashion_terms_string_list = []
+    year_to_total_articles_dict = {}
+    for i in range(0,len(years_in_same_order)):
+        terms = ' '.join(fashion_terms_occurrences[i][0].replace("'",'').strip('][').split(', '))
+        year = int(years_in_same_order[i][0])
+        years_list.append(year)
+        fashion_terms_string_list.append(terms)
+        if year not in year_to_total_articles_dict:
+            year_to_total_articles_dict[year] = 0
+        year_to_total_articles_dict[year] +=1
+    vectorizer = CountVectorizer(stop_words='english')
+    X = vectorizer.fit_transform(fashion_terms_string_list)
+    model = KMeans(n_clusters=num_clusters, init='k-means++', max_iter=100, n_init=1)
+    model.fit(X)
+
+    print("Top terms per cluster:")
+    order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+    terms = vectorizer.get_feature_names()
+    for i in range(num_clusters):
+        print("Cluster %d:" % i),
+        for ind in order_centroids[i, :10]:
+            print(' %s' % terms[ind]),
+
+    year_to_cluster_props_dict = {}
+    for i in range(0,len(years_in_same_order)):
+        terms = fashion_terms_string_list[i]
+        year = years_list[i]
+        Y = vectorizer.transform([terms])
+        cluster = model.predict(Y)[0]
+        if year not in year_to_cluster_props_dict:
+            year_to_cluster_props_dict[year] = {}
+        if cluster not in year_to_cluster_props_dict[year]:
+            year_to_cluster_props_dict[year][cluster] = 0
+        year_to_cluster_props_dict[year][cluster]+=1/year_to_total_articles_dict[year]
+    pickle.dump(year_to_cluster_props_dict,open("%s/data/year_to_cluster_props_dict.p"%DATA_PATH,"wb"))
+
+
+def get_ascending_list_of_popular_clusters(year_to_cluster_props_dict):
+    cluster_to_total_props_dict = {}
+    for year in year_to_cluster_props_dict.keys():
+        for cluster in year_to_cluster_props_dict[year].keys():
+            if cluster not in cluster_to_total_props_dict:
+                cluster_to_total_props_dict[cluster] = 0
+            cluster_to_total_props_dict += year_to_cluster_props_dict[year][prop]
+    return sorted(cluster_to_total_props_dict, key=cluster_to_total_props_dict.get)
+
+def make_react_codes_for_cluster_area_charts():
+    year_to_cluster_props_dict=pickle.load(open("%s/data/year_to_cluster_props_dict.p"%DATA_PATH,"rb"))
+    clusters_list = get_ascending_list_of_popular_clusters(year_to_cluster_props_dict)
+    years_sum_so_far_dict = {} #react does not stack itself, so manually stacking
+    my_str = "color_clustering_data:[ \n"
+    count = 1
+    for cluster in clusters_list:
+        my_str += "\t  {\"name\":\"Words Cluster %d\",\"data\": {\n"%count
+        count +=1
+        for year in range(1800,2020):
+            if year not in year_to_cluster_props_dict:
+                continue
+            current_prop = year_to_cluster_props_dict[year][cluster]
+            if year not in years_sum_so_far_dict:
+                 years_sum_so_far_dict[year] = 0
+            years_sum_so_far_dict[year] += current_prop
+            my_str += " '%d': %f ,"%(year,years_sum_so_far_dict[year])
+        my_str = my_str[:-1]+"\t}},\n"
+
+    my_str = my_str[:-2]+"],\n"
+    text_file = open("%s/data/react-codes/react_word_clustering_area_chart_codes.txt"%(DATA_PATH), "w")
+    text_file.write(my_str)
+    text_file.close()
+    print ("Done with Area Chart Word React codes")
+
+cluster_articles_and_years_based_on_fashion_terms()
+make_react_codes_for_cluster_area_charts()
 #make_cooccurence_matrix()
 #visualize_matrix()
 #save_deg_and_weighted_deg_centrality()
@@ -282,4 +360,4 @@ def cluster_years_based_on_fashion_terms_and_related_adjs(num_clusters=7):
 #make_adjs_cooccur_helper()
 #make_react_dictionary_for_what_adjs_other_cooccur_with_most()
 #make_react_word_cloud_data_for_adjs()
-cluster_years_based_on_fashion_terms_and_related_adjs()
+#cluster_years_based_on_fashion_terms_and_related_adjs()
