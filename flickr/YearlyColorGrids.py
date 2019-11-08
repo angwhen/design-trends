@@ -80,7 +80,6 @@ def get_all_colors_and_year_to_pixels_dict():
     return all_colors, year_to_pixels_dict
 
 def make_yearly_quantization_based_color_palettes(num_quantized_colors=20):
-    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     all_colors, year_to_pixels_dict = get_all_colors_and_year_to_pixels_dict()
 
     all_colors_array_sample = shuffle(np.array(all_colors), random_state=0)[:500000]
@@ -105,10 +104,9 @@ def make_yearly_quantization_based_color_palettes(num_quantized_colors=20):
     quantized_years_breakdown = QuantizedImageBreakdown(centroids,year_to_counts_of_each_color_in_image_dict)
     pickle.dump(quantized_years_breakdown,open("%s/data/quantized_years_breakdown_Q%d_hsv_including_monochrome.p"%(DATA_PATH,num_quantized_colors),"wb"))
 
-def sort_colors_lists(rgb_colors_list):
-    hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in rgb_colors_list]
-    rgb_colors_list = [x for _,x in sorted(zip(hue_colors_list,rgb_colors_list))]
-    return rgb_colors_list
+def sort_rgb_colors_lists(rgb_colors_list):
+    hue_colors_list = [colorsys.rgb_to_hsv(c[0]/255,c[1]/255,c[2]/255)[0] for c in rgb_colors_list]
+    return [x for _,x in sorted(zip(hue_colors_list,rgb_colors_list))]
 
 def get_hsv_color_from_hex(hex_color):
     hex_color = hex_color[1:]
@@ -132,7 +130,7 @@ def make_yearly_colors_list_for_react(num_colors=10,num_quantized_colors=20):
 
     my_str = "yearly_colors:["
     for curr_year in sorted(list(year_to_color_palettes_dict.keys())):
-        curr_colors =  sort_colors_lists(year_to_color_palettes_dict[curr_year])
+        curr_colors =  sort_rgb_colors_lists(year_to_color_palettes_dict[curr_year])
         my_str += "{year:%d, colors: %s},\n"%(curr_year,rgb_list_to_hex_list(curr_colors))
     my_str = my_str[:-2] + "],\n"
 
