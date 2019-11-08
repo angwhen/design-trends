@@ -290,7 +290,9 @@ def make_react_codes_for_cluster_area_charts():
     my_str = "color_clustering_data:[ \n"
     for cluster in clusters_list:
         my_str += "[\n"
-        for year in year_to_cluster_props_dict.keys():
+        for year in range(1800,2020):
+            if year not in year_to_cluster_props_dict:
+                continue
             current_prop = year_to_cluster_props_dict[year][cluster]
             if year not in years_sum_so_far_dict:
                  years_sum_so_far_dict[year] = 0
