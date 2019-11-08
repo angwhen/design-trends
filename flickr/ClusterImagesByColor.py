@@ -245,19 +245,30 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
         my_str = my_str[:-1]+"],\n"
     my_str = my_str[:-2]+"\n],\n"
 
-    text_file = open("%s/data/react-codes/react_color_clustering_page_codes_Q%d_K%d%s.txt"%(DATA_PATH,Q,K,hsv_add_str), "w")
+    text_file = open("%s/data/react-codes/react_color_clustering_page_codes_Q%d_K%d%s.txt"%(DATA_PATH,Q,K,hsv_add_str), "wb")
     text_file.write(my_str)
     text_file.close()
     print ("Done with React codes")
 
-def make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
+def make_dict_of_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
     hsv_add_str = ""
     if use_hsv:
         hsv_add_str = "_hsv"
     fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb"))
+    clusters_list = list(pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,hsv_add_str),"rb")).keys())
     year_to_fnums_dict = pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%(DATA_PATH),"rb"))
 
-    return {}
+    year_to_cluster_prop_dict = {}
+    for year in year_to_fnums_dict.keys():
+        fnums = year_to_fnums_dict[year]
+        year_to_cluster_prop_dict[year] = {}
+        for cluster in clusters_list:
+            year_to_cluster_prop_dict[year][cluster] = 0
+        for fnum in fnums:
+            cluster = fnum_to_cluster_dict[fnum]
+            year_to_cluster_prop_dict[year][cluster]+=1/len(fnums)
+    return year_to_cluster_prop_dict
+
 def get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False):
     hsv_add_str = ""
     if use_hsv:
@@ -270,13 +281,10 @@ def get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False):
 
 def make_react_codes_for_cluster_area_charts():
     print ("Starting React Codes for Cluster Area Charts")
-    year_to_cluster_props_dict = make_dict_of_most_year_to_cluster_prop(Q=5,K=7,use_hsv=True)
-    clusters_list = get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False)
+    year_to_cluster_props_dict = make_dict_of_year_to_cluster_prop(Q=5,K=7,use_hsv=True)
+    clusters_list = get_ordered_list_of_clusters(Q=5,K=7,use_hsv=True)
 
-    # loop through clusters, sorted by on average least popular to most popular
-    # for each cluster loop through year
-
-    years_sum_so_far_dict = {}
+    years_sum_so_far_dict = {} #react does not stack itself, so manually stacking
     my_str = "color_clustering_data:[ \n"
     for cluster in clusters_list:
         my_str += "[\n"
@@ -288,9 +296,13 @@ def make_react_codes_for_cluster_area_charts():
             my_str += "{ x: '%d', y: %f },\n"%(year,years_sum_so_far_dict[year])
         my_str = my_str[:-2]+"],\n"
     my_str = my_str[:-2]+"],\n"
-
+    text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes.txt"%(DATA_PATH), "wb")
+    text_file.write(my_str)
+    text_file.close()
+    print ("Done with Area Chart Color React codes")
 
 make_react_codes_for_cluster_area_charts()
+
 """use_hsv = True
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
 for num_clusters in [7]:
