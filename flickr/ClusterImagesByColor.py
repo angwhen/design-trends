@@ -23,7 +23,7 @@ def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
 
 #https://stackoverflow.com/questions/35113979/calculate-distance-between-colors-in-hsv-space
-def project_to_hsv_cone(p): #input out of 255
+def project_to_hsv_cone(p): #input out of 255, input should already be in hsv
     return (p[1]/255*p[2]/255*math.sin(p[0]/255*2*math.pi), p[1]/255*p[2]/255*math.cos(p[0]/255*2*math.pi), p[2]/255)
 
 def hsv_cone_coords_to_hsv(p): #returns out of 255
