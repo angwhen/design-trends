@@ -116,7 +116,7 @@ def get_hsv_color_from_hex(hex_color):
     hex_color = hex_color[1:]
     rgb_color = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
     hsv_color = colorsys.rgb_to_hsv(rgb_color[0]/255,rgb_color[1]/255,rgb_color[2]/255)[0]
-
+    return hsv_color 
 def get_ordered_string_from_hex_colors_proportions_dict(hex_colors_proportions_dict):
     my_tuples = []
     for hex_color in hex_colors_proportions_dict.keys():
@@ -153,5 +153,5 @@ def make_yearly_colors_list_for_react(num_colors=10,num_quantized_colors=20):
     print ("Done making yearly colors react codes")
 
 #make_yearly_color_palettes(num_colors=10)
-make_yearly_quantization_based_color_palettes()
+#make_yearly_quantization_based_color_palettes()
 make_yearly_colors_list_for_react(num_colors=10)
