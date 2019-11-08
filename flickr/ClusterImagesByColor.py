@@ -277,7 +277,7 @@ def get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False):
     tup_list = []
     for cluster in cluster_to_fnums_dict.keys():
         tup_list.append([cluster,len(cluster_to_fnums_dict[cluster])])
-    return [tup[0] for tup in sorted(tup_list, key = lamda x: x[1])]
+    return [tup[0] for tup in sorted(tup_list, key = lambda x: x[1])]
 
 def make_react_codes_for_cluster_area_charts():
     print ("Starting React Codes for Cluster Area Charts")
