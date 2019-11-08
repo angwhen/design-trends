@@ -79,7 +79,7 @@ def get_all_colors_and_year_to_pixels_dict():
     all_colors = []
     year_to_pixels_dict = {}
     for fnum in fnums_list:
-        all_pixels_curr = get_pixels_in_fnums([fnum])
+        all_pixels_curr = get_pixels_in_fnums([fnum],1)
         all_colors.extend(all_pixels_curr)
         if len(all_pixels_curr) != 0:
             year = fnum_to_year_dict[fnum]
