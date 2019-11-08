@@ -295,8 +295,8 @@ def make_react_codes_for_cluster_area_charts():
             if year not in years_sum_so_far_dict:
                  years_sum_so_far_dict[year] = 0
             years_sum_so_far_dict[year] += current_prop
-            my_str += "\t\t '%d': %f ,\n"%(year,years_sum_so_far_dict[year])
-        my_str = my_str[:-2]+"\t},\n"
+            my_str += "\t\t '%d': %f ,"%(year,years_sum_so_far_dict[year])
+        my_str = my_str[:-1]+"\t}},\n"
     my_str = my_str[:-2]+"],\n"
     text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes.txt"%(DATA_PATH), "w")
     text_file.write(my_str)
