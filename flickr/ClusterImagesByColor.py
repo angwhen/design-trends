@@ -260,16 +260,13 @@ def make_dict_of_year_to_cluster_prop(Q=5,K=7,use_hsv=False):
 
     year_to_cluster_prop_dict = {}
     for year in year_to_fnums_dict.keys():
-        fnums = year_to_fnums_dict[year]
-        total_elements = reduce(lambda a,b:a+b,[fnum for fnum in fnums if fnum in fnum_to_cluster_dict])
+        fnums = [fnum for fnum in year_to_fnums_dict[year] if fnum in fnum_to_cluster_dict]
         year_to_cluster_prop_dict[year] = {}
         for cluster in clusters_list:
             year_to_cluster_prop_dict[year][cluster] = 0
         for fnum in fnums:
-            if fnum not in  fnum_to_cluster_dict:
-                continue
             cluster = fnum_to_cluster_dict[fnum]
-            year_to_cluster_prop_dict[year][cluster]+=1/total_elements
+            year_to_cluster_prop_dict[year][cluster]+=1/len(fnums)
     return year_to_cluster_prop_dict
 
 def get_ordered_list_of_clusters(Q=5,K=7,use_hsv=False):
