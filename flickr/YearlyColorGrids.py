@@ -44,26 +44,21 @@ def get_pixels_in_fnums(fnums,sample_amount):
         people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
         if len(people_indices) == 0:
             continue
-
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
             print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
             continue
-
         sum_mask = masks[people_indices[0]]
         for ind in people_indices[1:]:
             sum_mask += masks[ind]
         my_pixels = im[sum_mask!=0]
         all_pixels.extend(shuffle(my_pixels, random_state=0)[:int(len(my_pixels)/sample_amount)])
-
     return shuffle(all_pixels,random_state=0)[:360000]
 
 def make_yearly_color_palettes(num_colors=10,sample_amount=5):
     year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
     year_to_color_palettes_dict = {}
     for year in year_to_fnums_dict.keys():
-        if year in year_to_color_palettes_dict:
-            continue
         year_pixels = get_pixels_in_fnums(year_to_fnums_dict[year],sample_amount)
         if len(year_pixels) == 0:
             print ("year %d has no valid pixels to use"%year)
@@ -75,17 +70,13 @@ def make_yearly_color_palettes(num_colors=10,sample_amount=5):
 
 def get_all_colors_and_year_to_pixels_dict():
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-    fnum_to_year_dict=pickle.load(open("%s/data/basics/fnum_to_year_dict.p"%DATA_PATH,"rb"))
+    year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
     all_colors = []
     year_to_pixels_dict = {}
-    for fnum in fnums_list:
-        all_pixels_curr = get_pixels_in_fnums([fnum],1)
+    for year in year_to_fnums_dict.keys():
+        all_pixels_curr = get_pixels_in_fnums(year_to_fnums_dict[year],1)
         all_colors.extend(all_pixels_curr)
-        if len(all_pixels_curr) != 0:
-            year = fnum_to_year_dict[fnum]
-            if year not in year_to_pixels_dict:
-                year_to_pixels_dict[year] = []
-            year_to_pixels_dict[year].extend(all_pixels_curr)
+        year_to_pixels_dict[year] = all_pixels_curr
     return all_colors, year_to_pixels_dict
 
 def make_yearly_quantization_based_color_palettes(num_quantized_colors=20):
