@@ -112,15 +112,15 @@ def sort_rgb_colors_lists(rgb_colors_list):
     hue_colors_list = [colorsys.rgb_to_hsv(c[0]/255,c[1]/255,c[2]/255)[0] for c in rgb_colors_list]
     return [x for _,x in sorted(zip(hue_colors_list,rgb_colors_list))]
 
-def get_hsv_color_from_hex(hex_color):
+def get_hue_color_from_hex(hex_color):
     hex_color = hex_color[1:]
     rgb_color = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-    hsv_color = colorsys.rgb_to_hsv(rgb_color[0]/255,rgb_color[1]/255,rgb_color[2]/255)[0]
-    return hsv_color 
+    return colorsys.rgb_to_hsv(rgb_color[0]/255,rgb_color[1]/255,rgb_color[2]/255)[0]
+
 def get_ordered_string_from_hex_colors_proportions_dict(hex_colors_proportions_dict):
     my_tuples = []
     for hex_color in hex_colors_proportions_dict.keys():
-        hue = get_hsv_color_from_hex(hex_color)[0]
+        hue = get_hue_color_from_hex(hex_color)
         my_tuples.append([hex_color,hue,hex_colors_proportions_dict[hex_color]])
     my_tuples = sorted(my_tuples,key=lambda x: x[1])
     my_str = "{"
