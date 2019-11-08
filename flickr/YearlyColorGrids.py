@@ -125,7 +125,7 @@ def get_ordered_string_from_hex_colors_proportions_dict(hex_colors_proportions_d
     my_tuples = sorted(my_tuples,key=lambda x: x[1])
     my_str = "{"
     for tup in my_tuples:
-        my_str += "%s:%s, "%(tup[0],tup[2])
+        my_str += "\'%s\':%s, "%(tup[0],tup[2])
     my_str = my_str[:-2]+"}"
     return my_str
 
