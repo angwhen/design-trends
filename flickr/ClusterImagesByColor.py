@@ -290,7 +290,7 @@ def make_react_codes_for_cluster_area_charts():
     for cluster in clusters_list:
         my_str += "\t  {\"name\":\"Color Cluster %d\",\"data\": {\n"%count
         count +=1
-        for year in range(1800,2020):
+        for year in range(1852,2020):
             if year not in year_to_cluster_props_dict:
                 continue
             current_prop = year_to_cluster_props_dict[year][cluster]

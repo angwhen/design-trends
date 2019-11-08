@@ -329,7 +329,7 @@ def make_react_codes_for_cluster_area_charts():
     year_to_cluster_props_dict=pickle.load(open("%s/data/year_to_cluster_props_dict.p"%DATA_PATH,"rb"))
     clusters_list = get_ascending_list_of_popular_clusters(year_to_cluster_props_dict)
     years_sum_so_far_dict = {} #react does not stack itself, so manually stacking
-    my_str = "color_clustering_data:[ \n"
+    my_str = "word_clustering_data:[ \n"
     count = 1
     for cluster in clusters_list:
         my_str += "\t  {\"name\":\"Words Cluster %d\",\"data\": {\n"%count
