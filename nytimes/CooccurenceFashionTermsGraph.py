@@ -322,7 +322,7 @@ def get_ascending_list_of_popular_clusters(year_to_cluster_props_dict):
         for cluster in year_to_cluster_props_dict[year].keys():
             if cluster not in cluster_to_total_props_dict:
                 cluster_to_total_props_dict[cluster] = 0
-            cluster_to_total_props_dict += year_to_cluster_props_dict[year][cluster]
+            cluster_to_total_props_dict[cluster] += year_to_cluster_props_dict[year][cluster]
     return sorted(cluster_to_total_props_dict, key=cluster_to_total_props_dict.get)
 
 def make_react_codes_for_cluster_area_charts():
