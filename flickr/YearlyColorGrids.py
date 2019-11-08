@@ -1,11 +1,10 @@
 from matplotlib import pyplot as plt
 import pandas as pd
-import os, re, pickle,math
+import numpy as np
+import os, re, pickle, math, cv2
 from ColorThiefModified import ColorThief
 import colorsys
 from collections import deque
-import numpy as np
-import cv2
 from sklearn.utils import shuffle
 import HSVHelpers
 
@@ -16,19 +15,23 @@ try:
 except:
     print ("data is right here")
 
+
+def rgb_list_to_hex_list(rgb_list):
+    return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
+
 class QuantizedImageBreakdown():
     def __init__(self,colors_definitions,year_to_counts_of_each_color_in_image_dict):
         self.colors_definitions = rgb_list_to_hex_list(colors_definitions)
         self.year_to_counts_of_each_color_in_image_dict = year_to_counts_of_each_color_in_image_dict
-    def get_fnums_to_hex_colors_proportions_dict(self):
-        fnums_to_hex_colors_proportions_dict = {}
-        for fnum in self.year_to_counts_of_each_color_in_image_dict.keys():
-            total_pixels = sum(self.year_to_counts_of_each_color_in_image_dict[fnum])
+    def get_year_to_hex_colors_proportions_dict(self):
+        year_to_hex_colors_proportions_dict = {}
+        for year in self.year_to_counts_of_each_color_in_image_dict.keys():
+            total_pixels = sum(self.year_to_counts_of_each_color_in_image_dict[year])
             hex_colors_proportions_dict = {}
             for i,color in enumerate(self.colors_definitions):
-                hex_colors_proportions_dict[color] = self.year_to_counts_of_each_color_in_image_dict[fnum][i]/total_pixels
-            fnums_to_hex_colors_proportions_dict[fnum] = hex_colors_proportions_dict
-        return fnums_to_hex_colors_proportions_dict
+                hex_colors_proportions_dict[color] = self.year_to_counts_of_each_color_in_image_dict[year][i]/total_pixels
+            year_to_hex_colors_proportions_dict[year] = hex_colors_proportions_dict
+        return year_to_hex_colors_proportions_dict
 
 def get_pixels_in_fnums(fnums,sample_amount):
     all_pixels = []
@@ -102,55 +105,54 @@ def make_yearly_quantization_based_color_palettes(num_quantized_colors=20):
             counts_of_each_color_in_image = [0]*num_quantized_colors
             for color_ind in list_of_colors:
                 counts_of_each_color_in_image[color_ind] +=1
-            year_to_counts_of_each_color_in_image_dict[fnum] = counts_of_each_color_in_image
+            year_to_counts_of_each_color_in_image_dict[year] = counts_of_each_color_in_image
 
     centroids = kmeans.cluster_centers_
-    if use_hsv:
-        centroids = [HSVHelpers.hsv_cone_coords_to_hsv(col) for col in centroids]
-        centroids = [colorsys.hsv_to_rgb(col[0]/255,col[1]/255,col[2]/255) for col in centroids]
-        centroids = [[col[0]*255,col[1]*255,col[2]*255] for col in centroids]
-    quantized_images_breakdown = QuantizedImageBreakdown(centroids,year_to_counts_of_each_color_in_image_dict)
-    pickle.dump(quantized_images_breakdown,open("%s/data/quantized_years_breakdown_Q%d_hsv_including_monochrome.p"%(DATA_PATH,num_quantized_colors),"wb"))
+    centroids = [HSVHelpers.hsv_cone_coords_to_hsv(col) for col in centroids]
+    centroids = [colorsys.hsv_to_rgb(col[0]/255,col[1]/255,col[2]/255) for col in centroids]
+    centroids = [[col[0]*255,col[1]*255,col[2]*255] for col in centroids]
+    quantized_years_breakdown = QuantizedImageBreakdown(centroids,year_to_counts_of_each_color_in_image_dict)
+    pickle.dump(quantized_years_breakdown,open("%s/data/quantized_years_breakdown_Q%d_hsv_including_monochrome.p"%(DATA_PATH,num_quantized_colors),"wb"))
 
-def sort_colors_lists(all_colors_list): #  sort list of lists of rgb colors by hue
-    new_all_colors_list = []
-    for rgb_colors_list in all_colors_list:
-        hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in rgb_colors_list]
-        rgb_colors_list = [x for _,x in sorted(zip(hue_colors_list,rgb_colors_list))]
-        if len(new_all_colors_list) == 0:
-            new_all_colors_list.append(rgb_colors_list)
-        else:
-            #rotate until rgb colors list matches the prev as best as possible
-            new_all_colors_list.append( rotate_until_most_contig(new_all_colors_list[len(new_all_colors_list)-1],rgb_colors_list))
-    return new_all_colors_list
+def sort_colors_lists(rgb_colors_list):
+    hue_colors_list = [colorsys.rgb_to_hsv(c[0],c[1],c[2])[0] for c in rgb_colors_list]
+    rgb_colors_list = [x for _,x in sorted(zip(hue_colors_list,rgb_colors_list))]
+    return rgb_colors_list
 
-def make_yearly_colors_list_for_react(num_colors=10):
+def get_hsv_color_from_hex(hex_color):
+    hex_color = hex_color[1:]
+    rgb_color = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    hsv_color = colorsys.rgb_to_hsv(rgb_color[0]/255,rgb_color[1]/255,rgb_color[2]/255)[0]
+
+def get_ordered_string_from_hex_colors_proportions_dict(hex_colors_proportions_dict):
+    my_tuples = []
+    for hex_color in hex_colors_proportions_dict.keys():
+        hue = get_hsv_color_from_hex(hex_color)[0]
+        my_tuples.append([hex_color,hue,hex_colors_proportions_dict[hex_color]])
+    my_tuples = sorted(my_tuples,key=lambda x: x[1])
+    my_str = "{"
+    for tup in my_tuples:
+        my_str += "%s:%s, "%(tup[0],tup[2])
+    my_str = my_str[:-2]+"}"
+    return my_str
+
+def make_yearly_colors_list_for_react(num_colors=10,num_quantized_colors=20):
     year_to_color_palettes_dict=pickle.load(open("%s/data/year_to_%d_color_palettes_dict.p"%(DATA_PATH,num_colors),"rb"))
 
     my_str = "yearly_colors:["
     for curr_year in sorted(list(year_to_color_palettes_dict.keys())):
-        curr_colors =  sort_colors_lists([year_to_color_palettes_dict[curr_year]])[0]
-        my_str += "{year:%d, colors: ["%curr_year
-        for i in range(0,len(curr_colors)):
-            c = curr_colors[i]
-            my_str+="'#%02x%02x%02x'," %(c[0],c[1],c[2])
-        my_str = my_str[:-1]
-        my_str += "]},\n"
-    my_str = my_str[:-2] + "],"
+        curr_colors =  sort_colors_lists(year_to_color_palettes_dict[curr_year])
+        my_str += "{year:%d, colors: %s},\n"%(curr_year,rgb_list_to_hex_list(curr_colors))
+    my_str = my_str[:-2] + "],\n"
 
-    quantized_images_breakdown = pickle.load(open("%s/data/quantized_images_breakdown_Q%d%s.p"%(DATA_PATH,Q,hsv_add_str),"rb"))
-    fnums_to_hex_colors_proportions_dict = quantized_images_breakdown.get_fnums_to_hex_colors_proportions_dict()
-    my_str += "quantized_colors: [\n"
-    for i in range(0, min_len):
-        my_str += "["
-        for k in range(0,num_clusters):
-            curr_fnum = cluster_to_fnums_dict[k][i]
-            if curr_fnum in fnums_to_hex_colors_proportions_dict:
-                my_str += "%s,"%fnums_to_hex_colors_proportions_dict[curr_fnum]
-            else:
-                my_str += "[],"
-        my_str = my_str[:-1]+"],\n"
-    my_str = my_str[:-2]+"\n],\n"
+    quantized_years_breakdown = pickle.load(open(open("%s/data/quantized_years_breakdown_Q%d_hsv_including_monochrome.p"%(DATA_PATH,num_quantized_colors),"rb"))
+    year_to_hex_colors_proportions_dict = quantized_years_breakdown.get_year_to_hex_colors_proportions_dict()
+    my_str += "yearly_quantized_colors: [\n"
+    for curr_year in range(1800,2020):
+        if curr_year not in year_to_hex_colors_proportions_dict:
+            continue
+        my_str += "{year:%d, colors: %s},\n"%(curr_year, get_ordered_string_from_hex_colors_proportions_dict(year_to_hex_colors_proportions_dict[curr_year]))
+    my_str = my_str[:-2] + "],\n"
 
     text_file = open("%s/data/react-codes/react_yearly_colors_for_colors_slides.txt"%DATA_PATH, "w")
     text_file.write(my_str)
@@ -158,4 +160,5 @@ def make_yearly_colors_list_for_react(num_colors=10):
     print ("Done making yearly colors react codes")
 
 #make_yearly_color_palettes(num_colors=10)
+make_yearly_quantization_based_color_palettes()
 make_yearly_colors_list_for_react(num_colors=10)
