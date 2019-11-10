@@ -33,6 +33,26 @@ def get_image_with_non_people_blacked_out(fnum):
     im[people_img == 0] = [0, 0, 0]
     return im
 
-im = get_image_with_non_people_blacked_out(5)
-plt.imshow(im)
-plt.show()
+def get_face_mask(fnum):#size of image, 0 where no face, 1 where is face
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    # Read the input image
+    img = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+    # Convert into grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+    print (type(faces))
+    print (faces)
+    # Draw rectangle around the faces
+    for (x, y, w, h) in faces:
+        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+    # Display the output
+    cv2.imshow('img', img)
+    cv2.waitKey()
+
+#https://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
+def get_skin_mask(fnum):
+    return ""
+
+#im = get_image_with_non_people_blacked_out(5)
+get_face_mask(5)

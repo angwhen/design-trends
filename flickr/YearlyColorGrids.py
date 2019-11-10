@@ -48,6 +48,7 @@ def get_pixels_in_fnums(fnums,sample_amount):
         if len(people_indices) == 0:
             continue
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum),cv2.COLOR_BGR2RGB)
+        print (im.shape)
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
             print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
             continue
