@@ -52,22 +52,14 @@ def get_pixels_in_fnums(fnums,sample_amount):
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
             print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
             continue
-        print ("image shape")
-        print (im.shape)
+
         sum_mask = masks[people_indices[0]]
         for ind in people_indices[1:]:
             sum_mask += masks[ind]
-        print ("sum mask shape")
-        print (sum_mask.shape)
+
         my_pixels = im[sum_mask!=0]
-        print ("my pixels shape")
-        print (my_pixels.shape)
-        if (len(my_pixels.shape)!=2):
-            print ("Something is wrong with my pixels for im %d"%fnum)
-            return ["trash stuff"]
         all_pixels.extend(shuffle(my_pixels, random_state=0)[:int(len(my_pixels)/sample_amount)])
-        print ("all pixels shape")
-        print (np.asarray(all_pixels).shape)
+
     return shuffle(all_pixels,random_state=0)[:360000]
 
 def make_yearly_color_palettes(num_colors=10,sample_amount=5):

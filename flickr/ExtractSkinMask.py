@@ -42,30 +42,35 @@ def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
     img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
     histograms = []
     for (x, y, w, h) in faces:
-        crop_face = img[y+int(h/5):y+4*int(h/5), x+int(w/5):x+4*int(w/5)]  # crop abit more tightly
-        crop_face = cv2.blur(crop_face,(int(w/4),int(h/4)))
-        histr = cv2.calcHist([crop_face],[0,1], mask=None, histSize=[80, 256], ranges=[0, 180, 0, 256] )
+        crop_face_before_blur = img[y+int(h/6):y+5*int(h/6), x+int(w/6):x+5*int(w/6)]  # crop abit more tightly
+        crop_face_blurred = cv2.blur(crop_face_before_blur,(int(w/4),int(h/4)))
+
+        face_features = crop_face_before_blur-crop_face_blurred
+        face_features = cv2.cvtColor(face_features,cv2.COLOR_HSV2BGR)
+
+        face_features_gray = cv2.cvtColor(face_features, cv2.COLOR_BGR2GRAY)
+        print (face_features_gray.shape)
+        new = np.ones([face_features.shape[0],face_features.shape[1]],dtype=np.uint8)
+        new[np.where(face_features_gray >50)] = 0
+
+        crop_face_temp = cv2.cvtColor(crop_face_before_blur,cv2.COLOR_HSV2BGR)
+        cv2.imshow("okay",cv2.bitwise_and(crop_face_temp,crop_face_temp, mask =new))
+        cv2.waitKey(0)
+
+        histr = cv2.calcHist([crop_face_blurred],[0,1], mask=new, histSize=[80, 256], ranges=[0, 180, 0, 256] )
         histograms.append(histr)
     return histograms
+
 #https://www.learnopencv.com/blob-detection-using-opencv-python-c/
-def remove_blobs(mask):
-    print ("Removing small blobs")
-    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum), cv2.IMREAD_GRAYSCALE)
+#https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
+def remove_small_blobs(mask):
+    from skimage import morphology
+    import skimage
+    small_piece = mask.shape[0]*mask.shape[1]/500
+    processed = morphology.remove_small_objects(mask.astype(bool), min_size=small_piece, connectivity=5).astype(np.uint8)
 
-    params = cv2.SimpleBlobDetector_Params()
-    detector = cv2.SimpleBlobDetector_create(params)
+    return processed
 
-
-    # Detect blobs.
-    keypoints = detector.detect(mask)
-    im=cv2.bitwise_not(im)
-    # Draw detected blobs as red circles.
-    # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-    im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-    # Show keypoints
-    cv2.imshow("Keypoints", im_with_keypoints)
-    cv2.waitKey(0)
 # 1) https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
 # 1) tends to get much more pixels than is actually skin
 # 2) #https://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
@@ -89,15 +94,19 @@ def get_skin_mask(fnum):
     return skin_mask
 
 
-
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms(154)
-fnum = 26 #5, 154
+fnum = 136#26 27,,5, 154
 skin_mask = get_skin_mask(fnum)
-remove_blobs(skin_mask)
+processed_skin_mask = remove_small_blobs(skin_mask)
 print (skin_mask.shape)
 print (skin_mask)
+
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 new_im =cv2.bitwise_and(im,im, mask = skin_mask)
 cv2.imshow("new image",new_im)
+cv2.waitKey(0)
+
+new_im =cv2.bitwise_and(im,im, mask = processed_skin_mask)
+cv2.imshow("new image 2",new_im)
 cv2.waitKey(0)
