@@ -22,6 +22,9 @@ except:
 def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
 
+def bgr_list_to_hex_list(bgr_list):
+    return ["#%02x%02x%02x"%(int(c[1]),int(c[1]),int(c[0])) for c in bgr_list]
+
 #https://stackoverflow.com/questions/35113979/calculate-distance-between-colors-in-hsv-space
 def project_to_hsv_cone(p): #input out of 255, input should already be in hsv
     return (p[1]/255*p[2]/255*math.sin(p[0]/255*2*math.pi), p[1]/255*p[2]/255*math.cos(p[0]/255*2*math.pi), p[2]/255)
@@ -226,7 +229,7 @@ def make_react_codes(Q = 5, K=7,use_hsv=False):
         for k in range(0,num_clusters):
             curr_fnum = cluster_to_fnums_dict[k][i]
             if curr_fnum in fnum_to_palettes_dict:
-                my_str += "%s,"%rgb_list_to_hex_list(fnum_to_palettes_dict[curr_fnum])
+                my_str += "%s,"%bgr_list_to_hex_list(fnum_to_palettes_dict[curr_fnum]) #TODO weird rn
             else:
                 my_str += "[],"
         my_str = my_str[:-1]+"],\n"
@@ -308,12 +311,12 @@ def make_react_codes_for_cluster_area_charts():
     text_file.close()
     print ("Done with Area Chart Color React codes")
 
-make_react_codes_for_cluster_area_charts()
+#make_react_codes_for_cluster_area_charts()
 
 use_hsv = True
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
 for num_clusters in [7]:
     for num_quantized_colors in [5,7,20]:
-        print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
-        make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict,use_hsv=use_hsv)
+        #print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
+        #make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict,use_hsv=use_hsv)
         make_react_codes(Q =num_quantized_colors,K=num_clusters,use_hsv=use_hsv)
