@@ -314,7 +314,7 @@ def make_react_codes_for_cluster_area_charts():
 #make_react_codes_for_cluster_area_charts()
 
 use_hsv = True
-all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
+#all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
 for num_clusters in [7]:
     for num_quantized_colors in [5,7,20]:
         #print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
