@@ -62,6 +62,8 @@ def get_pixels_in_file(fnum,every_few = 10,use_hsv=False):
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     if use_hsv:
         im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
+    else:
+        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
         print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
         return []
@@ -308,10 +310,10 @@ def make_react_codes_for_cluster_area_charts():
 
 make_react_codes_for_cluster_area_charts()
 
-"""use_hsv = True
+use_hsv = True
 all_colors, fnum_to_pixels_dict = get_all_colors_and_fnum_to_pixels_dict(use_hsv)
 for num_clusters in [7]:
     for num_quantized_colors in [5,7,20]:
         print ("working on Q=%d, K = %d"%(num_quantized_colors,num_clusters))
         make_clusters(num_quantized_colors =num_quantized_colors,num_clusters=num_clusters,all_colors=all_colors, fnum_to_pixels_dict=fnum_to_pixels_dict,use_hsv=use_hsv)
-        make_react_codes(Q =num_quantized_colors,K=num_clusters,use_hsv=use_hsv)"""
+        make_react_codes(Q =num_quantized_colors,K=num_clusters,use_hsv=use_hsv)
