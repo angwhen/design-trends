@@ -66,6 +66,7 @@ def make_yearly_color_palettes(num_colors=10,sample_amount=5):
         if len(year_pixels) == 0:
             print ("year %d has no valid pixels to use"%year)
             continue
+        print (np.array(year_pixels).shape)
         ct = ColorThief(year_pixels)
         color_list = ct.get_palette(color_count=num_colors)
         year_to_color_palettes_dict[year] = color_list
