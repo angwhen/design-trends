@@ -59,7 +59,7 @@ def get_pixels_in_fnums(fnums,sample_amount):
         print (my_pixels.shape)
         all_pixels.extend(shuffle(my_pixels, random_state=0)[:int(len(my_pixels)/sample_amount)])
         print ("all pixels shape")
-        print (all_pixels.shape)
+        print (np.asarray(all_pixels).shape)
     return shuffle(all_pixels,random_state=0)[:360000]
 
 def make_yearly_color_palettes(num_colors=10,sample_amount=5):
