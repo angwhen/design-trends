@@ -8,16 +8,14 @@ import numpy as np
 import cv2
 from sklearn.utils import shuffle
 
-DATA_PATH = ""
 try:
-    f=open("data_location.txt", "r")
-    DATA_PATH  = f.read().strip()
+    DATA_PATH  = open("data_location.txt", "r").read().strip()
 except:
-    print ("data is right here")
+    DATA_PATH = "."
 
 def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amount=1):
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
-    fnames_list = df[["file_name"]].values.tolist()
+    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
 
     try:
         palettes = pickle.load(open("%s/data/%s.p"%(DATA_PATH,output_fname),"rb"))
@@ -25,14 +23,12 @@ def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amoun
         palettes = {}
 
     count = 0
-    for fname in fnames_list:
-        fname_num = fname[0].split("/")[-1]
-        fname_num = (int) (fname_num.split(".jpg")[0])
-        if fname_num in palettes:
-            #print ("already done with %d"%fname_num)
+    for fnum in fnums:
+        if fnum in palettes:
+            #print ("already done with %d"%fnum)
             continue
         try:
-            res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fname_num),"rb"))
+            res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
         except:
             continue
         masks = res[1]
@@ -47,12 +43,12 @@ def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amoun
         if len(people_indices) == 0:
             continue
 
-        print (fname_num)
+        print (fnum)
         my_pixels = []
         inner_count = 0
-        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fname_num))
+        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum),cv2.COLOR_BGR2RGB)
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
-            print ("some dimensional problem with the mask and image for this one: %d"%fname_num)
+            print ("some dimensional problem with the mask and image for this one: %d"%fnum)
             continue
         for ind in people_indices:
             curr_mask =  masks[ind]
@@ -63,7 +59,7 @@ def make_color_palettes(num_colors=10,output_fname="color_palettes",sample_amoun
                     inner_count +=1
         ct = ColorThief(my_pixels)
         color_list = ct.get_palette(color_count=num_colors)
-        palettes[fname_num] = color_list
+        palettes[fnum] = color_list
 
         if count % 5 == 0: #save frequently to avoid having to rerun too often
             pickle.dump(palettes,open("%s/data/%s.p"%(DATA_PATH,output_fname),"wb"))
@@ -127,11 +123,11 @@ def make_colors_list_for_react():
     years_start_and_end = {}
     i = 0
     for el in years_list:
-        fname_num = int(el[0].split(".")[0].split("/")[-1])
+        fnum = int(el[0].split(".")[0].split("/")[-1])
         year = el[1]
-        if fname_num in palettes:
+        if fnum in palettes:
             used_years_list.append(year)
-            all_colors_list.append(palettes[fname_num])
+            all_colors_list.append(palettes[fnum])
             if year not in years_start_and_end:
                 years_start_and_end[year] = (i,i+1)
             else:
@@ -168,5 +164,5 @@ def make_colors_list_for_react():
     text_file.write(my_str)
     text_file.close()
 
-#make_color_palettes(num_colors=5,output_fname="5_color_fnum_to_palettes_dict")
-#make_colors_list_for_react()
+make_color_palettes(num_colors=5,output_fname="5_color_fnum_to_palettes_dict")
+make_colors_list_for_react()

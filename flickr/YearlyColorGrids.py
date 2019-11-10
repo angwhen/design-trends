@@ -47,7 +47,7 @@ def get_pixels_in_fnums(fnums,sample_amount):
         people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
         if len(people_indices) == 0:
             continue
-        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum),cv2.COLOR_BGR2RGB)
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
             print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
             continue
@@ -152,6 +152,6 @@ def make_yearly_colors_list_for_react(num_colors=10,num_quantized_colors=20):
     text_file.close()
     print ("Done making yearly colors react codes")
 
-#make_yearly_color_palettes(num_colors=10)
-#make_yearly_quantization_based_color_palettes()
+make_yearly_color_palettes(num_colors=10)
+make_yearly_quantization_based_color_palettes()
 make_yearly_colors_list_for_react(num_colors=10)
