@@ -38,7 +38,7 @@ def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     img = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # face cascade needs grayscale
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+    faces = face_cascade.detectMultiScale(gray, 1.1, 10)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
     histograms = []
     for (x, y, w, h) in faces:
@@ -51,7 +51,7 @@ def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
         face_features_gray = cv2.cvtColor(face_features, cv2.COLOR_BGR2GRAY)
         print (face_features_gray.shape)
         new = np.ones([face_features.shape[0],face_features.shape[1]],dtype=np.uint8)
-        new[np.where(face_features_gray >50)] = 0
+        new[np.where(face_features_gray >20)] = 0
 
         crop_face_temp = cv2.cvtColor(crop_face_before_blur,cv2.COLOR_HSV2BGR)
         cv2.imshow("okay",cv2.bitwise_and(crop_face_temp,crop_face_temp, mask =new))
@@ -68,7 +68,6 @@ def remove_small_blobs(mask):
     import skimage
     small_piece = mask.shape[0]*mask.shape[1]/500
     processed = morphology.remove_small_objects(mask.astype(bool), min_size=small_piece, connectivity=5).astype(np.uint8)
-
     return processed
 
 # 1) https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
@@ -91,22 +90,49 @@ def get_skin_mask(fnum):
         skin_mask += B
 
     skin_mask[skin_mask > 0] = 1
-    return skin_mask
+    return remove_small_blobs(skin_mask)
 
+#https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/
+def auto_canny(image, sigma=0.33):
+	# compute the median of the single channel pixel intensities
+	v = np.median(image)
+
+	# apply automatic Canny edge detection using the computed median
+	lower = int(max(0, (1.0 - sigma) * v))
+	upper = int(min(255, (1.0 + sigma) * v))
+	edged = cv2.Canny(image, lower, upper)
+
+	# return the edged image
+	return edged
+
+def get_smooth_areas_mask(fnum):
+    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+    textured_outlines = auto_canny(im,10)
+    kernel = np.ones((3,3), np.uint8)
+    textured_outlines = cv2.dilate(textured_outlines, kernel, iterations=1)
+    #cv2.imshow("okay",textured_outlines)
+    #cv2.waitKey(0)
+
+    textured_mask_starter = cv2.blur(textured_outlines,(10,10))
+    #cv2.imshow("idk",textured_mask_starter)
+    #cv2.waitKey(0)
+    textured_mask = np.ones([textured_mask_starter.shape[0],textured_mask_starter.shape[1]],dtype=np.uint8)
+    textured_mask[np.where(textured_mask_starter >80)] = 0
+
+    #cv2.imshow("okay",cv2.bitwise_and(im,im, mask =textured_mask))
+    #cv2.waitKey(0)
+
+    return textured_mask #mask with textured areas zeroed out
 
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms(154)
-fnum = 136#26 27,,5, 154
+fnum = 1649#14#1649 #26 27,,5, 154, 136
+get_smooth_areas_mask(fnum)
 skin_mask = get_skin_mask(fnum)
-processed_skin_mask = remove_small_blobs(skin_mask)
 print (skin_mask.shape)
 print (skin_mask)
 
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 new_im =cv2.bitwise_and(im,im, mask = skin_mask)
 cv2.imshow("new image",new_im)
-cv2.waitKey(0)
-
-new_im =cv2.bitwise_and(im,im, mask = processed_skin_mask)
-cv2.imshow("new image 2",new_im)
 cv2.waitKey(0)
