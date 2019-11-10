@@ -33,26 +33,46 @@ def get_image_with_non_people_blacked_out(fnum):
     im[people_img == 0] = [0, 0, 0]
     return im
 
-def get_face_mask(fnum):#size of image, 0 where no face, 1 where is face
+#https://towardsdatascience.com/face-detection-in-2-minutes-using-opencv-python-90f89d7c0f81
+def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    # Read the input image
     img = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-    # Convert into grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Detect faces
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # face cascade needs grayscale
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-    print (type(faces))
-    print (faces)
-    # Draw rectangle around the faces
+    #img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    histograms = []
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-    # Display the output
-    cv2.imshow('img', img)
-    cv2.waitKey()
+        crop_face = img[y+int(h/5):y+4*int(h/5), x+int(w/5):x+4*int(w/5)]  # crop abit more tightly
+        cv2.imshow("crop_face",crop_face)
+        cv2.waitKey(0)
+        crop_face = cv2.blur(crop_face,(int(w/4),int(h/4)))
+        cv2.imshow("crop_face",crop_face)
+        cv2.waitKey(0)
+        histr = cv2.calcHist([crop_face],[0,1], mask=None, histSize=[80, 256], ranges=[0, 180, 0, 256] )
+        histograms.append(histr)
+    return histograms
 
-#https://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
+# 1) https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
+# 1) tends to get much more pixels than is actually skin
+# 2) #https://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
+# 2) Using the zebra stuff from this for the histogram
+def convolve(B, r):
+    D = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(r,r))
+    cv2.filter2D(B, -1, D, B)
+    return B
 def get_skin_mask(fnum):
-    return ""
+    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum),cv2.COLOR_BGR2HSV)
+    histograms = get_face_histograms(fnum)
+    for histr in histograms:
+        B = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,180,0,256], scale=1)
+        B = convolve(B, r=5)
+        new_im =cv2.bitwise_and(im,im, mask = B)
+        cv2.imshow("new image",new_im)
+        cv2.waitKey(0)
+    return []
+
+
 
 #im = get_image_with_non_people_blacked_out(5)
-get_face_mask(5)
+#get_face_histograms(154)
+get_skin_mask(5)#154)

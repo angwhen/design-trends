@@ -48,7 +48,6 @@ def get_pixels_in_fnums(fnums,sample_amount):
         if len(people_indices) == 0:
             continue
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum),cv2.COLOR_BGR2RGB)
-        print (im.shape)
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
             print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
             continue
@@ -56,7 +55,11 @@ def get_pixels_in_fnums(fnums,sample_amount):
         for ind in people_indices[1:]:
             sum_mask += masks[ind]
         my_pixels = im[sum_mask!=0]
+        print ("my pixels shape")
+        print (my_pixels.shape)
         all_pixels.extend(shuffle(my_pixels, random_state=0)[:int(len(my_pixels)/sample_amount)])
+        print ("all pixels shape")
+        print (all_pixels.shape)
     return shuffle(all_pixels,random_state=0)[:360000]
 
 def make_yearly_color_palettes(num_colors=10,sample_amount=5):
