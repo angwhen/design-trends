@@ -75,4 +75,4 @@ def get_skin_mask(fnum):
 
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms(154)
-get_skin_mask(5)#154)
+get_skin_mask(26)#5)#154)
