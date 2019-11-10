@@ -51,6 +51,8 @@ def get_pixels_in_fnums(fnums,sample_amount):
         if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
             print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
             continue
+        print ("image shape")
+        print (im.shape)
         sum_mask = masks[people_indices[0]]
         for ind in people_indices[1:]:
             sum_mask += masks[ind]
