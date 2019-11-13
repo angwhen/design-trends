@@ -18,7 +18,7 @@ for fnum in fnums_list:
     print (fnum)
     if "%d.png"%fnum in finished_peopled_ims:
         continue
-    if not "%d.png"%fnum in finished_masked_ims:
+    if not "res_%d.png"%fnum in finished_masked_ims:
         continue
     try:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
