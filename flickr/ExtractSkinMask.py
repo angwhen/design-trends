@@ -53,7 +53,7 @@ def get_face_histograms_and_cutouts(fnum):#size of image, 0 where no face, 1 whe
         face_features = cv2.cvtColor(face_features,cv2.COLOR_HSV2BGR)
 
         face_features_gray = cv2.cvtColor(face_features, cv2.COLOR_BGR2GRAY)
-        print (face_features_gray.shape)
+        #print (face_features_gray.shape)
         new = np.ones([face_features.shape[0],face_features.shape[1]],dtype=np.uint8)
         new[np.where(face_features_gray >20)] = 0
 
@@ -91,7 +91,7 @@ def convolve(B, r):
 def get_skin_cutout(fnum):
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
-    print (im.shape)
+    #print (im.shape)
     skin_cutout = np.zeros((im.shape[0],im.shape[1]),dtype=np.uint8)
     histograms,faces_cutout = get_face_histograms_and_cutouts(fnum)
     if len(histograms) == 0:
@@ -142,9 +142,12 @@ def get_textured_mask(fnum):
 
 def save_skin_masks_and_deskinned_people_images():
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+    finished_fnums =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/"%(DATA_PATH)))
     for fnum in fnums_list:
-        skin_mask = get_skin_mask(fnum)
+        if fnum in finished_fnums:
+            continue
         print ("working on %d"%fnum)
+        skin_mask = get_skin_mask(fnum)
         if skin_mask is None:
             print ("no face...")
             continue

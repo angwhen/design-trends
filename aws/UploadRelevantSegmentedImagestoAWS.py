@@ -31,13 +31,16 @@ def contains_person(fnum):
             break
     return  hasPerson
 
-def upload_segmented_images_to_aws():
+def upload_segmented_images_to_aws(skinless=False):
     s3 = boto3.client('s3')
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     my_list = df[["url","year","file_name"]].values.tolist()
-    finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images/"%DATA_PATH))
+    skinless_str = ""
+    if skinless:
+        skinless_str = "_without_skin"
+    finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images%s/"%(DATA_PATH,skinless_str)))
     try:
-        already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums.p","rb"))
+        already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"rb"))
     except:
         already_uploaded = set([])
     for im in my_list:
@@ -46,37 +49,14 @@ def upload_segmented_images_to_aws():
 
         if contains_person(fnum) and not fnum in already_uploaded and "%d.png"%fnum in finished_peopled_ims:
             # want to change to get the person segmented only version
-            filename = "%s/data/images/mask_rcnn_results/people_seg_images/%d.png"%(DATA_PATH,fnum)
+            filename = "%s/data/images/mask_rcnn_results/people_seg_images%s/%d.png"%(DATA_PATH,skinless_str,fnum)
             bucket_name = 'design-trends-bucket'
-            objectname = "people_seg_results_%d.png"%fnum
+            objectname = "people_seg_results%s_%d.png"%(skiness_str,fnum)
             print (objectname)
 
             s3.upload_file(filename, bucket_name, objectname)
             already_uploaded.add(fnum)
-            pickle.dump(already_uploaded,open("people_segmented_images_uploaded_to_aws_fnums.p","wb")) # save freq in case stuff breaks
+            pickle.dump(already_uploaded,open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"wb")) # save freq in case stuff breaks
 
-def upload_skinless_people_images_to_aws():
-    s3 = boto3.client('s3')
-    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
-    my_list = df[["url","year","file_name"]].values.tolist()
-    finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/"%DATA_PATH))
-    try:
-        already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums.p","rb"))
-    except:
-        already_uploaded = set([])
-    for im in my_list:
-        fnum = im[2].split("/")[-1]
-        fnum = (int) (fnum.split(".jpg")[0])
-
-        if contains_person(fnum) and not fnum in already_uploaded and "%d.png"%fnum in finished_peopled_ims:
-            # want to change to get the person segmented only version
-            filename = "%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum)
-            bucket_name = 'design-trends-bucket'
-            objectname = "people_seg_results_%d.png"%fnum
-            print (objectname)
-
-            s3.upload_file(filename, bucket_name, objectname)
-            already_uploaded.add(fnum)
-            pickle.dump(already_uploaded,open("people_segmented_images_uploaded_to_aws_fnums.p","wb")) # save freq in case stuff breaks
 
 upload_segmented_images_to_aws()
