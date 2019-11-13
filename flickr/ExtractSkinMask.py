@@ -138,6 +138,9 @@ def get_textured_mask(fnum):
 
 def save_skin_masks_and_deskinned_people_images():
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+    for fnum in fnums_list:
+        skin_mask = get_skin_mask(fnum)
+        
     print ("Done")
 
 #im = get_image_with_non_people_blacked_out(5)

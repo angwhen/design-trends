@@ -2,14 +2,21 @@ import pandas as pd
 import pickle
 import os
 import boto3
-import os
+import csv
 
 # script to upload all segmented_images with proper date to aws
 try:
     DATA_PATH  = open("../flickr/data_location.txt", "r").read().strip()
 except:
     DATA_PATH = "../flickr"
-
+with open("credentials.csv") as csv_file:
+    csv_reader = csv.reader(csv_file,delimiter=",")
+    line_count = 0
+    for row in csv_reader:
+        if line_count == 1:
+            ACCESS_ID = row[2]
+            ACCESS_KEY = row[3]
+        line_count +=1
 def contains_person(fnum):
     mask_file_name ="%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum)
     if not os.path.exists(mask_file_name):
@@ -26,6 +33,9 @@ def contains_person(fnum):
 
 def upload_segmented_images_to_aws():
     s3 = boto3.client('s3')
+    s3 = boto3.resource('s3',
+         aws_access_key_id=ACCESS_ID,
+         aws_secret_access_key= ACCESS_KEY)
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     my_list = df[["url","year","file_name"]].values.tolist()
     finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images/"%DATA_PATH))
