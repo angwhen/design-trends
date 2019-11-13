@@ -19,7 +19,7 @@ for fnum in fnums_list:
     if "%d.png"%fnum in finished_peopled_ims:
         print ("%d already done"%fnum)
         continue
-    if not "res_%d.png"%fnum in finished_masked_ims:
+    if not "res_%d.p"%fnum in finished_masked_ims:
         print ("%d not found in finished masked images"%fnum)
         continue
     try:
