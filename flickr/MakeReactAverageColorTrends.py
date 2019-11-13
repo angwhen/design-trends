@@ -1,11 +1,9 @@
 from matplotlib import pyplot as plt
+from sklearn.utils import shuffle
 import pandas as pd
-import pickle
-import os
-import re
+import pickle, math, random, re, os
 import colorsys
 from collections import deque
-import math
 import numpy as np
 import cv2
 
@@ -167,3 +165,4 @@ my_str +=  make_current(rgb_colors_avg,my_type="hsv_val")
 text_file = open("%s/data/react-codes/react_colors_charts_for_trends.txt"%DATA_PATH, "w")
 text_file.write(my_str)
 text_file.close()
+print ("Done")
