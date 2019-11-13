@@ -59,7 +59,7 @@ def make_pickle_sums_and_counts():
             continue
 
         pixels_list_colors_sums = list(sum(np.array(np.array(pixels_list).tolist())))
-        print (pixels_list_colors_sums)
+        #print (pixels_list_colors_sums)
         if year in rgb_colors_sums:
             rgb_colors_sums[year] = [sum(x) for x in zip(rgb_colors_sums[year],pixels_list_colors_sums)]
             rgb_colors_counts[year] +=len(pixels_list)

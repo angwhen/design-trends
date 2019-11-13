@@ -4,13 +4,14 @@ import pandas as pd
 import numpy as np
 import pickle
 import os, cv2, math
+#from jeanCVModified import skinDetector
 
 try:
     DATA_PATH  = open("data_location.txt", "r").read().strip()
 except:
     DATA_PATH = "."
 
-def get_image_with_non_people_blacked_out(fnum):
+def get_people_cutout(fnum):
     try:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
@@ -30,8 +31,9 @@ def get_image_with_non_people_blacked_out(fnum):
     people_img = masks[people_indices[0]]
     for i in range(1,len(people_indices)):
         people_img += masks[people_indices[i]]
-    im[people_img == 0] = [0, 0, 0]
-    return im
+    #im[people_img == 0] = [0, 0, 0]
+    #return im
+    return people_img
 
 #https://towardsdatascience.com/face-detection-in-2-minutes-using-opencv-python-90f89d7c0f81
 def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
@@ -54,8 +56,6 @@ def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
         new[np.where(face_features_gray >20)] = 0
 
         crop_face_temp = cv2.cvtColor(crop_face_before_blur,cv2.COLOR_HSV2BGR)
-        cv2.imshow("okay",cv2.bitwise_and(crop_face_temp,crop_face_temp, mask =new))
-        cv2.waitKey(0)
 
         histr = cv2.calcHist([crop_face_blurred],[0,1], mask=new, histSize=[80, 256], ranges=[0, 180, 0, 256] )
         histograms.append(histr)
@@ -78,61 +78,63 @@ def convolve(B, r):
     D = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(r,r))
     cv2.filter2D(B, -1, D, B)
     return B
-def get_skin_mask(fnum):
+def get_skin_cutout(fnum):
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
     print (im.shape)
-    skin_mask = np.zeros((im.shape[0],im.shape[1]),dtype=np.uint8)
+    skin_cutout = np.zeros((im.shape[0],im.shape[1]),dtype=np.uint8)
     histograms = get_face_histograms(fnum)
     for histr in histograms:
         B = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,180,0,256], scale=1)
-        B = convolve(B, r=5)
-        skin_mask += B
+        B = convolve(B, r=2)
+        #print (B[100])
+        skin_cutout += B
 
-    skin_mask[skin_mask > 0] = 1
-    return remove_small_blobs(skin_mask)
+    skin_cutout[skin_cutout > 10] = 1
+    textured_mask = get_textured_mask(fnum)
+    skin_cutout  = cv2.bitwise_and(skin_cutout,skin_cutout, mask =textured_mask) #remove textured "skin"
+    return remove_small_blobs(skin_cutout)
+def get_skin_mask(fnum):
+    skin_cutout = get_skin_cutout(fnum)
+    return  1-skin_cutout
 
 #https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/
 def auto_canny(image, sigma=0.33):
 	# compute the median of the single channel pixel intensities
 	v = np.median(image)
-
 	# apply automatic Canny edge detection using the computed median
 	lower = int(max(0, (1.0 - sigma) * v))
 	upper = int(min(255, (1.0 + sigma) * v))
 	edged = cv2.Canny(image, lower, upper)
-
-	# return the edged image
 	return edged
 
-def get_smooth_areas_mask(fnum):
+def get_textured_mask(fnum):
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-    textured_outlines = auto_canny(im,10)
-    kernel = np.ones((3,3), np.uint8)
+    textured_outlines = auto_canny(im,0.01)
+    kernel = np.ones((2,2), np.uint8)
     textured_outlines = cv2.dilate(textured_outlines, kernel, iterations=1)
-    #cv2.imshow("okay",textured_outlines)
-    #cv2.waitKey(0)
+    cv2.imshow("okay",textured_outlines)
+    cv2.waitKey(0)
 
     textured_mask_starter = cv2.blur(textured_outlines,(10,10))
-    #cv2.imshow("idk",textured_mask_starter)
-    #cv2.waitKey(0)
     textured_mask = np.ones([textured_mask_starter.shape[0],textured_mask_starter.shape[1]],dtype=np.uint8)
-    textured_mask[np.where(textured_mask_starter >80)] = 0
-
-    #cv2.imshow("okay",cv2.bitwise_and(im,im, mask =textured_mask))
-    #cv2.waitKey(0)
+    textured_mask[np.where(textured_mask_starter >10)] = 0
 
     return textured_mask #mask with textured areas zeroed out
 
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms(154)
-fnum = 1649#14#1649 #26 27,,5, 154, 136
-get_smooth_areas_mask(fnum)
-skin_mask = get_skin_mask(fnum)
-print (skin_mask.shape)
-print (skin_mask)
+fnum = 14#136#1649#14#1649 #26 27,,5, 154, 136
+skin_cutout = get_skin_mask(fnum)
+people_cutout =  get_people_cutout(fnum)
 
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-new_im =cv2.bitwise_and(im,im, mask = skin_mask)
+new_im =cv2.bitwise_and(im,im, mask = people_cutout)
+new_im =cv2.bitwise_and(new_im,new_im, mask = skin_cutout)
 cv2.imshow("new image",new_im)
 cv2.waitKey(0)
+
+
+#image = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+#detector = skinDetector(image,get_people_cutout(fnum))
+#etector.find_skin()
