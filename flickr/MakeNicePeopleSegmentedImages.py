@@ -49,3 +49,5 @@ for fnum in fnums_list:
     im[circle_img == 0] = [0, 0, 0]
     im  = im + sub
     cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images/%d.png"%(DATA_PATH,fnum), im)
+
+print ("DONE")
