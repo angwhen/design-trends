@@ -45,7 +45,7 @@ def get_face_histograms_and_cutouts(fnum):#size of image, 0 where no face, 1 whe
     histograms = []
     faces_cutout = np.zeros([img.shape[0],img.shape[1]],dtype=np.uint8)
     for (x, y, w, h) in faces:
-        faces_cutout[y+int(h/6):y+5*int(h/6), x+int(w/6):x+5*int(w/6)][0:100] = 1
+        faces_cutout[y:y+h, x:x+w]= 1
         crop_face_before_blur = img[y+int(h/6):y+5*int(h/6), x+int(w/6):x+5*int(w/6)]  # crop abit more tightly
         crop_face_blurred = cv2.blur(crop_face_before_blur,(int(w/4),int(h/4)))
 
@@ -94,6 +94,8 @@ def get_skin_cutout(fnum):
     print (im.shape)
     skin_cutout = np.zeros((im.shape[0],im.shape[1]),dtype=np.uint8)
     histograms,faces_cutout = get_face_histograms_and_cutouts(fnum)
+    if len(histograms) == 0:
+        return None
     for histr in histograms:
         B = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,256,0,256], scale=1)
         B = convolve(B, r=5)
@@ -110,6 +112,8 @@ def get_skin_cutout(fnum):
     return remove_small_blobs(skin_cutout)
 def get_skin_mask(fnum):
     skin_cutout = get_skin_cutout(fnum)
+    if skin_cutout == None:
+        return None
     return  1-skin_cutout
 
 #https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/
@@ -140,12 +144,23 @@ def save_skin_masks_and_deskinned_people_images():
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     for fnum in fnums_list:
         skin_mask = get_skin_mask(fnum)
-        
+        print ("working on %d"%fnum)
+        if skin_mask == None:
+            print ("no face...")
+            continue
+        pickle.dump(skin_mask,open("%s/data/images/mask_rcnn_results/skin_masks/"%DATA_PATH,"wb"))
+        #save image with skin darked out
+        people_without_skin_cutout = cv2.bitwise_and(people_cutout,skin_mask)
+        sub = np.true_divide(im,5)
+        im = im - sub
+        im[people_without_skin_cutout == 0] = [0, 0, 0]
+        im  = im + sub
+        cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
     print ("Done")
 
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
-"""fnum = 1649#1649#136#1649#14#1649 #26 27,,5, 154, 136
+"""fnum = 127#1649#136#1649#14#1649 #26 27,,5, 154, 136
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 skin_mask = get_skin_mask(fnum)
 detector = skinDetector(im,get_people_cutout(fnum))
@@ -155,16 +170,24 @@ skin_mask_very_general = 1-skin_cutout_very_general #masks definitely note skin
 people_cutout =  get_people_cutout(fnum)
 
 
-cv2.imshow("orig image",im)
-cv2.waitKey(0)
+#cv2.imshow("orig image",im)
+#cv2.waitKey(0)
+people_without_skin_cutout = cv2.bitwise_and(people_cutout,skin_mask)
+sub = np.true_divide(im,5)
+im = im - sub
+im[people_without_skin_cutout == 0] = [0, 0, 0]
+im  = im + sub
+cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
+"""
+"""
 new_im =cv2.bitwise_and(im,im, mask = people_cutout)
 new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask)
 cv2.imshow("new image",new_im)
 cv2.waitKey(0)
 new_im =cv2.bitwise_and(im,im, mask = cv2.bitwise_and(skin_mask_very_general,people_cutout))
 cv2.imshow("new image2",new_im)
-cv2.waitKey(0)"""
-
+cv2.waitKey(0)
+"""
 
 """
 image = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
