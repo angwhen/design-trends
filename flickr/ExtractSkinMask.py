@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import os, cv2, math
-#from jeanCVModified import skinDetector
+from jeanCVModified import skinDetector
 
 try:
     DATA_PATH  = open("data_location.txt", "r").read().strip()
@@ -36,14 +36,16 @@ def get_people_cutout(fnum):
     return people_img
 
 #https://towardsdatascience.com/face-detection-in-2-minutes-using-opencv-python-90f89d7c0f81
-def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
+def get_face_histograms_and_cutouts(fnum):#size of image, 0 where no face, 1 where is face
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     img = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # face cascade needs grayscale
     faces = face_cascade.detectMultiScale(gray, 1.1, 10)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
     histograms = []
+    faces_cutout = np.zeros([img.shape[0],img.shape[1]],dtype=np.uint8)
     for (x, y, w, h) in faces:
+        faces_cutout[y+int(h/6):y+5*int(h/6), x+int(w/6):x+5*int(w/6)][0:100] = 1
         crop_face_before_blur = img[y+int(h/6):y+5*int(h/6), x+int(w/6):x+5*int(w/6)]  # crop abit more tightly
         crop_face_blurred = cv2.blur(crop_face_before_blur,(int(w/4),int(h/4)))
 
@@ -57,17 +59,25 @@ def get_face_histograms(fnum):#size of image, 0 where no face, 1 where is face
 
         crop_face_temp = cv2.cvtColor(crop_face_before_blur,cv2.COLOR_HSV2BGR)
 
-        histr = cv2.calcHist([crop_face_blurred],[0,1], mask=new, histSize=[80, 256], ranges=[0, 180, 0, 256] )
+        histr = cv2.calcHist([crop_face_blurred],[0,1], mask=new, histSize=[256, 256], ranges=[0, 256, 0, 256] )
         histograms.append(histr)
-    return histograms
+
+    return histograms,faces_cutout
+
+"""def mask_allowable_skin_colors():
+    lower_HSV_values = np.array([0, 40, 0], dtype = "uint8")
+    upper_HSV_values = np.array([25, 255, 255], dtype = "uint8")
+
+    lower_YCbCr_values = np.array((0, 138, 67), dtype = "uint8")
+    upper_YCbCr_values = np.array((255, 173, 133), dtype = "uint8")"""
 
 #https://www.learnopencv.com/blob-detection-using-opencv-python-c/
 #https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
 def remove_small_blobs(mask):
     from skimage import morphology
     import skimage
-    small_piece = mask.shape[0]*mask.shape[1]/500
-    processed = morphology.remove_small_objects(mask.astype(bool), min_size=small_piece, connectivity=5).astype(np.uint8)
+    small_piece = mask.shape[0]*mask.shape[1]/600
+    processed = morphology.remove_small_objects(mask.astype(bool), min_size=small_piece, connectivity=1).astype(np.uint8)
     return processed
 
 # 1) https://nalinc.github.io/blog/2018/skin-detection-python-opencv/
@@ -83,16 +93,20 @@ def get_skin_cutout(fnum):
     im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
     print (im.shape)
     skin_cutout = np.zeros((im.shape[0],im.shape[1]),dtype=np.uint8)
-    histograms = get_face_histograms(fnum)
+    histograms,faces_cutout = get_face_histograms_and_cutouts(fnum)
     for histr in histograms:
-        B = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,180,0,256], scale=1)
-        B = convolve(B, r=2)
+        B = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,256,0,256], scale=1)
+        B = convolve(B, r=5)
         #print (B[100])
         skin_cutout += B
 
     skin_cutout[skin_cutout > 10] = 1
     textured_mask = get_textured_mask(fnum)
-    skin_cutout  = cv2.bitwise_and(skin_cutout,skin_cutout, mask =textured_mask) #remove textured "skin"
+    #return faces_cutout
+    skin_cutout  = cv2.bitwise_and(skin_cutout,skin_cutout, mask =textured_mask) #removing overly textured stuff from what is considered skin
+    skin_cutout  += faces_cutout
+    skin_cutout[skin_cutout > 0] = 1
+    #return skin_cutout
     return remove_small_blobs(skin_cutout)
 def get_skin_mask(fnum):
     skin_cutout = get_skin_cutout(fnum)
@@ -113,28 +127,47 @@ def get_textured_mask(fnum):
     textured_outlines = auto_canny(im,0.01)
     kernel = np.ones((2,2), np.uint8)
     textured_outlines = cv2.dilate(textured_outlines, kernel, iterations=1)
-    cv2.imshow("okay",textured_outlines)
-    cv2.waitKey(0)
 
     textured_mask_starter = cv2.blur(textured_outlines,(10,10))
+    #cv2.imshow("okay",textured_mask_starter)
+    #cv2.waitKey(0)
     textured_mask = np.ones([textured_mask_starter.shape[0],textured_mask_starter.shape[1]],dtype=np.uint8)
     textured_mask[np.where(textured_mask_starter >10)] = 0
 
     return textured_mask #mask with textured areas zeroed out
 
+def save_skin_masks_and_deskinned_people_images():
+    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+    print ("Done")
+
 #im = get_image_with_non_people_blacked_out(5)
-#get_face_histograms(154)
-fnum = 14#136#1649#14#1649 #26 27,,5, 154, 136
-skin_cutout = get_skin_mask(fnum)
+#get_face_histograms_and_cutouts(154)
+"""fnum = 1649#1649#136#1649#14#1649 #26 27,,5, 154, 136
+im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+skin_mask = get_skin_mask(fnum)
+detector = skinDetector(im,get_people_cutout(fnum))
+skin_cutout_very_general = detector.find_skin()
+skin_cutout_very_general[skin_cutout_very_general>0]=1
+skin_mask_very_general = 1-skin_cutout_very_general #masks definitely note skin
 people_cutout =  get_people_cutout(fnum)
 
-im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+
+cv2.imshow("orig image",im)
+cv2.waitKey(0)
 new_im =cv2.bitwise_and(im,im, mask = people_cutout)
-new_im =cv2.bitwise_and(new_im,new_im, mask = skin_cutout)
+new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask)
 cv2.imshow("new image",new_im)
 cv2.waitKey(0)
+new_im =cv2.bitwise_and(im,im, mask = cv2.bitwise_and(skin_mask_very_general,people_cutout))
+cv2.imshow("new image2",new_im)
+cv2.waitKey(0)"""
 
 
-#image = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-#detector = skinDetector(image,get_people_cutout(fnum))
-#etector.find_skin()
+"""
+image = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+detector = skinDetector(image,get_people_cutout(fnum))
+skin_cutout = detector.find_skin()
+new_im =cv2.bitwise_and(image,image, mask = people_cutout)
+new_im =cv2.bitwise_and(new_im,new_im, mask = skin_cutout)
+cv2.imshow("new image2",new_im)
+cv2.waitKey(0)"""
