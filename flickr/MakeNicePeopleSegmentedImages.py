@@ -17,14 +17,16 @@ finished_masked_ims =set(os.listdir("%s/data/images/mask_rcnn_results/"%DATA_PAT
 for fnum in fnums_list:
     print (fnum)
     if "%d.png"%fnum in finished_peopled_ims:
+        print ("%d already done"%fnum)
         continue
     if not "res_%d.png"%fnum in finished_masked_ims:
+        print ("%d not found in finished masked images"%fnum)
         continue
     try:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
+        print ("no data for %d"%fnum)
         continue
-    print ("huh?")
     masks = res[1]
     ids = res[2]
 
