@@ -24,7 +24,7 @@ for fnum in fnums_list:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
         continue
-
+    print ("huh?")
     masks = res[1]
     ids = res[2]
 
