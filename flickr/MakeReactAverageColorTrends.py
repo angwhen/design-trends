@@ -9,42 +9,38 @@ import math
 import numpy as np
 import cv2
 
-# list of average H, S, V for each year to make react plot
+try:
+    DATA_PATH  = open("data_location.txt", "r").read().strip()
+except:
+    DATA_PATH = "."
 
-def get_pixels_in_file(fname_num):
+# list of average H, S, V for each year to make react plot
+def get_pixels_in_file(fnum,every_few = 10):
     try:
-        res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
+        res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
         return []
-    masks = res[1]
-    ids = res[2]
+    masks, ids = res[1], res[2]
 
-    people_indices = []
-    for i in range(0,masks.shape[0]): #the masks we have for people
-        if ids[i] == 0:
-            people_indices.append(i)
-
+    people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
     if len(people_indices) == 0:
         return []
-    im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
+
+    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
-        print ("some dimensional problem")
+        print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
         return []
 
-    print (fname_num)
-    my_pixels = []
-    inner_count = 0
-    for ind in people_indices:
-        curr_mask =  masks[ind]
-        for row in range(0,curr_mask.shape[0]):
-            for col in range(0,curr_mask.shape[1]):
-                if inner_count % 10 == 0: # dont save all pixels to save space
-                    my_pixels.append(im[row][col])
-                inner_count +=1
-    return my_pixels
+    sum_mask = masks[people_indices[0]]
+    for ind in people_indices[1:]:
+        sum_mask += masks[ind]
+    my_pixels = im[sum_mask!=0]
+    return shuffle(my_pixels, random_state=0)[:max(36000,int(len(my_pixels)/every_few))] #dont let any image return too many pixels
+
 
 def make_pickle_sums_and_counts():
-    df =  pd.read_csv("data/url_title_and_file_data.csv")
+    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     years_list = df[["file_name","year"]].values.tolist()
     years_list.sort(key=lambda x: x[1])
     rgb_colors_sums = {}
@@ -73,16 +69,16 @@ def make_pickle_sums_and_counts():
             rgb_colors_sums[year] = pixels_list_colors_sums
             rgb_colors_counts[year] =len(pixels_list)
 
-        if count % 5 == 0: #save frequently to avoid having to rerun too often
-            pickle.dump(rgb_colors_sums,open("data/years_to_rgb_colors_sums.p","wb"))
-            pickle.dump(rgb_colors_counts,open("data/years_to_rgb_colors_counts.p","wb"))
-            pickle.dump(done_fname_nums,open("data/years_done_fname_nums_for_colors_avgs.p","wb"))
-            print ("current part saved")
+        """if count % 5 == 0: #save frequently to avoid having to rerun too often
+            pickle.dump(rgb_colors_sums,open("%s/data/years_to_rgb_colors_sums.p"%DATA_PATH,"wb"))
+            pickle.dump(rgb_colors_counts,open("%s/data/years_to_rgb_colors_counts.p"%DATA_PATH,"wb"))
+            pickle.dump(done_fname_nums,open("%s/data/years_done_fname_nums_for_colors_avgs.p"%DATA_PATH,"wb"))
+            print ("current part saved")"""
         count +=1
         done_fname_nums.append(fname_num)
-    pickle.dump(rgb_colors_sums,open("data/years_to_rgb_colors_sums.p","wb"))
-    pickle.dump(rgb_colors_counts,open("data/years_to_rgb_colors_counts.p","wb"))
-    pickle.dump(done_fname_nums,open("data/years_done_fname_nums_for_colors_avgs.p","wb"))
+    pickle.dump(rgb_colors_sums,open("%s/data/years_to_rgb_colors_sums.p"%DATA_PATH,"wb"))
+    pickle.dump(rgb_colors_counts,open("%s/data/years_to_rgb_colors_counts.p"%DATA_PATH,"wb"))
+    pickle.dump(done_fname_nums,open("%s/data/years_done_fname_nums_for_colors_avgs.p"%DATA_PATH,"wb"))
 
 def make_current(rgb_colors_avg, my_type = "red"):
     my_str = ""
@@ -152,11 +148,11 @@ def make_current(rgb_colors_avg, my_type = "red"):
     return my_str
 
 
-#make_pickle_sums_and_counts()
+make_pickle_sums_and_counts()
 
 #open it and make charts
-rgb_colors_sums = pickle.load(open("data/years_to_rgb_colors_sums.p","rb")) # bigger people weighted more heavily
-rgb_colors_counts = pickle.load(open("data/years_to_rgb_colors_counts.p","rb"))
+rgb_colors_sums = pickle.load(open("%s/data/years_to_rgb_colors_sums.p"%DATA_PATH,"rb")) # bigger people weighted more heavily
+rgb_colors_counts = pickle.load(open("%s/data/years_to_rgb_colors_counts.p"%DATA_PATH,"rb"))
 rgb_colors_avg = {}
 for k in rgb_colors_sums:
     rgb_colors_avg[k] = [c/rgb_colors_counts[k] for c in rgb_colors_sums[k]]
@@ -168,6 +164,6 @@ my_str +=  make_current(rgb_colors_avg,my_type="blue")
 my_str +=  make_current(rgb_colors_avg,my_type="hsv_hue")
 my_str +=  make_current(rgb_colors_avg,my_type="hsv_sat")
 my_str +=  make_current(rgb_colors_avg,my_type="hsv_val")
-text_file = open("data/react_colors_charts_for_trends.txt", "w")
+text_file = open("%s/data/react-codes/react_colors_charts_for_trends.txt"%DATA_PATH, "w")
 text_file.write(my_str)
 text_file.close()
