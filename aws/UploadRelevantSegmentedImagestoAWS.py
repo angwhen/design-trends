@@ -33,9 +33,6 @@ def contains_person(fnum):
 
 def upload_segmented_images_to_aws():
     s3 = boto3.client('s3')
-    #s3 = boto3.resource('s3',
-    #     aws_access_key_id=ACCESS_ID,
-    #     aws_secret_access_key= ACCESS_KEY)
     df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
     my_list = df[["url","year","file_name"]].values.tolist()
     finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images/"%DATA_PATH))
@@ -50,6 +47,30 @@ def upload_segmented_images_to_aws():
         if contains_person(fnum) and not fnum in already_uploaded and "%d.png"%fnum in finished_peopled_ims:
             # want to change to get the person segmented only version
             filename = "%s/data/images/mask_rcnn_results/people_seg_images/%d.png"%(DATA_PATH,fnum)
+            bucket_name = 'design-trends-bucket'
+            objectname = "people_seg_results_%d.png"%fnum
+            print (objectname)
+
+            s3.upload_file(filename, bucket_name, objectname)
+            already_uploaded.add(fnum)
+            pickle.dump(already_uploaded,open("people_segmented_images_uploaded_to_aws_fnums.p","wb")) # save freq in case stuff breaks
+
+def upload_skinless_people_images_to_aws():
+    s3 = boto3.client('s3')
+    df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
+    my_list = df[["url","year","file_name"]].values.tolist()
+    finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/"%DATA_PATH))
+    try:
+        already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums.p","rb"))
+    except:
+        already_uploaded = set([])
+    for im in my_list:
+        fnum = im[2].split("/")[-1]
+        fnum = (int) (fnum.split(".jpg")[0])
+
+        if contains_person(fnum) and not fnum in already_uploaded and "%d.png"%fnum in finished_peopled_ims:
+            # want to change to get the person segmented only version
+            filename = "%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum)
             bucket_name = 'design-trends-bucket'
             objectname = "people_seg_results_%d.png"%fnum
             print (objectname)
