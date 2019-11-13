@@ -6,20 +6,22 @@ import pickle
 import os
 import cv2
 
-df =  pd.read_csv("data/url_title_and_file_data.csv")
-fnames_list = df[["file_name"]].values.tolist()
-finished_peopled_ims =set(os.listdir("data/images/mask_rcnn_results/people_seg_images/"))
-finished_masked_ims =set(os.listdir("data/images/mask_rcnn_results/"))
-for fname in fnames_list:
-    fname_num = fname[0].split("/")[-1]
-    fname_num = (int) (fname_num.split(".jpg")[0])
-    print (fname_num)
-    if "%d.png"%fname_num in finished_peopled_ims:
+try:
+    DATA_PATH  = open("data_location.txt", "r").read().strip()
+except:
+    DATA_PATH = "."
+
+fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images/"%DATA_PATH))
+finished_masked_ims =set(os.listdir("%s/data/images/mask_rcnn_results/"%DATA_PATH))
+for fnum in fnums_list:
+    print (fnum)
+    if "%d.png"%fnum in finished_peopled_ims:
         continue
-    if not "%d.png"%fname_num in finished_masked_ims:
+    if not "%d.png"%fnum in finished_masked_ims:
         continue
     try:
-        res = pickle.load(open("data/images/mask_rcnn_results/res_%d.p"%fname_num,"rb"))
+        res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
         continue
 
@@ -34,7 +36,7 @@ for fname in fnames_list:
     if len(people_indices) == 0:
         continue
 
-    im = cv2.imread("data/images/smaller_images/%d.jpg"%fname_num)
+    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
         print ("some dimensional problem with the mask and image for this one")
         continue
@@ -46,4 +48,4 @@ for fname in fnames_list:
     im = im - sub
     im[circle_img == 0] = [0, 0, 0]
     im  = im + sub
-    cv2.imwrite("data/images/mask_rcnn_results/people_seg_images/%d.png"%fname_num, im)
+    cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images/%d.png"%(DATA_PATH,fnum), im)
