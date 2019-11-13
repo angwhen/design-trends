@@ -112,7 +112,7 @@ def get_skin_cutout(fnum):
     return remove_small_blobs(skin_cutout)
 def get_skin_mask(fnum):
     skin_cutout = get_skin_cutout(fnum)
-    if skin_cutout == None:
+    if skin_cutout is None:
         return None
     return  1-skin_cutout
 
@@ -145,11 +145,14 @@ def save_skin_masks_and_deskinned_people_images():
     for fnum in fnums_list:
         skin_mask = get_skin_mask(fnum)
         print ("working on %d"%fnum)
-        if skin_mask == None:
+        if skin_mask is None:
             print ("no face...")
             continue
-        pickle.dump(skin_mask,open("%s/data/images/mask_rcnn_results/skin_masks/"%DATA_PATH,"wb"))
+        pickle.dump(skin_mask,open("%s/data/images/mask_rcnn_results/skin_masks/%d.png"%(DATA_PATH,fnum),"wb"))
+
         #save image with skin darked out
+        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+        people_cutout =  get_people_cutout(fnum)
         people_without_skin_cutout = cv2.bitwise_and(people_cutout,skin_mask)
         sub = np.true_divide(im,5)
         im = im - sub
@@ -158,6 +161,7 @@ def save_skin_masks_and_deskinned_people_images():
         cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
     print ("Done")
 
+save_skin_masks_and_deskinned_people_images()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
 """fnum = 127#1649#136#1649#14#1649 #26 27,,5, 154, 136
