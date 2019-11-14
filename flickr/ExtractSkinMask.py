@@ -151,11 +151,13 @@ def save_skin_masks_and_deskinned_people_images():
         if skin_mask is None:
             print ("no face...")
             continue
+        people_cutout =  get_people_cutout(fnum)
+        if people_cutout is None:
+            continue
         pickle.dump(skin_mask,open("%s/data/images/mask_rcnn_results/skin_masks/%d.png"%(DATA_PATH,fnum),"wb"))
 
         #save image with skin darked out
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-        people_cutout =  get_people_cutout(fnum)
         people_without_skin_cutout = cv2.bitwise_and(people_cutout,skin_mask)
         sub = np.true_divide(im,5)
         im = im - sub
