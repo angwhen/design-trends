@@ -14,7 +14,7 @@ def get_images_code_for_react_skinless():
     my_str = ""
     my_str += "  images: [\n"
     for fnum in fnums_list:
-        if not fnum in already_uploaded_skinless
+        if not fnum in already_uploaded_skinless:
             continue
 
         url = fnum_to_url_dict[fnum]
