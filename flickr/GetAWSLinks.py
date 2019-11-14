@@ -28,4 +28,4 @@ def get_images_code_for_react_skinless():
     text_file.write(my_str)
     text_file.close()
 
-get_images_code_for_react()
+get_images_code_for_react_skinless()
