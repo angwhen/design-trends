@@ -59,4 +59,4 @@ def upload_segmented_images_to_aws(skinless=False):
             pickle.dump(already_uploaded,open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"wb")) # save freq in case stuff breaks
 
 
-upload_segmented_images_to_aws()
+upload_segmented_images_to_aws(skinless=True)
