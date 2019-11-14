@@ -12,12 +12,10 @@ from collections import Counter
 from functools import reduce
 import colorsys
 
-DATA_PATH = "."
 try:
-    f=open("data_location.txt", "r")
-    DATA_PATH  = f.read().strip()
+    DATA_PATH  = open("data_location.txt", "r").read().strip()
 except:
-    print ("data is right here")
+    DATA_PATH = "."
 
 def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
