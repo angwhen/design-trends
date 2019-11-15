@@ -11,15 +11,15 @@ except:
 def save_predom_faces_fnums_list():
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    predom_faces_list = set([])
+    predom_faces_list = []
     for fnum in fnums_list:
         img = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # face cascade needs grayscale
         faces = face_cascade.detectMultiScale(gray, 1.1, 10)
         for (x, y, w, h) in faces:
-            if h > 0.75*img.shape[0] or  w > 0.75*img.shape[1]:
+            if h > 0.5*img.shape[0] or  w > 0.5*img.shape[1]:
                 print ("%d is too facey"%fnum)
-                predom_faces_list.add(fnum)
+                predom_faces_list.append(fnum)
                 break
     pickle.dump(predom_faces_list,open("%s/data/predom_faces_list.p"%(DATA_PATH),"wb"))
 
