@@ -52,7 +52,7 @@ def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_p
 
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     if (im.shape[0] != masks.shape[1] or im.shape[1] != masks.shape[2]):
-        print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
+        #print ("Dimensional problem on %d, image:%d, %d vs masks: %d, %d"%(fnum, im.shape[0],im.shape[1],masks.shape[1],masks.shape[2]))
         return []
 
     if color_rep == "hsv":
@@ -89,6 +89,7 @@ def get_pixels_dict_info_string(color_rep="rgb", remove_monochrome=False, remove
     return info_string
 
 def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+    print ("Getting years to pixels dict")
     info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
     try:
         return pickle.load(open("%s/data/saved_pixels/year_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
@@ -105,6 +106,7 @@ def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_pre
         return year_to_pixels_dict
 
 def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+    print ("Getting fnum to pixels dict and all colors")
     info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
     try:
         fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))

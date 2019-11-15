@@ -7,6 +7,7 @@ from time import time
 from collections import Counter
 from functools import reduce
 import pickle, math, random, cv2, colorsys
+import HSVHelpers
 
 
 def rgb_list_to_hex_list(rgb_list):
