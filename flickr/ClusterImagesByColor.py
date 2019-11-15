@@ -61,7 +61,7 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
     fnum_to_cluster_dict, cluster_to_fnums_dict,fnum_to_distance_to_cluster_dict = {}, {}, {}
     for i in range(0,len(fnums_in_order_list)):
         fnum_to_cluster_dict[fnums_in_order_list[i]] = clusters[i]
-        fnum_to_distance_to_cluster_dict[fnum] = numpy.linalg.norm(kmeans.cluster_centers_[i]-counts_of_each_color_in_image_list[i])
+        fnum_to_distance_to_cluster_dict[fnum] = np.linalg.norm(kmeans.cluster_centers_[i]-counts_of_each_color_in_image_list[i])
         if clusters[i] not in cluster_to_fnums_dict:
             cluster_to_fnums_dict[clusters[i]] = []
         cluster_to_fnums_dict[clusters[i]].append(fnums_in_order_list[i])
