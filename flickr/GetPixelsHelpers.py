@@ -42,17 +42,10 @@ def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_p
     global monochrome_list, list_of_predom_faces_fnums
 
     if remove_predom_faces:
-        if list_of_predom_faces_fnums is None:
-            import PredomFaceDetector
-            list_of_predom_faces_fnums = PredomFaceDetector.save_predom_faces_fnums_list()
         if fnum in list_of_predom_faces_fnums:
             return []
 
     if remove_monochrome:
-        if monochrome_list is None:
-            import MonochromeDetector
-            monochrome_list = MonochromeDetector.save_monochrome_fnums_list()
-            MonochromeDetector.make_react_code(method = "hsv")
         if fnum in monochrome_list:
             return []
     try:
