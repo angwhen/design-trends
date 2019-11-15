@@ -33,8 +33,6 @@ def get_skin_mask(fnum):
         return None
 
 def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
-    global monochrome_list, list_of_predom_faces_fnums
-
     if remove_predom_faces:
         if fnum in list_of_predom_faces_fnums:
             return []
@@ -121,7 +119,7 @@ def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=Fa
                 fnum_to_pixels_dict[fnum] = curr_pixels
                 all_colors.extend(curr_pixels)
         all_colors = shuffle(np.array(all_colors), random_state=0)[:3600000]
-        pickle.dump(year_to_pixels_dict,open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
+        pickle.dump(fnum_to_pixels_dict,open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
         pickle.dump(all_colors,open("%s/data/saved_pixels/all_colors%s.p"%(DATA_PATH,info_string),"wb"))
 
     return fnum_to_pixels_dict, all_colors
