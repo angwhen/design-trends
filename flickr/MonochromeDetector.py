@@ -35,7 +35,7 @@ def make_react_code_for_prop_monochrome_over_time(method = "hsv"):
     for fnum in monochrome_list:
         year = fnum_to_year_dict[fnum]
         if year not in year_to_monochrome_prop_dict:
-            year_to_monochrome_proptdict[year] = 0
+            year_to_monochrome_prop_dict[year] = 0
         year_to_monochrome_prop_dict[year] +=1/float(len(year_to_fnums_dict))
 
     my_str = "data:[["
