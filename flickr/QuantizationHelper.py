@@ -33,7 +33,7 @@ def quantize(Q,color_rep,all_colors_array_sample,fnum_to_pixels_dict):
     fnum_to_counts_of_each_color_in_image_dict= {}
     for fnum in fnum_to_pixels_dict:
         if color_rep == "hsv":
-            list_of_colors =  kmeans.predict(np.apply_along_axis(HSVHelpers.project_to_hsv_cone, 1, fnum_to_pixels_dict[fnum]))
+            list_of_colors =  kmeans.predict(np.apply_along_axis(HSVHelpers.project_hsv_to_hsv_cone, 1, fnum_to_pixels_dict[fnum]))
         else:
             list_of_colors =  kmeans.predict(fnum_to_pixels_dict[fnum])
         color_ind_to_count = Counter(list_of_colors)

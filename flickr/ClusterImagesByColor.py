@@ -29,7 +29,7 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
 
     all_colors_array_sample = np.array(all_colors)
     if color_rep == "hsv":
-        all_colors_array_sample = np.apply_along_axis(HSVHelpers.project_to_hsv_cone, 1, all_colors_array_sample)
+        all_colors_array_sample = np.apply_along_axis(HSVHelpers.project_hsv_to_hsv_cone, 1, all_colors_array_sample)
 
     """print ("Quantization")
     kmeans = KMeans(n_clusters=Q, max_iter=100,random_state=0).fit(all_colors_array_sample)
