@@ -16,15 +16,9 @@ try:
 except:
     DATA_PATH = "."
 
-try:
-    monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,"hsv"),"rb")))
-except:
-    monochrome_list = None
+monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,"hsv"),"rb")))
+list_of_predom_faces_fnums = set(pickle.load(open("%s/data/predom_faces_list.p"%(DATA_PATH),"rb")))
 
-try:
-    list_of_predom_faces_fnums = set(pickle.load(open("%s/data/predom_faces_list.p"%(DATA_PATH),"rb")))
-except:
-    list_of_predom_faces_fnums = None
 
 def get_people_cutout(masks,people_indices):
     sum_mask = masks[people_indices[0]]
