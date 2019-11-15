@@ -17,7 +17,8 @@ def save_predom_faces_fnums_list():
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # face cascade needs grayscale
         faces = face_cascade.detectMultiScale(gray, 1.1, 10)
         for (x, y, w, h) in faces:
-            if h > 0.75*img.shape[0] or  h > 0.75*img.shape[0]:
+            if h > 0.75*img.shape[0] or  w > 0.75*img.shape[1]:
+                print ("%d is too facey"%fnum)
                 predom_faces_list.add(fnum)
                 break
     pickle.dump(predom_faces_list,open("%s/data/predom_faces_list.p"%(DATA_PATH),"wb"))
