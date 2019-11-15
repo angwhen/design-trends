@@ -37,10 +37,10 @@ def make_react_code():
             my_str += "\t['%s', '%s'],\n"%(fnum_to_url_dict[predom_faces_list[i]],fnum_to_url_dict[non_facey_list[i]])
     my_str = my_str[:-2]+"]\n}\n"
 
-    text_file = open("%s/data/react-codes/react_predom_faces_list_stuff_%s.txt"%(DATA_PATH), "w")
+    text_file = open("%s/data/react-codes/react_predom_faces_list_stuff.txt"%(DATA_PATH), "w")
     text_file.write(my_str)
     text_file.close()
     print ("Done with React codes")
 
-save_predom_faces_fnums_list()
+#save_predom_faces_fnums_list()
 make_react_code()
