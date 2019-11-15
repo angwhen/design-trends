@@ -87,7 +87,7 @@ def yearly_grids(num_dom_colors=5, Q= 10, color_rep="hsv",remove_monochrome=True
     make_yearly_quantization_based_color_palettes(Q=Q,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
     make_yearly_dom_color_palettes(num_colors=num_dom_colors,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
     info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
-    make_yearly_colors_list_for_react(num_colors=num_dom_colors,num_quantized_colors=Q, info_str)
+    make_yearly_colors_list_for_react(num_colors=num_dom_colors,num_quantized_colors=Q,info_str=info_str)
 """
 make_yearly_dom_color_palettes(num_colors=10)
 make_yearly_quantization_based_color_palettes()
