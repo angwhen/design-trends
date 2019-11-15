@@ -54,8 +54,8 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
     pickle.dump(quantized_images_breakdown,open("%s/data/quantized_images_breakdown_Q%d%s.p"%(DATA_PATH,Q,info_str),"wb"))
 
     print ("Clustering on those counts per color labels")
-    fnums_in_order_list = list(fnum_to_counts_of_each_color_in_image_dict.keys())
-    counts_of_each_color_in_image_list = [fnum_to_counts_of_each_color_in_image_dict[fnum] for fnum in fnums_in_order_list]
+    fnums_in_order_list = list(quantized_images_breakdown.im_to_counts_of_each_color_in_image_dict.keys())
+    counts_of_each_color_in_image_list = [quantized_images_breakdown.im_to_counts_of_each_color_in_image_dict[fnum] for fnum in fnums_in_order_list]
     kmeans = KMeans(n_clusters=K,random_state=0).fit(counts_of_each_color_in_image_list)
     clusters = kmeans.predict(counts_of_each_color_in_image_list)
     fnum_to_cluster_dict, cluster_to_fnums_dict,fnum_to_distance_to_cluster_dict = {}, {}, {}
