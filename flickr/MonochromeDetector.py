@@ -30,12 +30,21 @@ def save_monochrome_fnums_list(method = "hsv"):
 def make_react_code_for_prop_monochrome_over_time(method = "hsv"):
     monochrome_list = pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,method),"rb"))
     year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
-    year_to_monochrome_count_dict = {}
+    fnum_to_year_dict=pickle.load(open("%s/data/basics/fnum_to_year_dict.p"%DATA_PATH,"rb"))
     year_to_monochrome_prop_dict = {}
-    for y in year_to_fnums_dict.keys():
+    for fnum in monochrome_list:
+        year = fnum_to_year_dict[fnum]
+        if year not in year_to_monochrome_prop_dict:
+            year_to_monochrome_proptdict[year] = 0
+        year_to_monochrome_prop_dict[year] +=1/float(len(year_to_fnums_dict))
 
     my_str = "data:[["
     for year in range(1800,2020):
+        if year not in year_to_fnums_dict:
+            continue
+        proportion = 0
+        if year in year_to_monochrome_prop_dict:
+            proportion = year_to_monochrome_prop_dict[year]
         my_str += "{ x: %d, y: %f },"%(year,proportion)
     my_str += "]]\n"
     text_file = open("%s/data/react-codes/react_monochrome_proportion_chart_%s.txt"%(DATA_PATH,method), "w")
@@ -64,3 +73,5 @@ def make_react_code(method = "hsv"):
     text_file.write(my_str)
     text_file.close()
     print ("Done with React codes")
+
+make_react_code_for_prop_monochrome_over_time(method = "hsv")
