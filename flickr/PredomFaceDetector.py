@@ -40,3 +40,6 @@ def make_react_code():
     text_file.write(my_str)
     text_file.close()
     print ("Done with React codes")
+    
+save_predom_faces_fnums_list()
+make_react_code()
