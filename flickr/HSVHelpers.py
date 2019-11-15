@@ -1,4 +1,4 @@
-import math
+import math, colorsys
 
 #https://stackoverflow.com/questions/35113979/calculate-distance-between-colors-in-hsv-space
 def project_hsv_to_hsv_cone(p): #input out of 255
@@ -26,5 +26,7 @@ def hsv_cone_coords_to_hsv(p): #returns out of 255
         hue = 0
     return (hue*255/(2*math.pi),sat*255,val*255)
 
-def get_hsv_color_from_hex(hex_color):
-    return [0,0,0]
+def hsv_cone_coords_to_rgb(p):
+    col = hsv_cone_coords_to_hsv(p)
+    col = colorsys.hsv_to_rgb(col[0]/255,col[1]/255,col[2]/255)
+    return [col[0]*255,col[1]*255,col[2]*255]

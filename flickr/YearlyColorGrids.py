@@ -18,7 +18,6 @@ try:
 except:
     print ("data is right here")
 
-
 def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
 
