@@ -131,7 +131,7 @@ def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=Fa
         for fnum in fnums_list:
             curr_pixels = get_pixels_in_file(fnum , color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
             if len(curr_pixels) != 0:
-                num_to_pixels_dict[fnum] = curr_pixels
+                fnum_to_pixels_dict[fnum] = curr_pixels
                 all_colors.extend(curr_pixels)
         all_colors = shuffle(np.array(all_colors), random_state=0)[:3600000]
         pickle.dump(year_to_pixels_dict,open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
