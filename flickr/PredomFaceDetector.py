@@ -17,7 +17,7 @@ def save_predom_faces_fnums_list():
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # face cascade needs grayscale
         faces = face_cascade.detectMultiScale(gray, 1.1, 10)
         for (x, y, w, h) in faces:
-            if h > 0.75*img.shape[0] || h > 0.75*img.shape[0]:
+            if h > 0.75*img.shape[0] or  h > 0.75*img.shape[0]:
                 predom_faces_list.add(fnum)
                 break
     pickle.dump(predom_faces_list,open("%s/data/predom_faces_list.p"%(DATA_PATH),"wb"))
@@ -40,6 +40,6 @@ def make_react_code():
     text_file.write(my_str)
     text_file.close()
     print ("Done with React codes")
-    
+
 save_predom_faces_fnums_list()
 make_react_code()
