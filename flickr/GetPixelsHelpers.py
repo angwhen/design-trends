@@ -72,9 +72,17 @@ def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_p
     return shuffle(my_pixels, random_state=0)
 
 def get_pixels_in_fnums(fnums, color_rep="rgb", remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+    try:
+        info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+        fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
+    except:
+        fnum_to_pixels_dict = {}
     all_pixels = []
     for fnum in fnums:
-        my_pixels = get_pixels_in_file(fnum, color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+        if fnum in fnum_to_pixels_dict:
+            my_pixels = fnum_to_pixels_dict[fnum]
+        else:
+            my_pixels = get_pixels_in_file(fnum, color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
         all_pixels.extend(my_pixels)
     return shuffle(all_pixels,random_state=0)[:360000]
 
