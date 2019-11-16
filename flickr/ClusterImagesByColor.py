@@ -31,24 +31,6 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
     if color_rep == "hsv":
         all_colors_array_sample = np.apply_along_axis(HSVHelpers.project_hsv_to_hsv_cone, 1, all_colors_array_sample)
 
-    """print ("Quantization")
-    kmeans = KMeans(n_clusters=Q, max_iter=100,random_state=0).fit(all_colors_array_sample)
-    # Quantize each image
-    fnum_to_counts_of_each_color_in_image_dict= {}
-    for fnum in fnum_to_pixels_dict:
-        if color_rep == "hsv":
-            list_of_colors =  kmeans.predict(np.apply_along_axis(HSVHelpers.project_to_hsv_cone, 1, fnum_to_pixels_dict[fnum]))
-        else:
-            list_of_colors =  kmeans.predict(fnum_to_pixels_dict[fnum])
-        color_ind_to_count = Counter(list_of_colors)
-        counts_of_each_color_in_image = [0]*Q
-        for color_ind in color_ind_to_count.keys():
-            counts_of_each_color_in_image[color_ind] = color_ind_to_count[color_ind]
-        fnum_to_counts_of_each_color_in_image_dict[fnum] = counts_of_each_color_in_image
-
-    centroids = kmeans.cluster_centers_
-    if color_rep == "hsv": #convert back to rgb for saving purposes
-        centroids = [HSVHelpers.hsv_cone_coords_to_rgb(col) for col in centroids]"""
     quantized_images_breakdown =  QuantizationHelper.quantize(Q,color_rep,all_colors_array_sample,fnum_to_pixels_dict)
     #QuantizedImageBreakdown(centroids,fnum_to_counts_of_each_color_in_image_dict)
     pickle.dump(quantized_images_breakdown,open("%s/data/quantized_images_breakdown_Q%d%s.p"%(DATA_PATH,Q,info_str),"wb"))
@@ -61,7 +43,7 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
     fnum_to_cluster_dict, cluster_to_fnums_dict,fnum_to_distance_to_cluster_dict = {}, {}, {}
     for i in range(0,len(fnums_in_order_list)):
         fnum_to_cluster_dict[fnums_in_order_list[i]] = clusters[i]
-        fnum_to_distance_to_cluster_dict[fnums_in_order_list[i]] = np.linalg.norm(kmeans.cluster_centers_[i]-counts_of_each_color_in_image_list[i])
+        fnum_to_distance_to_cluster_dict[fnums_in_order_list[i]] = np.linalg.norm(kmeans.cluster_centers_[clusters[i]]-counts_of_each_color_in_image_list[i])
         if clusters[i] not in cluster_to_fnums_dict:
             cluster_to_fnums_dict[clusters[i]] = []
         cluster_to_fnums_dict[clusters[i]].append(fnums_in_order_list[i])
