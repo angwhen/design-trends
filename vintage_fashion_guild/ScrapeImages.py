@@ -26,7 +26,7 @@ def save_images_to_flickr_location():
     decade_to_page_content_dict= pickle.load(open("%s/data/decade_to_page_content_dict.p"%DATA_PATH,"rb"))
 
     mypath = "%s/data/images/smaller_images/"%FLICKR_DATA_PATH
-    existing_images_nums = [int(f.split(".")[0]) for f in listdir(mypath) if isfile(join(mypath, f)) if f[-3:] == 'jpg']
+    existing_images_nums = [int(f.split(".")[0]) for f in listdir(mypath) if isfile(join(mypath, f)) if f[-3:] == 'jpg' and f != "sompic.jpg"]
     max_num = max(existing_images_nums)
     curr_num = max_num +10000 # plus a big number just to be safe
 
