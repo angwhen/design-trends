@@ -25,10 +25,10 @@ def save_decades_to_pages_dict():
 def save_images_to_flickr_location():
     decade_to_page_content_dict= pickle.load(open("%s/data/decade_to_page_content_dict.p"%DATA_PATH,"rb"))
 
-    mypath = "%s/data/images/"%FLICKR_DATA_PATH
+    mypath = "%s/data/smaller_images/"%FLICKR_DATA_PATH
     existing_images_nums = [int(f.split(".")[0]) for f in listdir(mypath) if isfile(join(mypath, f)) if f[-3:] == 'jpg']
     max_num = max(existing_images_nums)
-    curr_num = max_num +1
+    curr_num = max_num +10000 # plus a big number just to be safe
 
     df_list = [] #  image num, title, year, url
     all_fnums = []
@@ -84,7 +84,7 @@ def save_images_to_flickr_location():
     pickle.dump(fnum_to_year_dict,open("%s/data/vfg_fnum_to_year_dict.p"%DATA_PATH,"wb"))
     pickle.dump(fnum_to_url_dict,open("%s/data/vfg_fnum_to_url_dict.p"%DATA_PATH,"wb"))
 
-save_decades_to_pages_dict()
+ssave_decades_to_pages_dict()
 save_images_to_flickr_location()
 
 
