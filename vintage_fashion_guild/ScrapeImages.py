@@ -34,6 +34,7 @@ def save_images_to_flickr_location():
     all_fnums = []
     year_to_fnums_dict = {}
     fnum_to_year_dict = {}
+    fnum_to_url_dict = {}
     for decade in range(1810,1820,10):#2000,10):
         page_content = decade_to_page_content_dict[decade]
         soup = BeautifulSoup(page_content, 'html.parser')
@@ -65,6 +66,7 @@ def save_images_to_flickr_location():
                     year_to_fnums_dict[extracted_year] = []
                 year_to_fnums_dict[extracted_year].append(curr_num)
                 fnum_to_year_dict[curr_num] = extracted_year
+                fnum_to_url_dict[curr_num] = url
                 curr_num +=1
             except:
                 curr_num +=0
@@ -80,6 +82,7 @@ def save_images_to_flickr_location():
     pickle.dump(all_fnums,open("%s/data/vfg_fnums_list.p"%DATA_PATH,"wb"))
     pickle.dump(year_to_fnums_dict,open("%s/data/vfg_year_to_fnums_dict.p"%DATA_PATH,"wb"))
     pickle.dump(fnum_to_year_dict,open("%s/data/vfg_fnum_to_year_dict.p"%DATA_PATH,"wb"))
+    pickle.dump(fnum_to_url_dict,open("%s/data/vfg_fnum_to_url_dict.p"%DATA_PATH,"wb"))
 
 #save_decades_to_pages_dict()
 save_images_to_flickr_location()
@@ -88,9 +91,7 @@ save_images_to_flickr_location()
 # LATER:
 # run save smaller images, no code needs to be changed
 #rerun make basic dicts , run everythign else directly
-# save mask data using flickr code, add vfg fnums list to it
-
-# save monochrome together, need to load in additional fnums
-# change basics to add in fnums list
+# save mask data using flickr code
+# save monochrome together
 # rerun color trends too directly
 # make a double bar  chart showing how much data from each source (flickr vs vfg) on each year

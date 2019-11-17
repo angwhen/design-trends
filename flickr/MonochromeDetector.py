@@ -53,7 +53,7 @@ def make_react_code_for_prop_monochrome_over_time(method = "hsv"):
     print ("Done monochrome over time")
 
 def make_react_code(method = "hsv"):
-    fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
+    fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_url_dict.p"%DATA_PATH,"rb"))
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     if method == "hsv":
         monochrome_list = pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,method),"rb"))

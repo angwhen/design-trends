@@ -118,7 +118,7 @@ def make_clusters_react_codes(Q,K, color_rep="rgb",remove_monochrome=False, remo
     print ("Starting making Clustering React codes")
     info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
 
-    fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
+    fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_url_dict.p"%DATA_PATH,"rb"))
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
     fnum_to_distance_to_cluster_dict = pickle.load(open("%s/data/fnum_to_distance_to_cluster_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
     for i in range(0,K):

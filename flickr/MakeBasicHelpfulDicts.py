@@ -22,7 +22,14 @@ def make_fnum_to_flickr_url_dict(df):
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
     pickle.dump(fnum_to_url_dict,open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"wb"))
-
+    try:
+        vfg_fnum_to_url_dict = pickle.load(open("%s/data/vfg_fnum_to_url_dict.p"%VFG_DATA_PATH,"rb"))
+        for fnum in vfg_fnum_to_url_dict.keys():
+            fnum_to_url_dict[fnum]=url
+        pickle.dump(fnum_to_url_dict,open("%s/data/basics/fnum_to_url_dict.p"%DATA_PATH,"wb"))
+    except:
+        print ("do not have vintage fashion guild data yet")
+        
 def make_fnum_to_year_dict(df):
     years_list = df[["file_name","year"]].values.tolist()
     fnum_to_year_dict = {}
@@ -73,7 +80,7 @@ def make_fnums_list(df):
     pickle.dump(fnums_list,open("%s/data/basics/fnums_list.p"%DATA_PATH,"wb"))
 
 df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
-#make_fnum_to_flickr_url_dict(df)
+make_fnum_to_flickr_url_dict(df)
 make_fnum_to_year_dict(df)
 make_fnums_list(df)
 make_year_to_fnums_dict(df)
