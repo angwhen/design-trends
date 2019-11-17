@@ -74,4 +74,5 @@ def make_react_code(method = "hsv"):
     text_file.close()
     print ("Done with React codes")
 
+save_monochrome_fnums_list(method = "hsv")
 make_react_code_for_prop_monochrome_over_time(method = "hsv")

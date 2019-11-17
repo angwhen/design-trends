@@ -8,18 +8,10 @@ try:
     DATA_PATH  = open("data_location.txt", "r").read().strip()
 except:
     DATA_PATH = "."
-try:
-    VFG_DATA_PATH  = open("../vintage_fashion_guild/data_location.txt", "r").read().strip()
-except:
-    VFG_DATA_PATH = "../vintage_fashion_guild"
 
 SAVE_SPACE = True
 df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
 fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-try:
-    fnums_list.extend( pickle.load(open("%s/data/vfg_fnums_list.p"%VFG_DATA_PATH,"rb")) )
-except:
-    print ("do not have vintage fashion guild data yet")
 finished_ims =set(os.listdir("%s/data/images/mask_rcnn_results"%DATA_PATH))
 
 net = model_zoo.get_model('mask_rcnn_resnet50_v1b_coco', pretrained=True)
