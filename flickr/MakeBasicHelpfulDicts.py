@@ -37,7 +37,7 @@ def make_fnum_to_year_dict(df):
             fnum_to_year_dict[fnum] = vfg_fnum_to_year_dict[fnum]
     except:
         print ("do not have vintage fashion guild data yet")
-    pickle.dump(fnum_to_year_dict,open("%s/data/fnum_to_year_dict.p"%DATA_PATH,"wb"))
+    pickle.dump(fnum_to_year_dict,open("%s/data/basics/fnum_to_year_dict.p"%DATA_PATH,"wb"))
 
 def make_year_to_fnums_dict(df):
     years_list = df[["file_name","year"]].values.tolist()
