@@ -11,6 +11,7 @@ except:
     VFG_DATA_PATH = "../vintage_fashion_guild"
 
 def make_fnum_to_flickr_url_dict(df):
+    print ("making url dict")
     my_urls_list = df[["url","file_name"]].values.tolist()
     # Make filename num to url dict
     fnum_to_url_dict = {}
@@ -31,6 +32,7 @@ def make_fnum_to_flickr_url_dict(df):
         print ("do not have vintage fashion guild data yet")
 
 def make_fnum_to_year_dict(df):
+    print ("making fnum to year dict")
     years_list = df[["file_name","year"]].values.tolist()
     fnum_to_year_dict = {}
     for el in years_list:
@@ -47,6 +49,7 @@ def make_fnum_to_year_dict(df):
     pickle.dump(fnum_to_year_dict,open("%s/data/basics/fnum_to_year_dict.p"%DATA_PATH,"wb"))
 
 def make_year_to_fnums_dict(df):
+    print ("making year to fnums dict")
     years_list = df[["file_name","year"]].values.tolist()
     year_to_fnums_dict = {}
     for el in years_list:
@@ -66,6 +69,7 @@ def make_year_to_fnums_dict(df):
     pickle.dump(year_to_fnums_dict,open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"wb"))
 
 def make_fnums_list(df):
+    print ("making fnums list")
     my_list = df[["file_name"]].values.tolist()
     fnums_list = []
     for el in my_list:
