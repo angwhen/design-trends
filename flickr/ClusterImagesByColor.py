@@ -24,6 +24,13 @@ def bgr_list_to_hex_list(bgr_list):
 
 def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
     info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    try:
+        pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
+        make_react_codes_for_cluster_area_charts(Q,K,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+        make_clusters_react_codes(Q,K,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+        return
+    except:
+        print ("Not done yet")
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     fnum_to_pixels_dict,all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
 
@@ -103,7 +110,7 @@ def make_react_codes_for_cluster_area_charts(Q, K, color_rep="rgb",remove_monoch
     my_str = my_str[:-2]+"\n],\n"
 
     cluster_to_hex_colors_proportions_list = pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
-    new_cluster_to_hex_colors_proportions_list = {clusters_list.index(cluster):cluster_to_hex_colors_proportions_list[cluster] for cluster in cluster_to_hex_colors_proportions_list.keys()}
+    new_cluster_to_hex_colors_proportions_list = {clusters_list.index(cluster):cluster_to_hex_colors_proportions_list[cluster] for cluster in range(0,len(cluster_to_hex_colors_proportions_list))}
     my_str += "cluster_to_hex:  %s ,\n"%new_cluster_to_hex_colors_proportions_list
 
     text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes_Q%d_K%d%s.txt"%(DATA_PATH,info_str), "w")
