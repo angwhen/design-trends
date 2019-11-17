@@ -2,12 +2,10 @@ import pandas as pd
 import os
 from PIL import Image
 
-DATA_PATH = "."
 try:
-    f=open("data_location.txt", "r")
-    DATA_PATH  = f.read().strip()
+    DATA_PATH  = open("data_location.txt", "r").read().strip()
 except:
-    print ("data is right here")
+    DATA_PATH = "."
 
 #shorter size should be 600 px
 # but bigger side should be less than 1000px

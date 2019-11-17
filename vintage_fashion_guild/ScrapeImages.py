@@ -78,6 +78,7 @@ save_images_to_flickr_location()
 
 
 # LATER:
+# run save smaller images, no code needs to be changed
 # save mask data using flickr code, add vfg fnums list to it
 # save monochrome together, need to load in additional fnums
 # just add in usage of images to clustering and color charts automatically

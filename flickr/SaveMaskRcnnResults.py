@@ -4,28 +4,31 @@ import pandas as pd
 import pickle
 import os
 
-DATA_PATH = "."
 try:
-    f=open("data_location.txt", "r")
-    DATA_PATH  = f.read().strip()
+    DATA_PATH  = open("data_location.txt", "r").read().strip()
 except:
-    print ("data is right here")
+    DATA_PATH = "."
+try:
+    VFG_DATA_PATH  = open("../vintage_fashion_guild/data_location.txt", "r").read().strip()
+except:
+    VFG_DATA_PATH = "../vintage_fashion_guild"
 
 SAVE_SPACE = True
 df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
-fnames_list = df[["file_name"]].values.tolist()
+fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+try:
+    fnums_list.extend( pickle.load(open("%s/data/vfg_fnums_list.p"%VFG_DATA_PATH,"rb")) )
+except:
+    print ("do not have vintage fashion guild data yet")
 finished_ims =set(os.listdir("%s/data/images/mask_rcnn_results"%DATA_PATH))
 
 net = model_zoo.get_model('mask_rcnn_resnet50_v1b_coco', pretrained=True)
-
-for fname in fnames_list:
-    fname_num = fname[0].split("/")[-1]
-    fname_num = (int) (fname_num.split(".jpg")[0])
-    if "%d.png"%fname_num in finished_ims:
-        print ("finished with %d previously"%fname_num)
+for fnum in fnums_list:
+    if "%d.png"%fnum in finished_ims:
+        print ("finished with %d previously"%fnum)
         continue
-    print ("working on %d"%fname_num)
-    im_fname = "%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fname_num)
+    print ("working on %d"%fnum)
+    im_fname = "%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum)
     x, orig_img = data.transforms.presets.rcnn.load_test(im_fname)
     ids, scores, bboxes, masks = [xx[0].asnumpy() for xx in net(x)]
 
@@ -40,11 +43,11 @@ for fname in fnames_list:
         ax = fig.add_subplot(1, 1, 1)
         ax = utils.viz.plot_bbox(orig_img, bboxes, scores, ids,
                              class_names=net.classes, ax=ax)
-        plt.savefig("%s/data/images/mask_rcnn_results/%d.png"%(DATA_PATH,fname_num), bbox_inches = 'tight', pad_inches = 0)
+        plt.savefig("%s/data/images/mask_rcnn_results/%d.png"%(DATA_PATH,fnum), bbox_inches = 'tight', pad_inches = 0)
         plt.clf()
         plt.close(fig)
     if SAVE_SPACE:
         orig_img = [] #set it to empty, no need for it
         bboxes = []
     res = [orig_img, masks, ids, scores, bboxes]
-    pickle.dump(res,open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fname_num),"wb"))
+    pickle.dump(res,open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"wb"))
