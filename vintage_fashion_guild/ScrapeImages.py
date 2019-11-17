@@ -71,15 +71,15 @@ def save_images_to_flickr_location():
     df.to_csv("%s/data/vintage_fashion_guild_images_df.csv"%DATA_PATH)
     # save a dataframe of image numbers, year, and link here, save title
     # also save a list of all fnums
-    pickle.dump(all_fnums,open("%s/data/all_vfg_fnums_list.p"%DATA_PATH,"wb"))
+    pickle.dump(all_fnums,open("%s/data/vfg_fnums_list.p"%DATA_PATH,"wb"))
 
 #save_decades_to_pages_dict()
 save_images_to_flickr_location()
 
 
 # LATER:
-# save mask data using flickr code
-# save monochrome together
+# save mask data using flickr code, add vfg fnums list to it
+# save monochrome together, need to load in additional fnums
 # just add in usage of images to clustering and color charts automatically
-# rerun color trends too
+# rerun color trends too directly
 # make a double bar  chart showing how much data from each source (flickr vs vfg) on each year
