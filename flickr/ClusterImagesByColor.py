@@ -31,7 +31,6 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
         return
     except:
         print ("Not done yet")
-        return #TODO: remove after debugging
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
     fnum_to_pixels_dict,all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_monochrome , remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
 
