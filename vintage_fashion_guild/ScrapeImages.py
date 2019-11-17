@@ -84,7 +84,7 @@ def save_images_to_flickr_location():
     pickle.dump(fnum_to_year_dict,open("%s/data/vfg_fnum_to_year_dict.p"%DATA_PATH,"wb"))
     pickle.dump(fnum_to_url_dict,open("%s/data/vfg_fnum_to_url_dict.p"%DATA_PATH,"wb"))
 
-ssave_decades_to_pages_dict()
+#save_decades_to_pages_dict()
 save_images_to_flickr_location()
 
 
