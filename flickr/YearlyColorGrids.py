@@ -37,7 +37,7 @@ def make_yearly_quantization_based_color_palettes(Q=20,color_rep="hsv",remove_mo
     if color_rep == "hsv":
         all_colors_array_sample = np.apply_along_axis(HSVHelpers.project_hsv_to_hsv_cone, 1, all_colors_array_sample)
 
-    quantized_years_breakdown = QuantizationHelper.quantize(Q,color_rep,all_colors_array_sample,fnum_to_pixels_dict)
+    quantized_years_breakdown = QuantizationHelper.quantize(Q,color_rep,all_colors_array_sample,year_to_pixels_dict)
     pickle.dump(quantized_years_breakdown,open("%s/data/quantized_years_breakdown_Q%d%s.p"%(DATA_PATH,num_quantized_colors,info_str),"wb"))
 
 def sort_rgb_colors_lists(rgb_colors_list):
