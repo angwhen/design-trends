@@ -91,6 +91,7 @@ save_images_to_flickr_location()
 # LATER:
 # run save smaller images, no code needs to be changed
 #rerun make basic dicts , run everythign else directly
+# save smaller images
 # save mask data using flickr code
 # save monochrome together
 # rerun color trends too directly
