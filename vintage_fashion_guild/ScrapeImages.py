@@ -35,7 +35,7 @@ def save_images_to_flickr_location():
     year_to_fnums_dict = {}
     fnum_to_year_dict = {}
     fnum_to_url_dict = {}
-    for decade in range(1810,1820,10):#2000,10):
+    for decade in range(1800,2000,10):#2000,10):
         page_content = decade_to_page_content_dict[decade]
         soup = BeautifulSoup(page_content, 'html.parser')
         images_list = soup.findAll('img')
