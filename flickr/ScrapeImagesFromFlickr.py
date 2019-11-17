@@ -5,6 +5,7 @@ import re
 import urllib.request
 import pickle
 
+raise ValueError("need to fix this, to not overwrite vfg data")
 # save the images
 # and also a dataframe from url to image name
 def later_additions():
