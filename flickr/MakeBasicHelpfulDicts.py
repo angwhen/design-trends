@@ -60,10 +60,10 @@ def make_year_to_fnums_dict(df):
         year_to_fnums_dict[year].append(fnum)
     try:
         vfg_year_to_fnums_dict = pickle.load(open("%s/data/vfg_year_to_fnums_dict.p"%VFG_DATA_PATH,"rb"))
-        for year in vfg_fnum_to_year_dict.keys():
+        for year in vfg_year_to_fnums_dict .keys():
             if year not in year_to_fnums_dict:
-                year_to_fnums_dict[year] = vfg_fnum_to_year_dict[year]
-            year_to_fnums_dict[year].extend(vfg_fnum_to_year_dict[year])
+                year_to_fnums_dict[year] = vfg_year_to_fnums_dict [year]
+            year_to_fnums_dict[year].extend(vfg_year_to_fnums_dict[year])
     except:
         print ("do not have vintage fashion guild data yet")
     pickle.dump(year_to_fnums_dict,open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"wb"))
