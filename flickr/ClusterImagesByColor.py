@@ -32,7 +32,7 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
     except:
         print ("Not done yet")
     fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-    fnum_to_pixels_dict,all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    fnum_to_pixels_dict,all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_ , remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
 
     all_colors_array_sample = np.array(all_colors)
     if color_rep == "hsv":
@@ -113,7 +113,7 @@ def make_react_codes_for_cluster_area_charts(Q, K, color_rep="rgb",remove_monoch
     new_cluster_to_hex_colors_proportions_list = {clusters_list.index(cluster):cluster_to_hex_colors_proportions_list[cluster] for cluster in range(0,len(cluster_to_hex_colors_proportions_list))}
     my_str += "cluster_to_hex:  %s ,\n"%new_cluster_to_hex_colors_proportions_list
 
-    text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes_Q%d_K%d%s.txt"%(DATA_PATH,info_str), "w")
+    text_file = open("%s/data/react-codes/react_color_clustering_area_chart_codes_Q%d_K%d%s.txt"%(DATA_PATH,Q,K,info_str), "w")
     text_file.write(my_str)
     text_file.close()
     print ("Done with Area Chart Color React codes")
