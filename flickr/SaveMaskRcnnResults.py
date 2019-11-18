@@ -16,7 +16,7 @@ finished_ims =set(os.listdir("%s/data/images/mask_rcnn_results"%DATA_PATH))
 
 net = model_zoo.get_model('mask_rcnn_resnet50_v1b_coco', pretrained=True)
 for fnum in fnums_list:
-    if "%d.png"%fnum in finished_ims:
+    if "res_%d.p"%fnum in finished_ims:
         print ("finished with %d previously"%fnum)
         continue
     print ("working on %d"%fnum)
