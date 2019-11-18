@@ -43,6 +43,7 @@ def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_p
     try:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
+        print ("no such mask rcnn result for fnum %d"fnum)
         return []
 
     masks, ids = res[1], res[2]
