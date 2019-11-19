@@ -1,10 +1,11 @@
 from matplotlib import pyplot as plt
-from gluoncv import model_zoo, data, utils
+#from gluoncv import model_zoo, data, utils
 import pandas as pd
 import numpy as np
 import pickle
 import os, cv2, math
-from jeanCVModified import skinDetector
+#from jeanCVModified import skinDetector
+#import cv2
 
 try:
     DATA_PATH  = open("data_location.txt", "r").read().strip()
@@ -106,7 +107,7 @@ def get_skin_cutout(fnum):
     textured_mask = get_textured_mask(fnum)
     #return faces_cutout
     skin_cutout  = cv2.bitwise_and(skin_cutout,skin_cutout, mask =textured_mask) #removing overly textured stuff from what is considered skin
-    skin_cutout  += faces_cutout
+    #skin_cutout  += faces_cutout
     skin_cutout[skin_cutout > 0] = 1
     #return skin_cutout
     return remove_small_blobs(skin_cutout)
@@ -166,37 +167,90 @@ def save_skin_masks_and_deskinned_people_images():
         cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
     print ("Done")
 
-save_skin_masks_and_deskinned_people_images()
+def magic_wand(fnum, small_skin_mask):
+    #small_skin_cutout = 1- small_skin_mask
+    #im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+    im = cv2.imread("seagull.jpg") #https://stackoverflow.com/questions/16705721/opencv-floodfill-with-mask
+    from skimage.segmentation import flood, flood_fill
+    from skimage import data, filters
+    #checkers = data.checkerboard()
+    #print (checkers.dtype, checkers.shape)
+    cat = im #data.chelsea()
+    cat_sobel = filters.sobel(cat[..., 0])
+    cat_nose = flood(cat_sobel, (240, 265), tolerance=0.03)
+
+    fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
+
+    ax[0].imshow(cat)
+    ax[0].set_title('Original')
+    ax[0].axis('off')
+
+    ax[1].imshow(cat_sobel)
+    ax[1].set_title('Sobel filtered')
+    ax[1].axis('off')
+
+    ax[2].imshow(cat)
+    ax[2].imshow(cat_nose, cmap=plt.cm.gray, alpha=0.3)
+    ax[2].plot(265, 240, 'wo')  # seed point
+    ax[2].set_title('Nose segmented with `flood`')
+    ax[2].axis('off')
+
+    fig.tight_layout()
+    plt.show()
+
+    """h,w,chn = im.shape
+    seed = (int(w/2),int(h/2))
+
+    mask = np.zeros((h+2,w+2),np.uint8)
+    print (mask.shape, im.shape)
+    floodflags = 4
+    floodflags |= cv2.FLOODFILL_MASK_ONLY
+    floodflags |= (255 << 8)
+    #skin = cv2.bitwise_and(im, im, mask=mask)
+    num,im,mask,rect = cv2.floodFill(im, mask, seed,(255,0,0), (10,)*3, (10,)*3, floodflags)
+    im = mask.copy()
+    h,w = im.shape
+    seed = (int(w/2),int(h/2))
+
+    mask = np.zeros((h+2,w+2),np.uint8)
+    print (mask.shape, im.shape)
+    floodflags = 4
+    floodflags |= cv2.FLOODFILL_MASK_ONLY
+    floodflags |= (255 << 8)
+    #skin = cv2.bitwise_and(im, im, mask=mask)
+    num,im,mask,rect = cv2.floodFill(im, mask, seed,(255,0,0))#, floodflags)
+    print (mask.shape)
+    print (mask*255)
+    cv2.imshow("Foreground", mask*255)
+    cv2.waitKey(0)"""
+    return mask
+#save_skin_masks_and_deskinned_people_images()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
-"""fnum = 127#1649#136#1649#14#1649 #26 27,,5, 154, 136
+fnum = 154#136#1649#14#1649 #26 27,,5, 154, 136
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 skin_mask = get_skin_mask(fnum)
-detector = skinDetector(im,get_people_cutout(fnum))
-skin_cutout_very_general = detector.find_skin()
-skin_cutout_very_general[skin_cutout_very_general>0]=1
-skin_mask_very_general = 1-skin_cutout_very_general #masks definitely note skin
+#detector = skinDetector(im,get_people_cutout(fnum))
+#skin_cutout_very_general = detector.find_skin()
+#skin_cutout_very_general[skin_cutout_very_general>0]=1
+#skin_mask_very_general = 1-skin_cutout_very_general #masks definitely note skin
 people_cutout =  get_people_cutout(fnum)
 
-
-#cv2.imshow("orig image",im)
-#cv2.waitKey(0)
-people_without_skin_cutout = cv2.bitwise_and(people_cutout,skin_mask)
-sub = np.true_divide(im,5)
-im = im - sub
-im[people_without_skin_cutout == 0] = [0, 0, 0]
-im  = im + sub
-cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
-"""
+#grab cut doesnt seem to fit usage
+skin_mask2 = magic_wand(fnum, skin_mask)
 """
 new_im =cv2.bitwise_and(im,im, mask = people_cutout)
 new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask)
-cv2.imshow("new image",new_im)
-cv2.waitKey(0)
-new_im =cv2.bitwise_and(im,im, mask = cv2.bitwise_and(skin_mask_very_general,people_cutout))
+#cv2.imshow("new image1",new_im)
+#cv2.waitKey(0)
+new_im =cv2.bitwise_and(im,im, mask = people_cutout)
+new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask2)
 cv2.imshow("new image2",new_im)
 cv2.waitKey(0)
 """
+#new_im =cv2.bitwise_and(im,im, mask = cv2.bitwise_and(skin_mask_very_general,people_cutout))
+#cv2.imshow("new image2",new_im)
+#cv2.waitKey(0)
 
 """
 image = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
