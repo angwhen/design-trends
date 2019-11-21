@@ -169,17 +169,17 @@ def save_skin_masks_and_deskinned_people_images():
 
 def magic_wand(fnum, small_skin_mask):
     #small_skin_cutout = 1- small_skin_mask
-    #im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-    im = cv2.imread("seagull.jpg") #https://stackoverflow.com/questions/16705721/opencv-floodfill-with-mask
+    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+    #im = cv2.imread("seagull.jpg") #https://stackoverflow.com/questions/16705721/opencv-floodfill-with-mask
     from skimage.segmentation import flood, flood_fill
     from skimage import data, filters
     #checkers = data.checkerboard()
     #print (checkers.dtype, checkers.shape)
-    cat = im #data.chelsea()
-    cat_sobel = filters.sobel(cat[..., 0])
-    cat_nose = flood(cat_sobel, (240, 265), tolerance=0.03)
+    #cat = im #data.chelsea()
+    #cat_sobel = filters.sobel(cat[..., 0])
+    #cat_nose = flood(cat_sobel, (240, 265), tolerance=0.03)
 
-    fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
+    """fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
 
     ax[0].imshow(cat)
     ax[0].set_title('Original')
@@ -196,8 +196,66 @@ def magic_wand(fnum, small_skin_mask):
     ax[2].axis('off')
 
     fig.tight_layout()
-    plt.show()
+    plt.show()"""
+    kernel = np.ones((10,10), np.uint8)
+    small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
+    small_skin_mask = (1-small_skin_mask)*255
 
+    #cv2.imshow("skin_mask",small_skin_mask)
+    #cv2.waitKey(0)
+    """blobParams = cv2.SimpleBlobDetector_Params()
+    blobParams.filterByCircularity = False
+    blobParams.filterByConvexity = False
+    blobParams.filterByInertia = False
+    blobVer = (cv2.__version__).split('.')
+    if int(blobVer[0]) < 3:
+        detector = cv2.SimpleBlobDetector(blobParams)
+    else:
+        detector = cv2.SimpleBlobDetector_create(blobParams)
+    keypoints = detector.detect(small_skin_mask)#small_skin_mask) #list of blobs keypoints
+    # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+    im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)"""
+
+    # Show keypoints
+    #cv2.imshow("Keypoints", im_with_keypoints)
+    #cv2.waitKey(0)
+
+    connectivity = 4
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(small_skin_mask , connectivity , cv2.CV_32S)
+    print (centroids)
+    for i in range(0,centroids.shape[0]):
+        x = centroids[i][0]#keypoints[i].pt[0] #i is the index of the blob you want to get the position
+        y = centroids[i][1]#keypoints[i].pt[1]
+        im_sobel = filters.sobel(im[..., 0])+filters.sobel(im[...,1])+filters.sobel(im[..., 2])
+        #cv2.imshow("soebl",im_sobel)
+        #cv2.waitKey(0)
+        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.03)
+        print (im_skin_curr.shape)
+        print (type(im_skin_curr))
+        im_skin_curr = im_skin_curr.astype(np.uint8)
+        print (im_skin_curr.dtype)
+        cv2.imshow("new image2",im_skin_curr*255)
+        cv2.waitKey(0)
+
+        """"print (x,y)
+        fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
+
+        ax[0].imshow(im)
+        ax[0].set_title('Original')
+        ax[0].axis('off')
+
+        ax[1].imshow(im_sobel)
+        ax[1].set_title('Sobel filtered')
+        ax[1].axis('off')
+
+        ax[2].imshow(im)
+        ax[2].imshow(flood(im_sobel, (int(y),int(x)), tolerance=0.03),  alpha=0.9)
+        ax[2].plot(int(x),int(y), 'wo',color='blue')  # seed point
+        ax[2].set_title('Segmented skin part`')
+        ax[2].axis('off')
+
+        fig.tight_layout()
+        plt.show()"""
     """h,w,chn = im.shape
     seed = (int(w/2),int(h/2))
 
@@ -223,11 +281,11 @@ def magic_wand(fnum, small_skin_mask):
     print (mask*255)
     cv2.imshow("Foreground", mask*255)
     cv2.waitKey(0)"""
-    return mask
+    #return mask
 #save_skin_masks_and_deskinned_people_images()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
-fnum = 154#136#1649#14#1649 #26 27,,5, 154, 136
+fnum = 136#136#1649#14#1649 #26 27,,5, 154, 136
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 skin_mask = get_skin_mask(fnum)
 #detector = skinDetector(im,get_people_cutout(fnum))
