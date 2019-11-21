@@ -230,7 +230,7 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
         histr = cv2.calcHist([im_temp],[0,1], mask=1-im_skin_curr, histSize=[256, 256], ranges=[0, 256, 0, 256] )
         correl = cv2.compareHist(histr, hists_sum,cv2.HISTCMP_CORREL)
         print ("COMPARISON",correl)
-        if correl < 0.1:
+        if correl < 0.05:
             continue
         #how_correct_is_color = len(im_skin_curr[ cv2.bitwise_and(B,im_skin_curr) == 1])/len(im_skin_curr[im_skin_curr == 1])
         #if not Bsum == 0 and (how_correct_is_color) < 0.001: #if Bsum is 0 weird problem that idk why
