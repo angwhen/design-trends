@@ -17,8 +17,8 @@ def get_people_cutout(fnum):
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
         return None
-    masks, ids = res[1], res[2]
-
+    masks, ids,scores= res[1], res[2], res[3]
+    print (scores[:4])
     people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
     if len(people_indices) == 0:
         return None
@@ -31,9 +31,12 @@ def get_people_cutout(fnum):
 
     people_img = masks[people_indices[0]]
     for i in range(1,len(people_indices)):
+        if scores[i] < 0.75:
+            break
         people_img += masks[people_indices[i]]
     #im[people_img == 0] = [0, 0, 0]
     #return im
+    print (len(people_indices))
     return people_img
 
 #https://towardsdatascience.com/face-detection-in-2-minutes-using-opencv-python-90f89d7c0f81
@@ -64,13 +67,6 @@ def get_face_histograms_and_cutouts(fnum):#size of image, 0 where no face, 1 whe
         histograms.append(histr)
 
     return histograms,faces_cutout
-
-"""def mask_allowable_skin_colors():
-    lower_HSV_values = np.array([0, 40, 0], dtype = "uint8")
-    upper_HSV_values = np.array([25, 255, 255], dtype = "uint8")
-
-    lower_YCbCr_values = np.array((0, 138, 67), dtype = "uint8")
-    upper_YCbCr_values = np.array((255, 173, 133), dtype = "uint8")"""
 
 #https://www.learnopencv.com/blob-detection-using-opencv-python-c/
 #https://stackoverflow.com/questions/30369031/remove-spurious-small-islands-of-noise-in-an-image-python-opencv
@@ -177,14 +173,17 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
     #small_skin_mask  = small_skin_mask
     hists, _ = get_face_histograms_and_cutouts(fnum)
     B = None
+    hists_sum = None
     for histr in hists:
         Bcurr = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,256,0,256], scale=1)
         Bcurr = convolve(Bcurr, r=50)
         #print (Bcurr)
         if B is None:
             B = Bcurr
+            hists_sum = histr
         else:
             B = cv2.bitwise_or(B,Bcurr)
+            hists_sum += histr
         #cv2.imshow("Back",255*Bcurr)
         #cv2.waitKey(0)
     if B is None:
@@ -192,26 +191,24 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
     else:
         Bsum = len(B[B != 0])
 
-    #cv2.imshow("Back",255*B)
-    #cv2.waitKey(0)
-    #print (B)
     kernel = np.ones((10,10), np.uint8)
     small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
     small_skin_mask = (1-small_skin_mask)
-
-    #cv2.imshow("skin_mask",small_skin_mask*255)
+    #cv2.imshow("skin mask",small_skin_mask*255)
     #cv2.waitKey(0)
     if len(small_skin_mask[small_skin_mask==1]) == 0 or len(small_skin_mask[small_skin_mask==0]) == 0:
         print ("NO", fnum)
         return small_skin_mask_orig
-    # Show keypoints
-    #cv2.imshow("Keypoints", im_with_keypoints)
-    #cv2.waitKey(0)
+    cv2.imshow("skin",small_skin_mask*255)
+    cv2.waitKey(0)
 
     connectivity = 4
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(small_skin_mask , connectivity , cv2.CV_32S)
     print (centroids)
-    im_sobel = filters.sobel(im[..., 0])+filters.sobel(im[...,1])+filters.sobel(im[..., 2])
+    im_sobel = filters.sobel(im[..., 0]) + filters.sobel(im[..., 1]) + filters.sobel(im[..., 2])
+    print (im_sobel[0:])
+    kernel = np.ones((10,10), np.uint8)
+    im_sobel = cv2.dilate(im_sobel, kernel, iterations=1)
     skin_mask_total = None
     for i in range(0,centroids.shape[0]):
         x = int(centroids[i][0])#keypoints[i].pt[0] #i is the index of the blob you want to get the position
@@ -228,11 +225,18 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
         im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.05)
         im_skin_curr = im_skin_curr.astype(np.uint8)
 
-        # check if average B within the im_skin_curr mask is greater than 0.1
-        how_correct_is_color = len(im_skin_curr[ cv2.bitwise_and(B,im_skin_curr) == 1])/len(im_skin_curr[im_skin_curr == 1])
-        if not Bsum == 0 and (how_correct_is_color) < 0.01: #if Bsum is 0 weird problem that idk why
-            print ("bad color?", how_correct_is_color)
+        # color correctness
+        im_temp =  cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
+        histr = cv2.calcHist([im_temp],[0,1], mask=1-im_skin_curr, histSize=[256, 256], ranges=[0, 256, 0, 256] )
+        correl = cv2.compareHist(histr, hists_sum,cv2.HISTCMP_CORREL)
+        print ("COMPARISON",correl)
+        if correl < 0.1:
             continue
+        #how_correct_is_color = len(im_skin_curr[ cv2.bitwise_and(B,im_skin_curr) == 1])/len(im_skin_curr[im_skin_curr == 1])
+        #if not Bsum == 0 and (how_correct_is_color) < 0.001: #if Bsum is 0 weird problem that idk why
+        #    print ("bad color?", how_correct_is_color)
+        #    continue
+
 
         if skin_mask_total is None:
             skin_mask_total = im_skin_curr
@@ -267,7 +271,7 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
 fnum = 27#136#1649#14#1649 #26 27,,5, 154, 136
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 
-for fnum in [2]:#1,27,136,154,1649,
+for fnum in [2,1,27,136,154,1649]:
     skin_mask = get_skin_mask(fnum)
     people_cutout =  get_people_cutout(fnum)
     skin_mask2 = magic_wand(fnum, skin_mask,people_cutout)
