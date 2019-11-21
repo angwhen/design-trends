@@ -198,7 +198,7 @@ def magic_wand(fnum, small_skin_mask):
     fig.tight_layout()
     plt.show()"""
     kernel = np.ones((10,10), np.uint8)
-    small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
+    #small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
     small_skin_mask = (1-small_skin_mask)*255
 
     #cv2.imshow("skin_mask",small_skin_mask)
