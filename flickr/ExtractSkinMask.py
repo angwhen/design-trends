@@ -167,54 +167,30 @@ def save_skin_masks_and_deskinned_people_images():
         cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
     print ("Done")
 
-def magic_wand(fnum, small_skin_mask):
+def magic_wand(fnum, small_skin_mask,people_cutout):
     #small_skin_cutout = 1- small_skin_mask
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     #im = cv2.imread("seagull.jpg") #https://stackoverflow.com/questions/16705721/opencv-floodfill-with-mask
     from skimage.segmentation import flood, flood_fill
     from skimage import data, filters
-    #checkers = data.checkerboard()
-    #print (checkers.dtype, checkers.shape)
-    #cat = im #data.chelsea()
-    #cat_sobel = filters.sobel(cat[..., 0])
-    #cat_nose = flood(cat_sobel, (240, 265), tolerance=0.03)
-
-    """fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
-
-    ax[0].imshow(cat)
-    ax[0].set_title('Original')
-    ax[0].axis('off')
-
-    ax[1].imshow(cat_sobel)
-    ax[1].set_title('Sobel filtered')
-    ax[1].axis('off')
-
-    ax[2].imshow(cat)
-    ax[2].imshow(cat_nose, cmap=plt.cm.gray, alpha=0.3)
-    ax[2].plot(265, 240, 'wo')  # seed point
-    ax[2].set_title('Nose segmented with `flood`')
-    ax[2].axis('off')
-
-    fig.tight_layout()
-    plt.show()"""
-    kernel = np.ones((10,10), np.uint8)
-    #small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
-    small_skin_mask = (1-small_skin_mask)*255
-
-    #cv2.imshow("skin_mask",small_skin_mask)
+    small_skin_mask_orig = small_skin_mask
+    #small_skin_mask  = small_skin_mask
+    hists, _ = get_face_histograms_and_cutouts(fnum)
+    B = None
+    for histr in hists:
+        Bcurr = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,256,0,256], scale=1)
+        if B is None:
+            B = Bcurr
+        else:
+            B = cv2.bitwise_or(B,Bcurr)
+    #cv2.imshow("skin_mask",255*small_skin_mask)
     #cv2.waitKey(0)
-    """blobParams = cv2.SimpleBlobDetector_Params()
-    blobParams.filterByCircularity = False
-    blobParams.filterByConvexity = False
-    blobParams.filterByInertia = False
-    blobVer = (cv2.__version__).split('.')
-    if int(blobVer[0]) < 3:
-        detector = cv2.SimpleBlobDetector(blobParams)
-    else:
-        detector = cv2.SimpleBlobDetector_create(blobParams)
-    keypoints = detector.detect(small_skin_mask)#small_skin_mask) #list of blobs keypoints
-    # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-    im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)"""
+    kernel = np.ones((5,5), np.uint8)
+    small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
+    small_skin_mask = (small_skin_mask)
+
+    #cv2.imshow("skin_mask",small_skin_mask*255)
+    #cv2.waitKey(0)
 
     # Show keypoints
     #cv2.imshow("Keypoints", im_with_keypoints)
@@ -223,21 +199,37 @@ def magic_wand(fnum, small_skin_mask):
     connectivity = 4
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(small_skin_mask , connectivity , cv2.CV_32S)
     print (centroids)
+    im_sobel = filters.sobel(im[..., 0])+filters.sobel(im[...,1])+filters.sobel(im[..., 2])
+    skin_mask_total = None
     for i in range(0,centroids.shape[0]):
-        x = centroids[i][0]#keypoints[i].pt[0] #i is the index of the blob you want to get the position
-        y = centroids[i][1]#keypoints[i].pt[1]
-        im_sobel = filters.sobel(im[..., 0])+filters.sobel(im[...,1])+filters.sobel(im[..., 2])
+        x = int(centroids[i][0])#keypoints[i].pt[0] #i is the index of the blob you want to get the position
+        y = int(centroids[i][1])#keypoints[i].pt[1]
+        print (stats[i])
+        if small_skin_mask_orig[y][x] != 0:
+            print ( small_skin_mask_orig[y][x])
+            #continue
+
+        #print (B.dtype)
+        #B = convolve(B, r=5)
+        #cv2.imshow("backproj",B*255)
         #cv2.imshow("soebl",im_sobel)
         #cv2.waitKey(0)
-        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.03)
-        print (im_skin_curr.shape)
-        print (type(im_skin_curr))
-        im_skin_curr = im_skin_curr.astype(np.uint8)
-        print (im_skin_curr.dtype)
-        cv2.imshow("new image2",im_skin_curr*255)
-        cv2.waitKey(0)
 
-        """"print (x,y)
+
+        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.03)
+        im_skin_curr = im_skin_curr.astype(np.uint8)
+
+        # check if average B within the im_skin_curr mask is greater than 0.1
+        how_correct_is_color = len(im_skin_curr[ cv2.bitwise_and(B,im_skin_curr) == 1])/len(im_skin_curr[im_skin_curr == 1])
+        if (how_correct_is_color) < 0.005:
+            #continue
+            print ("bad color?", how_correct_is_color)
+        if skin_mask_total is None:
+            skin_mask_total = im_skin_curr
+        else:
+            skin_mask_total =cv2.bitwise_or(im_skin_curr,skin_mask_total)
+
+        print (x,y)
         fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
 
         ax[0].imshow(im)
@@ -249,39 +241,15 @@ def magic_wand(fnum, small_skin_mask):
         ax[1].axis('off')
 
         ax[2].imshow(im)
-        ax[2].imshow(flood(im_sobel, (int(y),int(x)), tolerance=0.03),  alpha=0.9)
+        ax[2].imshow(skin_mask_total,  alpha=0.9)
         ax[2].plot(int(x),int(y), 'wo',color='blue')  # seed point
         ax[2].set_title('Segmented skin part`')
         ax[2].axis('off')
 
         fig.tight_layout()
-        plt.show()"""
-    """h,w,chn = im.shape
-    seed = (int(w/2),int(h/2))
+        plt.show()
 
-    mask = np.zeros((h+2,w+2),np.uint8)
-    print (mask.shape, im.shape)
-    floodflags = 4
-    floodflags |= cv2.FLOODFILL_MASK_ONLY
-    floodflags |= (255 << 8)
-    #skin = cv2.bitwise_and(im, im, mask=mask)
-    num,im,mask,rect = cv2.floodFill(im, mask, seed,(255,0,0), (10,)*3, (10,)*3, floodflags)
-    im = mask.copy()
-    h,w = im.shape
-    seed = (int(w/2),int(h/2))
-
-    mask = np.zeros((h+2,w+2),np.uint8)
-    print (mask.shape, im.shape)
-    floodflags = 4
-    floodflags |= cv2.FLOODFILL_MASK_ONLY
-    floodflags |= (255 << 8)
-    #skin = cv2.bitwise_and(im, im, mask=mask)
-    num,im,mask,rect = cv2.floodFill(im, mask, seed,(255,0,0))#, floodflags)
-    print (mask.shape)
-    print (mask*255)
-    cv2.imshow("Foreground", mask*255)
-    cv2.waitKey(0)"""
-    #return mask
+    return cv2.bitwise_and(1-skin_mask_total,small_skin_mask_orig)
 #save_skin_masks_and_deskinned_people_images()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
@@ -295,17 +263,17 @@ skin_mask = get_skin_mask(fnum)
 people_cutout =  get_people_cutout(fnum)
 
 #grab cut doesnt seem to fit usage
-skin_mask2 = magic_wand(fnum, skin_mask)
-"""
+skin_mask2 = magic_wand(fnum, skin_mask,people_cutout)
+
 new_im =cv2.bitwise_and(im,im, mask = people_cutout)
 new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask)
-#cv2.imshow("new image1",new_im)
-#cv2.waitKey(0)
+cv2.imshow("new image1",new_im)
+cv2.waitKey(0)
 new_im =cv2.bitwise_and(im,im, mask = people_cutout)
 new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask2)
 cv2.imshow("new image2",new_im)
 cv2.waitKey(0)
-"""
+
 #new_im =cv2.bitwise_and(im,im, mask = cv2.bitwise_and(skin_mask_very_general,people_cutout))
 #cv2.imshow("new image2",new_im)
 #cv2.waitKey(0)
