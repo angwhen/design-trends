@@ -216,7 +216,7 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
         #cv2.waitKey(0)
 
 
-        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.03)
+        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.02)
         im_skin_curr = im_skin_curr.astype(np.uint8)
 
         # check if average B within the im_skin_curr mask is greater than 0.1
