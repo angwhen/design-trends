@@ -216,7 +216,10 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
     for i in range(0,centroids.shape[0]):
         x = int(centroids[i][0])#keypoints[i].pt[0] #i is the index of the blob you want to get the position
         y = int(centroids[i][1])#keypoints[i].pt[1]
-        print ("PEOPLE",people_cutout[y][x] == False)
+        if people_cutout[y][x] == False:
+            print ("PEOPLE",people_cutout[y][x] == False)
+            continue
+
         print (stats[i])
         if small_skin_mask_orig[y][x] != 0:
             print ( small_skin_mask_orig[y][x])
