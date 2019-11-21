@@ -179,19 +179,28 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
     B = None
     for histr in hists:
         Bcurr = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,256,0,256], scale=1)
+        Bcurr = convolve(Bcurr, r=5)
+        #print (Bcurr)
         if B is None:
             B = Bcurr
         else:
             B = cv2.bitwise_or(B,Bcurr)
-    #cv2.imshow("skin_mask",255*small_skin_mask)
+        #cv2.imshow("Back",255*Bcurr)
+        #cv2.waitKey(0)
+    Bsum = len(B[B != 0])
+
+    #cv2.imshow("Back",255*B)
     #cv2.waitKey(0)
+    #print (B)
     kernel = np.ones((5,5), np.uint8)
     small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
     small_skin_mask = (small_skin_mask)
 
     #cv2.imshow("skin_mask",small_skin_mask*255)
     #cv2.waitKey(0)
-
+    if len(small_skin_mask[small_skin_mask==1] == 0) or len(small_skin_mask[small_skin_mask==0] == 0):
+        print ("NO")
+        return small_skin_mask_orig
     # Show keypoints
     #cv2.imshow("Keypoints", im_with_keypoints)
     #cv2.waitKey(0)
@@ -209,27 +218,21 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
             print ( small_skin_mask_orig[y][x])
             #continue
 
-        #print (B.dtype)
-        #B = convolve(B, r=5)
-        #cv2.imshow("backproj",B*255)
-        #cv2.imshow("soebl",im_sobel)
-        #cv2.waitKey(0)
-
-
-        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.02)
+        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.05)
         im_skin_curr = im_skin_curr.astype(np.uint8)
 
         # check if average B within the im_skin_curr mask is greater than 0.1
         how_correct_is_color = len(im_skin_curr[ cv2.bitwise_and(B,im_skin_curr) == 1])/len(im_skin_curr[im_skin_curr == 1])
-        if (how_correct_is_color) < 0.005:
-            #continue
+        if not Bsum == 0 and (how_correct_is_color) < 0.005: #if Bsum is 0 weird problem that idk why
             print ("bad color?", how_correct_is_color)
+            continue
+
         if skin_mask_total is None:
             skin_mask_total = im_skin_curr
         else:
             skin_mask_total =cv2.bitwise_or(im_skin_curr,skin_mask_total)
 
-        print (x,y)
+        """print (x,y)
         fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
 
         ax[0].imshow(im)
@@ -247,32 +250,36 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
         ax[2].axis('off')
 
         fig.tight_layout()
-        plt.show()
-
+        plt.show()"""
+    if skin_mask_total is None:
+        return small_skin_mask_orig
     return cv2.bitwise_and(1-skin_mask_total,small_skin_mask_orig)
 #save_skin_masks_and_deskinned_people_images()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
-fnum = 136#136#1649#14#1649 #26 27,,5, 154, 136
+fnum = 27#136#1649#14#1649 #26 27,,5, 154, 136
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-skin_mask = get_skin_mask(fnum)
-#detector = skinDetector(im,get_people_cutout(fnum))
-#skin_cutout_very_general = detector.find_skin()
-#skin_cutout_very_general[skin_cutout_very_general>0]=1
-#skin_mask_very_general = 1-skin_cutout_very_general #masks definitely note skin
-people_cutout =  get_people_cutout(fnum)
 
-#grab cut doesnt seem to fit usage
-skin_mask2 = magic_wand(fnum, skin_mask,people_cutout)
+for fnum in [1,27,136,154,1649,2019]:
+    skin_mask = get_skin_mask(fnum)
+    #detector = skinDetector(im,get_people_cutout(fnum))
+    #skin_cutout_very_general = detector.find_skin()
+    #skin_cutout_very_general[skin_cutout_very_general>0]=1
+    #skin_mask_very_general = 1-skin_cutout_very_general #masks definitely note skin
+    people_cutout =  get_people_cutout(fnum)
 
-new_im =cv2.bitwise_and(im,im, mask = people_cutout)
-new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask)
-cv2.imshow("new image1",new_im)
-cv2.waitKey(0)
-new_im =cv2.bitwise_and(im,im, mask = people_cutout)
-new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask2)
-cv2.imshow("new image2",new_im)
-cv2.waitKey(0)
+    #grab cut doesnt seem to fit usage
+    skin_mask2 = magic_wand(fnum, skin_mask,people_cutout)
+    im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+
+    new_im =cv2.bitwise_and(im,im, mask = people_cutout)
+    new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask)
+    cv2.imshow("new image1",new_im)
+    cv2.waitKey(0)
+    new_im =cv2.bitwise_and(im,im, mask = people_cutout)
+    new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask2)
+    cv2.imshow("new image2",new_im)
+    cv2.waitKey(0)
 
 #new_im =cv2.bitwise_and(im,im, mask = cv2.bitwise_and(skin_mask_very_general,people_cutout))
 #cv2.imshow("new image2",new_im)
