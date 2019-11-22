@@ -20,7 +20,6 @@ def get_people_cutout(fnum):
     except:
         return None
     masks, ids,scores= res[1], res[2], res[3]
-    print (scores[:4])
     people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
     if len(people_indices) == 0:
         return None
@@ -34,7 +33,7 @@ def get_people_cutout(fnum):
     people_img = masks[people_indices[0]]
     for i in range(1,len(people_indices)):
         if scores[i] < 0.75:
-            break
+            break #dont use the unsure if faces guys
         people_img += masks[people_indices[i]]
     #im[people_img == 0] = [0, 0, 0]
     #return im
