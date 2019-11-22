@@ -165,6 +165,9 @@ def save_skin_masks_and_deskinned_people_images():
 
 def magic_wand(fnum, small_skin_mask,people_cutout):
     #small_skin_cutout = 1- small_skin_mask
+    if (small_skin_mask) is None:
+        print ("NO SKIN MASK?")
+        return None
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     #im = cv2.imread("seagull.jpg") #https://stackoverflow.com/questions/16705721/opencv-floodfill-with-mask
     from skimage.segmentation import flood, flood_fill
@@ -186,35 +189,49 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
             hists_sum += histr
         #cv2.imshow("Back",255*Bcurr)
         #cv2.waitKey(0)
-    if B is None:
-        Bsum = 0
-    else:
-        Bsum = len(B[B != 0])
+    #if B is None:
+    #    Bsum = 0
+    #else:
+    #    Bsum = len(B[B != 0])
 
     kernel = np.ones((10,10), np.uint8)
     small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
-    small_skin_mask = (1-small_skin_mask)
+    small_skin_mask = (small_skin_mask)
     #cv2.imshow("skin mask",small_skin_mask*255)
     #cv2.waitKey(0)
     if len(small_skin_mask[small_skin_mask==1]) == 0 or len(small_skin_mask[small_skin_mask==0]) == 0:
         print ("NO", fnum)
         return small_skin_mask_orig
-    cv2.imshow("skin",small_skin_mask*255)
-    cv2.waitKey(0)
+    #cv2.imshow("skin",small_skin_mask*255)
+    #cv2.waitKey(0)
 
     connectivity = 4
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(small_skin_mask , connectivity , cv2.CV_32S)
     print (centroids)
+    
     im_sobel = filters.sobel(im[..., 0]) + filters.sobel(im[..., 1]) + filters.sobel(im[..., 2])
-    print (im_sobel[0:])
-    kernel = np.ones((10,10), np.uint8)
-    im_sobel = cv2.dilate(im_sobel, kernel, iterations=1)
+    im_sobel = cv2.dilate(im_sobel,np.ones((10,10), np.uint8), iterations=1)
+
+    #cv2.imshow("people cutout",people_cutout*255)
+    #cv2.waitKey(0)
+    #loose_people_cutout = cv2.dilate(people_cutout,kernel,iterations = 1)
+    #cv2.imshow("people_cutout",loose_people_cutout*255)
+    #cv2.waitKey(0)
     skin_mask_total = None
     for i in range(0,centroids.shape[0]):
         x = int(centroids[i][0])#keypoints[i].pt[0] #i is the index of the blob you want to get the position
         y = int(centroids[i][1])#keypoints[i].pt[1]
+
         if people_cutout[y][x] == False:
-            print ("PEOPLE",people_cutout[y][x] == False)
+            """fig, ax = plt.subplots(nrows=2, figsize=(10, 20))
+            ax[0].imshow(im)
+            ax[0].plot(int(x),int(y), 'wo',color='blue')  # seed point
+            ax[0].set_title('spot not in person')
+            ax[0].axis('off')
+
+            fig.tight_layout()
+            plt.show()"""
+            print ("PEOPLE",people_cutout[y][x] )
             continue
 
         print (stats[i])
@@ -222,21 +239,17 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
             print ( small_skin_mask_orig[y][x])
             #continue
 
-        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.05)
-        im_skin_curr = im_skin_curr.astype(np.uint8)
+        im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.05).astype(np.uint8)
 
         # color correctness
         im_temp =  cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
-        histr = cv2.calcHist([im_temp],[0,1], mask=1-im_skin_curr, histSize=[256, 256], ranges=[0, 256, 0, 256] )
+        histr = cv2.calcHist([im_temp],[0,1], mask=cv2.bitwise_and(1-im_skin_curr,people_cutout), histSize=[256, 256], ranges=[0, 256, 0, 256] )
         correl = cv2.compareHist(histr, hists_sum,cv2.HISTCMP_CORREL)
         print ("COMPARISON",correl)
-        if correl < 0.05:
+        if correl < 0.02:
+            cv2.imshow("bad color match part",im_skin_curr*255)
+            cv2.waitKey(0)
             continue
-        #how_correct_is_color = len(im_skin_curr[ cv2.bitwise_and(B,im_skin_curr) == 1])/len(im_skin_curr[im_skin_curr == 1])
-        #if not Bsum == 0 and (how_correct_is_color) < 0.001: #if Bsum is 0 weird problem that idk why
-        #    print ("bad color?", how_correct_is_color)
-        #    continue
-
 
         if skin_mask_total is None:
             skin_mask_total = im_skin_curr
@@ -244,7 +257,7 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
             skin_mask_total =cv2.bitwise_or(im_skin_curr,skin_mask_total)
 
         print (x,y)
-        fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
+        """fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
 
         ax[0].imshow(im)
         ax[0].set_title('Original')
@@ -261,7 +274,7 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
         ax[2].axis('off')
 
         fig.tight_layout()
-        plt.show()
+        plt.show()"""
     if skin_mask_total is None:
         return small_skin_mask_orig
     return cv2.bitwise_and(1-skin_mask_total,small_skin_mask_orig)
@@ -271,7 +284,7 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
 fnum = 27#136#1649#14#1649 #26 27,,5, 154, 136
 im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 
-for fnum in [2,1,27,136,154,1649]:
+for fnum in [9,99,987,196,200,2,1,27,136,154,1649]:
     skin_mask = get_skin_mask(fnum)
     people_cutout =  get_people_cutout(fnum)
     skin_mask2 = magic_wand(fnum, skin_mask,people_cutout)
