@@ -170,7 +170,7 @@ def magic_wand(fnum, small_skin_mask):
 
     connectivity = 4
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(small_skin_mask , connectivity , cv2.CV_32S)
-    print (centroids)
+    #print (centroids)
 
     im_sobel = filters.sobel(im[..., 0]) + filters.sobel(im[..., 1]) + filters.sobel(im[..., 2])
     im_sobel = cv2.dilate(im_sobel,np.ones((10,10), np.uint8), iterations=1)
@@ -202,7 +202,7 @@ def magic_wand(fnum, small_skin_mask):
         else:
             skin_mask_total =cv2.bitwise_or(im_skin_curr,skin_mask_total)
 
-        print (x,y)
+        #print (x,y)
         """fig, ax = plt.subplots(nrows=3, figsize=(10, 20))
 
         ax[0].imshow(im)
