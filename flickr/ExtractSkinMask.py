@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import pickle
 import os, cv2, math
+from skimage.segmentation import flood, flood_fill
+from skimage import data, filters
 #from jeanCVModified import skinDetector
 #import cv2
 
@@ -111,7 +113,8 @@ def get_skin_mask(fnum):
     skin_cutout = get_skin_cutout(fnum)
     if skin_cutout is None:
         return None
-    return  1-skin_cutout
+    skin_mask = 1-skin_cutout
+    return magic_wand(fnum, skin_mask)
 
 #https://www.pyimagesearch.com/2015/04/06/zero-parameter-automatic-canny-edge-detection-with-python-and-opencv/
 def auto_canny(image, sigma=0.33):
@@ -137,73 +140,33 @@ def get_textured_mask(fnum):
 
     return textured_mask #mask with textured areas zeroed out
 
-def save_skin_masks_and_deskinned_people_images():
-    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-    finished_fnums =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/"%(DATA_PATH)))
-    for fnum in fnums_list:
-        if fnum in finished_fnums:
-            continue
-        print ("working on %d"%fnum)
-        skin_mask = get_skin_mask(fnum)
-        if skin_mask is None:
-            print ("no face...")
-            continue
-        people_cutout =  get_people_cutout(fnum)
-        if people_cutout is None:
-            continue
-        pickle.dump(skin_mask,open("%s/data/images/mask_rcnn_results/skin_masks/%d.png"%(DATA_PATH,fnum),"wb"))
 
-        #save image with skin darked out
-        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-        people_without_skin_cutout = cv2.bitwise_and(people_cutout,skin_mask)
-        sub = np.true_divide(im,5)
-        im = im - sub
-        im[people_without_skin_cutout == 0] = [0, 0, 0]
-        im  = im + sub
-        cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
-    print ("Done")
-
-def magic_wand(fnum, small_skin_mask,people_cutout):
+def magic_wand(fnum, small_skin_mask):
     #small_skin_cutout = 1- small_skin_mask
     if (small_skin_mask) is None:
-        print ("NO SKIN MASK?")
+        print ("NO SKIN MASK for fnum: ", fnum)
         return None
+
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-    #im = cv2.imread("seagull.jpg") #https://stackoverflow.com/questions/16705721/opencv-floodfill-with-mask
-    from skimage.segmentation import flood, flood_fill
-    from skimage import data, filters
+    people_cutout =  get_people_cutout(fnum)
+    if people_cutout is None:
+        return small_skin_mask
+        
     small_skin_mask_orig = small_skin_mask
-    #small_skin_mask  = small_skin_mask
     hists, _ = get_face_histograms_and_cutouts(fnum)
-    B = None
     hists_sum = None
     for histr in hists:
-        Bcurr = cv2.calcBackProject([im], channels=[0,1], hist=histr, ranges=[0,256,0,256], scale=1)
-        Bcurr = convolve(Bcurr, r=50)
-        #print (Bcurr)
-        if B is None:
-            B = Bcurr
+        if hists_sum is None:
             hists_sum = histr
         else:
-            B = cv2.bitwise_or(B,Bcurr)
             hists_sum += histr
-        #cv2.imshow("Back",255*Bcurr)
-        #cv2.waitKey(0)
-    #if B is None:
-    #    Bsum = 0
-    #else:
-    #    Bsum = len(B[B != 0])
 
-    kernel = np.ones((10,10), np.uint8)
+    #kernel = np.ones((10,10), np.uint8)
     #small_skin_mask = cv2.dilate((1-small_skin_mask), kernel, iterations=1)
-    small_skin_mask = (small_skin_mask)
-    #cv2.imshow("skin mask",small_skin_mask*255)
-    #cv2.waitKey(0)
-    if len(small_skin_mask[small_skin_mask==1]) == 0 or len(small_skin_mask[small_skin_mask==0]) == 0:
+
+    if len(small_skin_mask[small_skin_mask==1]) == 0 or len(small_skin_mask[small_skin_mask==0]) == 0: #no markings
         print ("NO", fnum)
         return small_skin_mask_orig
-    #cv2.imshow("skin",small_skin_mask*255)
-    #cv2.waitKey(0)
 
     connectivity = 4
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(small_skin_mask , connectivity , cv2.CV_32S)
@@ -212,25 +175,12 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
     im_sobel = filters.sobel(im[..., 0]) + filters.sobel(im[..., 1]) + filters.sobel(im[..., 2])
     im_sobel = cv2.dilate(im_sobel,np.ones((10,10), np.uint8), iterations=1)
 
-    #cv2.imshow("people cutout",people_cutout*255)
-    #cv2.waitKey(0)
-    #loose_people_cutout = cv2.dilate(people_cutout,kernel,iterations = 1)
-    #cv2.imshow("people_cutout",loose_people_cutout*255)
-    #cv2.waitKey(0)
     skin_mask_total = None
     for i in range(0,centroids.shape[0]):
         x = int(centroids[i][0])#keypoints[i].pt[0] #i is the index of the blob you want to get the position
         y = int(centroids[i][1])#keypoints[i].pt[1]
 
         if people_cutout[y][x] == False:
-            """fig, ax = plt.subplots(nrows=2, figsize=(10, 20))
-            ax[0].imshow(im)
-            ax[0].plot(int(x),int(y), 'wo',color='blue')  # seed point
-            ax[0].set_title('spot not in person')
-            ax[0].axis('off')
-
-            fig.tight_layout()
-            plt.show()"""
             print ("PEOPLE",people_cutout[y][x] )
             continue
 
@@ -278,18 +228,44 @@ def magic_wand(fnum, small_skin_mask,people_cutout):
     if skin_mask_total is None:
         return small_skin_mask_orig
     return cv2.bitwise_and(1-skin_mask_total,small_skin_mask_orig)
-#save_skin_masks_and_deskinned_people_images()
+
+def save_skin_masks_and_deskinned_people_images():
+    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+    finished_fnums =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/"%(DATA_PATH)))
+    #TODO redo so
+    finished_fnums = set([])
+    for fnum in fnums_list:
+        if fnum in finished_fnums:
+            continue
+        print ("working on %d"%fnum)
+        skin_mask = get_skin_mask(fnum)
+        if skin_mask is None:
+            print ("no face...")
+            continue
+        people_cutout =  get_people_cutout(fnum)
+        if people_cutout is None:
+            continue
+        pickle.dump(skin_mask,open("%s/data/images/mask_rcnn_results/skin_masks/%d.png"%(DATA_PATH,fnum),"wb"))
+
+        #save image with skin darked out
+        im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+        people_without_skin_cutout = cv2.bitwise_and(people_cutout,skin_mask)
+        sub = np.true_divide(im,5)
+        im = im - sub
+        im[people_without_skin_cutout == 0] = [0, 0, 0]
+        im  = im + sub
+        cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
+    print ("Done")
+save_skin_masks_and_deskinned_people_images()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
-fnum = 27#136#1649#14#1649 #26 27,,5, 154, 136
-im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
 
-for fnum in [9,99,987,196,200,2,1,27,136,154,1649]:
+"""
+for fnum in [197]:#196,200,2,1,27,136,154,1649]:
     skin_mask = get_skin_mask(fnum)
-    people_cutout =  get_people_cutout(fnum)
-    skin_mask2 = magic_wand(fnum, skin_mask,people_cutout)
+    skin_mask2 = magic_wand(fnum, skin_mask)
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
-
+    people_cutout = get_people_cutout(fnum)
     new_im =cv2.bitwise_and(im,im, mask = people_cutout)
     new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask)
     cv2.imshow("new image1",new_im)
@@ -297,7 +273,7 @@ for fnum in [9,99,987,196,200,2,1,27,136,154,1649]:
     new_im =cv2.bitwise_and(im,im, mask = people_cutout)
     new_im =cv2.bitwise_and(new_im,new_im, mask = skin_mask2)
     cv2.imshow("new image2",new_im)
-    cv2.waitKey(0)
+    cv2.waitKey(0)"""
 
 #new_im =cv2.bitwise_and(im,im, mask = cv2.bitwise_and(skin_mask_very_general,people_cutout))
 #cv2.imshow("new image2",new_im)
