@@ -151,7 +151,7 @@ def magic_wand(fnum, small_skin_mask):
     people_cutout =  get_people_cutout(fnum)
     if people_cutout is None:
         return small_skin_mask
-        
+
     small_skin_mask_orig = small_skin_mask
     hists, _ = get_face_histograms_and_cutouts(fnum)
     hists_sum = None
@@ -184,10 +184,6 @@ def magic_wand(fnum, small_skin_mask):
             print ("PEOPLE",people_cutout[y][x] )
             continue
 
-        print (stats[i])
-        if small_skin_mask_orig[y][x] != 0:
-            print ( small_skin_mask_orig[y][x])
-            #continue
 
         im_skin_curr = flood(im_sobel, (int(y),int(x)), tolerance=0.05).astype(np.uint8)
 
