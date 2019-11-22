@@ -192,8 +192,8 @@ def magic_wand(fnum, small_skin_mask):
         correl = cv2.compareHist(histr, hists_sum,cv2.HISTCMP_CORREL)
         print ("COMPARISON",correl)
         if correl < 0.02:
-            cv2.imshow("bad color match part",im_skin_curr*255)
-            cv2.waitKey(0)
+            #cv2.imshow("bad color match part",im_skin_curr*255)
+            #cv2.waitKey(0)
             continue
 
         if skin_mask_total is None:
@@ -251,7 +251,33 @@ def save_skin_masks_and_deskinned_people_images():
         im  = im + sub
         cv2.imwrite("%s/data/images/mask_rcnn_results/people_seg_images_without_skin/%d.png"%(DATA_PATH,fnum), im)
     print ("Done")
+
+def get_images_code_for_react_skinless():
+    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
+    fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"rb"))
+    monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,"hsv"),"rb")))
+    already_uploaded_skinless = pickle.load(open("../aws/people_segmented_images_uploaded_to_aws_fnums_without_skin.p","rb"))
+
+    my_str = ""
+    my_str += "  images: [\n"
+    for fnum in fnums_list:
+        if not fnum in already_uploaded_skinless:
+            continue
+        if fnum in monochrome_list:
+            continue
+        url = fnum_to_url_dict[fnum]
+        aws_seg_url = "https://design-trends-bucket.s3.us-east-2.amazonaws.com/people_seg_results_%d.png"%fnum
+        aws_seg_without_skin_url = "https://design-trends-bucket.s3.us-east-2.amazonaws.com/people_seg_results_without_skin_%d.png"%fnum
+        my_str += "['%s','%s','%s'],\n"%(url,aws_seg_url,aws_seg_without_skin_url)
+    my_str = my_str[:-2]+"\n"
+    my_str += "],"
+
+    text_file = open("%s/data/react-codes/react_for_skinless.txt"%DATA_PATH, "w")
+    text_file.write(my_str)
+    text_file.close()
+
 save_skin_masks_and_deskinned_people_images()
+get_images_code_for_react_skinless()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
 
