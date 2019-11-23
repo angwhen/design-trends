@@ -35,10 +35,11 @@ def upload_segmented_images_to_aws(skinless=False):
     if skinless:
         skinless_str = "_without_skin"
     finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images%s/"%(DATA_PATH,skinless_str)))
-    try:
-        already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"rb"))
-    except:
-        already_uploaded = set([])
+    #try:
+    #    already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"rb"))
+    #except:
+    #    already_uploaded = set([])
+    already_uploaded = set([])
     #for im in my_list:
     #    fnum = im[2].split("/")[-1]
     #    fnum = (int) (fnum.split(".jpg")[0])
