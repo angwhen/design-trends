@@ -54,7 +54,7 @@ def upload_segmented_images_to_aws(skinless=False):
             s3.upload_file(filename, bucket_name, objectname)
             already_uploaded.add(fnum)
             pickle.dump(already_uploaded,open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"wb")) # save freq in case stuff breaks
-
+    print ("DONE")
 
 upload_segmented_images_to_aws(skinless=True)
 

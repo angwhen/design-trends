@@ -22,14 +22,14 @@ def rgb_list_to_hex_list(rgb_list):
 def bgr_list_to_hex_list(bgr_list):
     return ["#%02x%02x%02x"%(int(c[2]),int(c[1]),int(c[0])) for c in bgr_list]
 
-def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
-    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_heads = False, remove_skin=False):
+    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
         pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
         raise ValueError("temporary bcuz have new data rn")
     except:
         fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-        fnum_to_pixels_dict,all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_monochrome , remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+        fnum_to_pixels_dict,all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_monochrome , remove_heads=remove_heads,remove_skin=remove_skin)
 
         all_colors_array_sample = np.array(all_colors)
         if color_rep == "hsv":
@@ -60,8 +60,8 @@ def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_pr
         pickle.dump(fnum_to_cluster_dict,open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"wb"))
         pickle.dump(fnum_to_distance_to_cluster_dict,open("%s/data/fnum_to_distance_to_cluster_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"wb"))
         pickle.dump(cluster_to_fnums_dict,open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"wb"))
-    make_react_codes_for_cluster_area_charts(Q,K,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
-    make_clusters_react_codes(Q,K,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    make_react_codes_for_cluster_area_charts(Q,K,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
+    make_clusters_react_codes(Q,K,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
 
 def make_dict_of_year_to_cluster_prop(Q, K, info_str):
     fnum_to_cluster_dict = pickle.load(open("%s/data/fnum_to_cluster_number_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K, info_str),"rb"))
@@ -83,9 +83,9 @@ def get_ordered_list_of_clusters(Q, K, info_str):
     tup_list = [[cluster,len(cluster_to_fnums_dict[cluster])] for cluster in cluster_to_fnums_dict.keys()]
     return [tup[0] for tup in sorted(tup_list, key = lambda x: x[1])]
 
-def make_react_codes_for_cluster_area_charts(Q, K, color_rep="rgb",remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+def make_react_codes_for_cluster_area_charts(Q, K, color_rep="rgb",remove_monochrome=False, remove_heads = False, remove_skin=False):
     print ("Starting React Codes for Cluster Area Charts")
-    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     year_to_cluster_props_dict = make_dict_of_year_to_cluster_prop(Q=Q,K=K,info_str=info_str)
     clusters_list = get_ordered_list_of_clusters(Q=Q,K=K,info_str=info_str)
 
@@ -115,9 +115,9 @@ def make_react_codes_for_cluster_area_charts(Q, K, color_rep="rgb",remove_monoch
     text_file.close()
     print ("Done with Area Chart Color React codes")
 
-def make_clusters_react_codes(Q,K, color_rep="rgb",remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+def make_clusters_react_codes(Q,K, color_rep="rgb",remove_monochrome=False, remove_heads = False, remove_skin=False):
     print ("Starting making Clustering React codes")
-    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
 
     fnum_to_url_dict = pickle.load(open("%s/data/basics/fnum_to_url_dict.p"%DATA_PATH,"rb"))
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))

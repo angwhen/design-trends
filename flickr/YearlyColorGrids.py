@@ -19,19 +19,19 @@ except:
 def rgb_list_to_hex_list(rgb_list):
     return ["#%02x%02x%02x"%(int(c[0]),int(c[1]),int(c[2])) for c in rgb_list]
 
-def make_yearly_dom_color_palettes(num_colors=10,color_rep="hsv",remove_monochrome=True, remove_predom_faces = False, remove_skin=False):
-    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
-    year_to_pixels_dict =  GetPixelsHelpers.get_year_to_pixels_dict(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+def make_yearly_dom_color_palettes(num_colors=10,color_rep="hsv",remove_monochrome=True, remove_heads = False, remove_skin=False):
+    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
+    year_to_pixels_dict =  GetPixelsHelpers.get_year_to_pixels_dict(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     year_to_color_palettes_dict = {}
     for year in year_to_pixels_dict.keys():
         year_to_color_palettes_dict[year] = ColorThief(year_to_pixels_dict[year]).get_palette(color_count=num_colors)
     pickle.dump(year_to_color_palettes_dict,open("%s/data/year_to_%d_color_palettes_dict%s.p"%(DATA_PATH,num_colors,info_str),"wb"))
 
-def make_yearly_quantization_based_color_palettes(Q=20,color_rep="hsv",remove_monochrome=True, remove_predom_faces = False, remove_skin=False):
+def make_yearly_quantization_based_color_palettes(Q=20,color_rep="hsv",remove_monochrome=True, remove_heads = False, remove_skin=False):
     #all_colors, year_to_pixels_dict = get_all_colors_and_year_to_pixels_dict()
-    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
-    _, all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
-    year_to_pixels_dict =  GetPixelsHelpers.get_year_to_pixels_dict(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
+    _, all_colors = GetPixelsHelpers.get_fnum_to_pixels_dict_and_all_colors(color_rep=color_rep,remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
+    year_to_pixels_dict =  GetPixelsHelpers.get_year_to_pixels_dict(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
 
     all_colors_array_sample = np.array(all_colors)
     if color_rep == "hsv":
@@ -83,10 +83,10 @@ def make_yearly_colors_list_for_react(num_colors,num_quantized_colors, info_str)
     text_file.close()
     print ("Done making yearly colors grids react codes")
 
-def yearly_grids(num_dom_colors=5, Q= 10, color_rep="hsv",remove_monochrome=True, remove_predom_faces = False, remove_skin=False):
-    make_yearly_quantization_based_color_palettes(Q=Q,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
-    make_yearly_dom_color_palettes(num_colors=num_dom_colors,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
-    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+def yearly_grids(num_dom_colors=5, Q= 10, color_rep="hsv",remove_monochrome=True, remove_heads = False, remove_skin=False):
+    make_yearly_quantization_based_color_palettes(Q=Q,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
+    make_yearly_dom_color_palettes(num_colors=num_dom_colors,color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
+    info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     make_yearly_colors_list_for_react(num_colors=num_dom_colors,num_quantized_colors=Q,info_str=info_str)
 """
 make_yearly_dom_color_palettes(num_colors=10)

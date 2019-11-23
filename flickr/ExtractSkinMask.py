@@ -276,7 +276,7 @@ def get_images_code_for_react_skinless():
     text_file.write(my_str)
     text_file.close()
 
-save_skin_masks_and_deskinned_people_images()
+#save_skin_masks_and_deskinned_people_images()
 get_images_code_for_react_skinless()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)

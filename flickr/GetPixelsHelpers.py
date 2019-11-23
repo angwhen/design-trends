@@ -32,8 +32,8 @@ def get_skin_mask(fnum):
     except:
         return None
 
-def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
-    if remove_predom_faces:
+def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_heads = False, remove_skin=False):
+    if remove_heads:
         if fnum in list_of_predom_faces_fnums:
             return []
 
@@ -72,9 +72,9 @@ def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_p
     my_pixels = im[ people_cutout != 0]
     return shuffle(my_pixels, random_state=0)
 
-def get_pixels_in_fnums(fnums, color_rep="rgb", remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+def get_pixels_in_fnums(fnums, color_rep="rgb", remove_monochrome=False, remove_heads = False, remove_skin=False):
     try:
-        info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+        info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
         fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
     except:
         fnum_to_pixels_dict = {}
@@ -83,23 +83,23 @@ def get_pixels_in_fnums(fnums, color_rep="rgb", remove_monochrome=False, remove_
         if fnum in fnum_to_pixels_dict:
             my_pixels = fnum_to_pixels_dict[fnum]
         else:
-            my_pixels = get_pixels_in_file(fnum, color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+            my_pixels = get_pixels_in_file(fnum, color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
         all_pixels.extend(my_pixels)
     return shuffle(all_pixels,random_state=0)[:360000]
 
-def get_pixels_dict_info_string(color_rep="rgb", remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+def get_pixels_dict_info_string(color_rep="rgb", remove_monochrome=False, remove_heads = False, remove_skin=False):
     info_string = "_color%s"%(color_rep)
     if remove_monochrome:
         info_string += "_removemonochrome"
-    if remove_predom_faces:
+    if remove_heads:
         info_string += "_removepredomfaces"
     if remove_skin:
         info_string += "_removeskin"
     return info_string
 
-def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_heads = False, remove_skin=False):
     print ("Getting years to pixels dict")
-    info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
         raise ValueError("temporary bcuz have new data rn")
         return pickle.load(open("%s/data/saved_pixels/year_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
@@ -107,7 +107,7 @@ def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_pre
         year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
         year_to_pixels_dict= {}
         for year in year_to_fnums_dict.keys():
-            year_pixels = get_pixels_in_fnums(year_to_fnums_dict[year], color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+            year_pixels = get_pixels_in_fnums(year_to_fnums_dict[year], color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
             if len(year_pixels) == 0:
                 print ("year %d has no valid pixels to use"%year)
                 continue
@@ -115,9 +115,9 @@ def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_pre
         pickle.dump(year_to_pixels_dict,open("%s/data/saved_pixels/year_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
         return year_to_pixels_dict
 
-def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=False, remove_predom_faces = False, remove_skin=False):
+def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=False, remove_heads = False, remove_skin=False):
     print ("Getting fnum to pixels dict and all colors")
-    info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+    info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
         fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
         all_colors= pickle.load(open("%s/data/saved_pixels/all_colors%s.p"%(DATA_PATH,info_string),"wb"))
@@ -127,7 +127,7 @@ def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=Fa
         fnum_to_pixels_dict = {}
         all_colors = []
         for fnum in fnums_list:
-            curr_pixels = get_pixels_in_file(fnum , color_rep=color_rep, remove_monochrome=remove_monochrome, remove_predom_faces=remove_predom_faces,remove_skin=remove_skin)
+            curr_pixels = get_pixels_in_file(fnum , color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
             if len(curr_pixels) != 0:
                 fnum_to_pixels_dict[fnum] = curr_pixels
                 all_colors.extend(curr_pixels)
