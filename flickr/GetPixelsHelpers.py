@@ -9,7 +9,7 @@ import cv2
 from collections import Counter
 from functools import reduce
 import colorsys
-import MonochromeDetector
+#import MonochromeDetector
 
 try:
     DATA_PATH  = open("data_location.txt", "r").read().strip()

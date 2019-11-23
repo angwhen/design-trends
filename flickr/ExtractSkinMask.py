@@ -265,10 +265,10 @@ def get_images_code_for_react_skinless():
             continue
         if fnum in monochrome_list:
             continue
-        if fnum in fnum_to_url_dict:
-            url = fnum_to_url_dict[fnum]
-        else:
-            url = ""
+        if fnum not in fnum_to_url_dict:
+            continue #some missing data
+        url = fnum_to_url_dict[fnum]
+
         aws_seg_url = "https://design-trends-bucket.s3.us-east-2.amazonaws.com/people_seg_results_%d.png"%fnum
         aws_seg_without_skin_url = "https://design-trends-bucket.s3.us-east-2.amazonaws.com/people_seg_results_without_skin_%d.png"%fnum
         my_str += "['%s','%s','%s'],\n"%(url,aws_seg_url,aws_seg_without_skin_url)
@@ -280,7 +280,7 @@ def get_images_code_for_react_skinless():
     text_file.close()
 
 #save_skin_masks_and_deskinned_people_images()
-get_images_code_for_react_skinless()
+#get_images_code_for_react_skinless()
 #im = get_image_with_non_people_blacked_out(5)
 #get_face_histograms_and_cutouts(154)
 
