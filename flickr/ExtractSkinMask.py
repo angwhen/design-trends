@@ -265,7 +265,10 @@ def get_images_code_for_react_skinless():
             continue
         if fnum in monochrome_list:
             continue
-        url = fnum_to_url_dict[fnum]
+        if fnum in fnum_to_url_dict:
+            url = fnum_to_url_dict[fnum]
+        else:
+            url = ""
         aws_seg_url = "https://design-trends-bucket.s3.us-east-2.amazonaws.com/people_seg_results_%d.png"%fnum
         aws_seg_without_skin_url = "https://design-trends-bucket.s3.us-east-2.amazonaws.com/people_seg_results_without_skin_%d.png"%fnum
         my_str += "['%s','%s','%s'],\n"%(url,aws_seg_url,aws_seg_without_skin_url)
