@@ -59,6 +59,7 @@ def make_year_to_fnums_dict(df):
             year_to_fnums_dict[year] = []
         year_to_fnums_dict[year].append(fnum)
     try:
+        # TODO: accidently deleted this file, may want to recover
         vfg_year_to_fnums_dict = pickle.load(open("%s/data/vfg_year_to_fnums_dict.p"%VFG_DATA_PATH,"rb"))
         for year in vfg_year_to_fnums_dict .keys():
             if year not in year_to_fnums_dict:
