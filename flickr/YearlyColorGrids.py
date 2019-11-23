@@ -1,14 +1,8 @@
-from matplotlib import pyplot as plt
-import pandas as pd
 import numpy as np
-import os, re, pickle, math, cv2
+import os, pickle
 from ColorThiefModified import ColorThief
 import colorsys
-from collections import deque
-from sklearn.utils import shuffle
 from sklearn.cluster import KMeans
-from collections import Counter
-from functools import reduce
 import HSVHelpers,  GetPixelsHelpers, QuantizationHelper
 
 try:
