@@ -91,7 +91,19 @@ def make_react_codes_for_cluster_area_charts(Q, K, color_rep="rgb",remove_monoch
         my_str += "\t  {\"name\":\"Color Cluster %d\",\"data\": {\n"%count
         count +=1
         for year in range(1852,2020):
-            if year not in year_to_cluster_props_dict:
+            if year not in year_to_cluster_props_dict: #interpolation
+                prev_year = year-1
+                next_year = year +1
+                while prev_year not in year_to_cluster_props_dict:
+                    prev_year -= 1
+                while next_year not in year_to_cluster_props_dict:
+                    next_year += 1
+                prev_prop = year_to_cluster_props_dict[prev_year][cluster]
+                next_prop = year_to_cluster_props_dict[next_year][cluster]
+                if year not in years_sum_so_far_dict:
+                     years_sum_so_far_dict[year] = 0
+                years_sum_so_far_dict[year] += (current_prop+next_prop)/2
+                my_str += " '%d': %f ,"%(year,years_sum_so_far_dict[year])
                 continue
             current_prop = year_to_cluster_props_dict[year][cluster]
             if year not in years_sum_so_far_dict:
