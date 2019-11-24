@@ -118,7 +118,7 @@ def make_clusters_react_codes(Q,K, color_rep="rgb",remove_monochrome=False, remo
     cluster_to_fnums_dict = pickle.load(open("%s/data/cluster_number_to_fnum_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
     fnum_to_distance_to_cluster_dict = pickle.load(open("%s/data/fnum_to_distance_to_cluster_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
     for i in range(0,K):
-        cluster_to_fnums_dict[i] = list(set(cluster_to_fnums_dict[i]))
+        #cluster_to_fnums_dict[i] = list(set(cluster_to_fnums_dict[i]))
         cluster_to_fnums_dict[i].sort(key = lambda x: fnum_to_distance_to_cluster_dict[x])
         cluster_to_fnums_dict[i] = [el for el in cluster_to_fnums_dict[i] if el in fnum_to_url_dict]
     min_len = reduce((lambda x, y: min(x,y)), [len(fnums) for fnums in cluster_to_fnums_dict.values()])
@@ -133,6 +133,8 @@ def make_clusters_react_codes(Q,K, color_rep="rgb",remove_monochrome=False, remo
         for k in range(0,K):
             curr_fnum = cluster_to_fnums_dict[k][i]
             my_str += "'%s',"%fnum_to_url_dict[curr_fnum]
+            if fnum_to_url_dict[curr_fnum] == "https://live.staticflickr.com/4073/35758701385_d98ef2114e_n.jpg":
+                print ("the bad url is from ", fnum)
         my_str = my_str[:-1]+"],\n"
     my_str = my_str[:-2]+"\n],\n"
 
