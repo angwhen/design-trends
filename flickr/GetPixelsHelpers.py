@@ -110,9 +110,9 @@ def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=Fa
     print ("Getting fnum to pixels dict and all colors")
     info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
-        #fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
-        #all_colors= pickle.load(open("%s/data/saved_pixels/all_colors%s.p"%(DATA_PATH,info_string),"wb"))
-        raise ValueError("temporary bcuz have new data rn")
+        fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
+        all_colors= pickle.load(open("%s/data/saved_pixels/all_colors%s.p"%(DATA_PATH,info_string),"wb"))
+        #raise ValueError("temporary error to rerun stuff bcuz have new data rn")
     except:
         fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
         fnum_to_pixels_dict = {}
