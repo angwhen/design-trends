@@ -25,6 +25,7 @@ def make_fnum_to_flickr_url_dict(df):
     pickle.dump(fnum_to_url_dict,open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"wb"))
     pickle.dump(fnum_to_url_dict,open("%s/data/basics/fnum_to_url_dict.p"%DATA_PATH,"wb"))
     try:
+        raise ValueError("We don't want to use the vintage fashion guild photos directly")
         vfg_fnum_to_url_dict = pickle.load(open("%s/data/vfg_fnum_to_url_dict.p"%VFG_DATA_PATH,"rb"))
         for fnum in vfg_fnum_to_url_dict.keys():
             fnum_to_url_dict[fnum]=url
