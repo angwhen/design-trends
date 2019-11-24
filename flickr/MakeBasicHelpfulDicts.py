@@ -36,7 +36,7 @@ def make_fnum_to_flickr_url_dict(df):
     all_urls = []
     for fnum in fnum_to_url_dict.keys():
         all_urls.append(fnum_to_url_dict[fnum])
-    print (fnum_to_url_dict)
+    #print (fnum_to_url_dict)
     print ("all urls size: ", len(all_urls))
     print ("setted becomes: ", len([set(all_urls)])) #check that no duplicates
 
