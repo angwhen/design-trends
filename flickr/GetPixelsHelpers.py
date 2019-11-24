@@ -92,8 +92,8 @@ def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_hea
     print ("Getting years to pixels dict")
     info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
-        raise ValueError("temporary bcuz have new data rn")
-        #return pickle.load(open("%s/data/saved_pixels/year_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
+        #raise ValueError("temporary bcuz have new data rn")
+        return pickle.load(open("%s/data/saved_pixels/year_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
     except:
         year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
         year_to_pixels_dict= {}
