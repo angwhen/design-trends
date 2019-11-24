@@ -20,7 +20,7 @@ def bgr_list_to_hex_list(bgr_list):
 def make_color_clusters(Q, K, color_rep="rgb",remove_monochrome=False, remove_heads = False, remove_skin=False):
     info_str = GetPixelsHelpers.get_pixels_dict_info_string(color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
-        pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
+        #pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
         raise ValueError("temporary bcuz have new data rn")
     except:
         fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))

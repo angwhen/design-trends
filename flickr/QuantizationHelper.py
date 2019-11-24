@@ -1,12 +1,7 @@
-import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.utils import shuffle
-import pandas as pd
 import numpy as np
-from time import time
 from collections import Counter
-from functools import reduce
-import pickle, math, random, cv2, colorsys
+import pickle
 import HSVHelpers
 
 
