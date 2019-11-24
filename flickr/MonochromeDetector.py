@@ -14,6 +14,7 @@ def save_monochrome_fnums_list(method = "hsv"):
     monochrome_list = []
     for fnum in fnums_list:
         im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
+
         if method == "hsv":
             hsv_im = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
             hsv_im = hsv_im.reshape(hsv_im.shape[0]*hsv_im.shape[1],3)
@@ -75,4 +76,4 @@ def make_react_code(method = "hsv"):
     print ("Done with React codes")
 
 save_monochrome_fnums_list(method = "hsv")
-make_react_code_for_prop_monochrome_over_time(method = "hsv")
+#make_react_code_for_prop_monochrome_over_time(method = "hsv")
