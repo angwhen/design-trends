@@ -119,7 +119,7 @@ def make_clusters_react_codes(Q,K, color_rep="rgb",remove_monochrome=False, remo
     fnum_to_distance_to_cluster_dict = pickle.load(open("%s/data/fnum_to_distance_to_cluster_dict_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
     for i in range(0,K):
         cluster_to_fnums_dict[i].sort(key = lambda x: fnum_to_distance_to_cluster_dict[x])
-        cluster_to_fnums_dict[i] = [el for el in cluster_to_fnums_dict[i] if el in fnum_to_url_dict
+        cluster_to_fnums_dict[i] = [el for el in cluster_to_fnums_dict[i] if el in fnum_to_url_dict]
     min_len = reduce((lambda x, y: min(x,y)), [len(fnums) for fnums in cluster_to_fnums_dict.values()])
     # CLUSTER LABELS
     cluster_to_hex_colors_proportions_list = pickle.load(open("%s/data/cluster_to_hex_colors_proportions_list_Q%d_K%d%s.p"%(DATA_PATH,Q,K,info_str),"rb"))
