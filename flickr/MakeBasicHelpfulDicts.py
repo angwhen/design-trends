@@ -86,6 +86,6 @@ def make_fnums_list(df):
 
 df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
 make_fnum_to_flickr_url_dict(df)
-make_fnum_to_year_dict(df)
-make_fnums_list(df)
-make_year_to_fnums_dict(df)
+#make_fnum_to_year_dict(df)
+#make_fnums_list(df)
+#make_year_to_fnums_dict(df)
