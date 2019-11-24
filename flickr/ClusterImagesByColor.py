@@ -102,7 +102,7 @@ def make_react_codes_for_cluster_area_charts(Q, K, color_rep="rgb",remove_monoch
                 next_prop = year_to_cluster_props_dict[next_year][cluster]
                 if year not in years_sum_so_far_dict:
                      years_sum_so_far_dict[year] = 0
-                years_sum_so_far_dict[year] += (current_prop+next_prop)/2
+                years_sum_so_far_dict[year] += (prev_prop+next_prop)/2
                 my_str += " '%d': %f ,"%(year,years_sum_so_far_dict[year])
                 continue
             current_prop = year_to_cluster_props_dict[year][cluster]
