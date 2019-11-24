@@ -1,15 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
-import pandas as pd
 import pickle, math, random
-from time import time
 import cv2
-from collections import Counter
-from functools import reduce
-import colorsys
-#import MonochromeDetector
 
 try:
     DATA_PATH  = open("data_location.txt", "r").read().strip()
@@ -17,7 +9,7 @@ except:
     DATA_PATH = "."
 
 monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,"hsv"),"rb")))
-#list_of_predom_faces_fnums = set(pickle.load(open("%s/data/predom_faces_list.p"%(DATA_PATH),"rb")))
+list_of_predom_faces_fnums = set(pickle.load(open("%s/data/predom_faces_list.p"%(DATA_PATH),"rb")))
 
 def get_people_cutout(masks,people_indices):
     sum_mask = masks[people_indices[0]]
