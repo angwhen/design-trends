@@ -134,7 +134,7 @@ def make_clusters_react_codes(Q,K, color_rep="rgb",remove_monochrome=False, remo
             curr_fnum = cluster_to_fnums_dict[k][i]
             my_str += "'%s',"%fnum_to_url_dict[curr_fnum]
             if fnum_to_url_dict[curr_fnum] == "https://live.staticflickr.com/4073/35758701385_d98ef2114e_n.jpg":
-                print ("the bad url is from ", fnum)
+                print ("the bad url is from "% fnum)
         my_str = my_str[:-1]+"],\n"
     my_str = my_str[:-2]+"\n],\n"
 
