@@ -17,8 +17,7 @@ except:
     DATA_PATH = "."
 
 monochrome_list = set(pickle.load(open("%s/data/monochrome_list_%s.p"%(DATA_PATH,"hsv"),"rb")))
-list_of_predom_faces_fnums = set(pickle.load(open("%s/data/predom_faces_list.p"%(DATA_PATH),"rb")))
-
+#list_of_predom_faces_fnums = set(pickle.load(open("%s/data/predom_faces_list.p"%(DATA_PATH),"rb")))
 
 def get_people_cutout(masks,people_indices):
     sum_mask = masks[people_indices[0]]
@@ -70,7 +69,7 @@ def get_pixels_in_file(fnum, color_rep = "rgb",remove_monochrome=False, remove_h
             people_cutout = cv2.bitwise_and(people_cutout,skin_mask)
 
     my_pixels = im[ people_cutout != 0]
-    return shuffle(my_pixels, random_state=0)
+    return shuffle(my_pixels, random_state=0)[:36000]
 
 def get_pixels_in_fnums(fnums, color_rep="rgb", remove_monochrome=False, remove_heads = False, remove_skin=False):
     try:
@@ -102,7 +101,7 @@ def get_year_to_pixels_dict(color_rep="rgb", remove_monochrome=False, remove_hea
     info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
         raise ValueError("temporary bcuz have new data rn")
-        return pickle.load(open("%s/data/saved_pixels/year_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
+        #return pickle.load(open("%s/data/saved_pixels/year_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
     except:
         year_to_fnums_dict=pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
         year_to_pixels_dict= {}
@@ -119,8 +118,8 @@ def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=Fa
     print ("Getting fnum to pixels dict and all colors")
     info_string =  get_pixels_dict_info_string( color_rep=color_rep, remove_monochrome=remove_monochrome, remove_heads=remove_heads,remove_skin=remove_skin)
     try:
-        fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
-        all_colors= pickle.load(open("%s/data/saved_pixels/all_colors%s.p"%(DATA_PATH,info_string),"wb"))
+        #fnum_to_pixels_dict = pickle.load(open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
+        #all_colors= pickle.load(open("%s/data/saved_pixels/all_colors%s.p"%(DATA_PATH,info_string),"wb"))
         raise ValueError("temporary bcuz have new data rn")
     except:
         fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
@@ -131,7 +130,7 @@ def get_fnum_to_pixels_dict_and_all_colors(color_rep="rgb", remove_monochrome=Fa
             if len(curr_pixels) != 0:
                 fnum_to_pixels_dict[fnum] = curr_pixels
                 all_colors.extend(curr_pixels)
-        all_colors = shuffle(np.array(all_colors), random_state=0)[:3600000]
+        all_colors = shuffle(np.array(all_colors), random_state=0)[:720000]
         pickle.dump(fnum_to_pixels_dict,open("%s/data/saved_pixels/fnum_to_pixels_dict%s.p"%(DATA_PATH,info_string),"wb"))
         pickle.dump(all_colors,open("%s/data/saved_pixels/all_colors%s.p"%(DATA_PATH,info_string),"wb"))
 
