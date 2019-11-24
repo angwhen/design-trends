@@ -64,7 +64,7 @@ def make_yearly_colors_list_for_react(num_colors,num_quantized_colors, info_str)
     my_str = my_str[:-2] + "],\n"
 
     quantized_years_breakdown = pickle.load(open("%s/data/quantized_years_breakdown_Q%d%s.p"%(DATA_PATH,num_quantized_colors,info_str),"rb"))
-    year_to_hex_colors_proportions_dict = quantized_years_breakdown.get_year_to_hex_colors_proportions_dict()
+    year_to_hex_colors_proportions_dict = quantized_years_breakdown.get_ims_to_hex_colors_proportions_dict()
     my_str += "yearly_quantized_colors: [\n"
     for curr_year in range(1800,2020):
         if curr_year not in year_to_hex_colors_proportions_dict:
