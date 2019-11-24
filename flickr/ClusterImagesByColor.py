@@ -65,6 +65,8 @@ def make_dict_of_year_to_cluster_prop(Q, K, info_str):
     year_to_cluster_prop_dict = {}
     for year in year_to_fnums_dict.keys():
         fnums = [fnum for fnum in year_to_fnums_dict[year] if fnum in fnum_to_cluster_dict]
+        if len(fnums) == 0:
+            continue
         year_to_cluster_prop_dict[year] = {}
         for cluster in clusters_list:
             year_to_cluster_prop_dict[year][cluster] = 0
