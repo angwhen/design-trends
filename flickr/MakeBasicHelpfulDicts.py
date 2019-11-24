@@ -43,7 +43,7 @@ def make_fnum_to_year_dict(df):
     try:
         vfg_fnum_to_year_dict = pickle.load(open("%s/data/vfg_fnum_to_year_dict.p"%VFG_DATA_PATH,"rb"))
         for fnum in vfg_fnum_to_year_dict.keys():
-            fnum_to_year_dict[fnum] = vfg_fnum_to_year_dict[fnum]
+            fnum_to_year_dict[fnum] = [int(year) for year in vfg_fnum_to_year_dict[fnum]]
     except:
         print ("do not have vintage fashion guild data yet")
     pickle.dump(fnum_to_year_dict,open("%s/data/basics/fnum_to_year_dict.p"%DATA_PATH,"wb"))
@@ -62,9 +62,9 @@ def make_year_to_fnums_dict(df):
         # TODO: accidently deleted this file, may want to recover
         vfg_year_to_fnums_dict = pickle.load(open("%s/data/vfg_year_to_fnums_dict.p"%VFG_DATA_PATH,"rb"))
         for year in vfg_year_to_fnums_dict .keys():
-            if year not in year_to_fnums_dict:
-                year_to_fnums_dict[year] = vfg_year_to_fnums_dict [year]
-            year_to_fnums_dict[year].extend(vfg_year_to_fnums_dict[year])
+            if int(year) not in year_to_fnums_dict:
+                year_to_fnums_dict[int(year)] = vfg_year_to_fnums_dict [year]
+            year_to_fnums_dict[int(year)].extend(vfg_year_to_fnums_dict[year])
     except:
         print ("do not have vintage fashion guild data yet")
     pickle.dump(year_to_fnums_dict,open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"wb"))
@@ -85,7 +85,7 @@ def make_fnums_list(df):
     pickle.dump(list(set(fnums_list)),open("%s/data/basics/fnums_list.p"%DATA_PATH,"wb"))
 
 df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
-make_fnum_to_flickr_url_dict(df)
-#make_fnum_to_year_dict(df)
+#make_fnum_to_flickr_url_dict(df)
+make_fnum_to_year_dict(df)
 #make_fnums_list(df)
-#make_year_to_fnums_dict(df)
+make_year_to_fnums_dict(df)
