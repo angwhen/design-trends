@@ -23,6 +23,7 @@ def make_fnum_to_flickr_url_dict(df):
         fname_num = (int) (fname_num.split(".jpg")[0])
         fnum_to_url_dict[fname_num]=url
     pickle.dump(fnum_to_url_dict,open("%s/data/basics/fnum_to_flickr_url_dict.p"%DATA_PATH,"wb"))
+    pickle.dump(fnum_to_url_dict,open("%s/data/basics/fnum_to_url_dict.p"%DATA_PATH,"wb"))
     try:
         vfg_fnum_to_url_dict = pickle.load(open("%s/data/vfg_fnum_to_url_dict.p"%VFG_DATA_PATH,"rb"))
         for fnum in vfg_fnum_to_url_dict.keys():
@@ -32,7 +33,7 @@ def make_fnum_to_flickr_url_dict(df):
         print ("do not have vintage fashion guild data yet")
     # print test
     all_urls = []
-    for fnum in fnum_to_url_dict:
+    for fnum in fnum_to_url_dict.keys():
         all_urls.append(fnum_to_url_dict[fnum])
     print ("all urls size: ", len(all_urls))
     print ("setted becomes: ", len([set(all_urls)])) #check that no duplicates
