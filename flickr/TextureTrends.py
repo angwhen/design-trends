@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 #from gluoncv import model_zoo, data, utils
 import numpy as np
-import pickle, os, cv2, math, boto3
+import pickle, os, cv2, math, boto3, time
 # make tiny 70x70 px crop images of the center of people
 # string them together vertically by year
 # to make height: 700, width 70 images
@@ -69,6 +69,7 @@ def save_years_samples(upload_to_aws = False):
     # make the 700x70 image with fnums of that year
     # if not enough fnums, just make the image shorter
     year_to_fnums_dict = pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%(DATA_PATH),"rb"))
+    done_years = []
     for year in year_to_fnums_dict.keys():
         fnums = year_to_fnums_dict[year]
         sample_images = []
@@ -81,9 +82,11 @@ def save_years_samples(upload_to_aws = False):
             continue
         year_image = sample_images[0]
         for i in range(1,min(10,len(sample_images))):
-            year_image= np.concatenate((year_image, sample_images[i]), axis=0)
+            year_image = np.concatenate((year_image, sample_images[i]), axis=0)
         cv2.imwrite("%s/data/images/samples/year_%d.png"%(DATA_PATH,year), year_image)
-
+        done_years.append(year)
+        
+    for year in done_years:
         filename = "%s/data/images/samples/year_%d.png"%(DATA_PATH,year)
         bucket_name = 'design-trends-bucket'
         objectname = "samples_from_year_%d.png"%(year)
