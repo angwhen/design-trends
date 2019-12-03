@@ -38,7 +38,7 @@ def get_sample_of_image(fnum):
     try:
         res = pickle.load(open("%s/data/images/mask_rcnn_results/res_%d.p"%(DATA_PATH,fnum),"rb"))
     except:
-        #print ("no such mask rcnn result for fnum %d"%fnum)
+        print ("no such mask rcnn result for fnum %d"%fnum)
         return None, None, None
 
     masks, ids = res[1], res[2]
