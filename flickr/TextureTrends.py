@@ -25,7 +25,7 @@ s3 = boto3.client('s3')
 
 def get_center_of_mask(mask):
     # https://answers.opencv.org/question/204175/how-to-get-boundry-and-center-information-of-a-mask/
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    _,contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     M = cv2.moments(contours[0])
     if (M['m00'] == 0 or M['m00'] == 0):
         return 0,0
@@ -126,9 +126,7 @@ def save_texture_amounts_dicts():
     year_to_score_sum_dict, year_to_total_num_dict  = {}, {}
     for fnum in fnums_list:
         total_score,sample_score = identify_texture_amount_in_fnum_and_sample(fnum)
-        #scale
-        total_score = total_score*100
-        sample_score = sample_score*100
+
         if sample_score != None:
             fnum_sample_to_score_dict[fnum] = sample_score
 
@@ -184,7 +182,7 @@ def save_texture_amounts_samples(upload_to_aws = False):
 
 print ("starting")
 save_texture_amounts_dicts()
-save_texture_amounts_samples(upload_to_aws=True)
+save_texture_amounts_samples(upload_to_aws=False)
 #make_react_code_for_years()
 #save_years_samples(upload_to_aws=True)
 print ("ending")
