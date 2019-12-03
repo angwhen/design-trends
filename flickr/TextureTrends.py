@@ -53,6 +53,8 @@ def get_sample_of_image(fnum):
             #print ("The center that you got is too on the edge")
             if which_mask == len(people_indices) - 1:
                 return None, None, None
+            else:
+                which_mask += 1
         else:
             break
 
