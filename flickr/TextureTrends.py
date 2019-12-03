@@ -28,6 +28,7 @@ def get_center_of_mask(mask):
     M = cv2.moments(contours[0])
     if (M['m00'] == 0 or M['m00']):
         return 0,0
+    print (round(M['m10'] / M['m00']), round(M['m01'] / M['m00']))
     return round(M['m10'] / M['m00']), round(M['m01'] / M['m00'])
 
 def get_sample_of_image(fnum):
