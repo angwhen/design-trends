@@ -107,35 +107,3 @@ def save_texture_amounts_samples(upload_to_aws = False):
     return None
 
 save_years_samples()
-
-def upload_segmented_images_to_aws(skinless=False):
-    s3 = boto3.client('s3')
-    #df =  pd.read_csv("%s/data/url_title_and_file_data.csv"%DATA_PATH)
-    #my_list = df[["url","year","file_name"]].values.tolist()
-
-    fnums_list = pickle.load(open("%s/data/basics/fnums_list.p"%DATA_PATH,"rb"))
-
-    skinless_str = ""
-    if skinless:
-        skinless_str = "_without_skin"
-    finished_peopled_ims =set(os.listdir("%s/data/images/mask_rcnn_results/people_seg_images%s/"%(DATA_PATH,skinless_str)))
-    #try:
-    #    already_uploaded = pickle.load(open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"rb"))
-    #except:
-    #    already_uploaded = set([])
-    already_uploaded = set([])
-    #for im in my_list:
-    #    fnum = im[2].split("/")[-1]
-    #    fnum = (int) (fnum.split(".jpg")[0])
-    for fnum in fnums_list:
-        if contains_person(fnum) and not fnum in already_uploaded and "%d.png"%fnum in finished_peopled_ims:
-            # want to change to get the person segmented only version
-            filename = "%s/data/images/mask_rcnn_results/people_seg_images%s/%d.png"%(DATA_PATH,skinless_str,fnum)
-            bucket_name = 'design-trends-bucket'
-            objectname = "people_seg_results%s_%d.png"%(skinless_str,fnum)
-            print (objectname)
-
-            s3.upload_file(filename, bucket_name, objectname)
-            already_uploaded.add(fnum)
-            pickle.dump(already_uploaded,open("people_segmented_images_uploaded_to_aws_fnums%s.p"%skinless_str,"wb")) # save freq in case stuff breaks
-    print ("DONE")
