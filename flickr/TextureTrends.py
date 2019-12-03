@@ -109,5 +109,7 @@ def save_texture_amounts_samples(upload_to_aws = False):
     # save images for those
 
     return None
+print ("starting")
 get_sample_of_image(1)
+print ("ending")
 #save_years_samples()
