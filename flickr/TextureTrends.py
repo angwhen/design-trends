@@ -44,6 +44,7 @@ def get_sample_of_image(fnum):
     masks, ids = res[1], res[2]
     people_indices = [i for i in range(0,masks.shape[0]) if ids[i] == 0]
     if len(people_indices) == 0:
+        print ("no people found")
         return None, None, None
 
     which_mask = 0
