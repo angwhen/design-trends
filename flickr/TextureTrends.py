@@ -111,7 +111,7 @@ def identify_texture_amount_in_fnum_and_sample(fnum):
     im = cv2.imread("%s/data/images/smaller_images/%d.jpg"%(DATA_PATH,fnum))
     im_sobel = filters.sobel(im[..., 0]) + filters.sobel(im[..., 1]) + filters.sobel(im[..., 2])
     total_score = np.mean(im_sobel)
-    if sample_im != None:
+    if sample_im is not None:
         sample_score = np.mean(im_sobel[center_y-35:center_y+35, center_x-35:center_x+35])
     else:
         sample_score = None
