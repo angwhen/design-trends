@@ -26,7 +26,7 @@ def get_center_of_mask(mask):
     # https://answers.opencv.org/question/204175/how-to-get-boundry-and-center-information-of-a-mask/
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     M = cv2.moments(contours[0])
-    if (M['m00'] == 0 or M['m00']):
+    if (M['m00'] == 0 or M['m00'] == 0):
         return 0,0
     print (round(M['m10'] / M['m00']), round(M['m01'] / M['m00']))
     return round(M['m10'] / M['m00']), round(M['m01'] / M['m00'])
