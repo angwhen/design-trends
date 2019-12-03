@@ -168,7 +168,7 @@ def save_texture_amounts_samples(upload_to_aws = False):
                 all_bin_images.append(bin_image)
 
         bin_image  = all_bin_images[0]
-        for j in range(1,len(all_bin_images)):
+        for j in range(1,min(10,len(all_bin_images))):
             bin_image = np.concatenate((bin_image, all_bin_images[j]), axis=0)
 
         cv2.imwrite("%s/data/images/samples/texture_samples_bin_%d.png"%(DATA_PATH,bin_num), bin_image)
@@ -181,7 +181,7 @@ def save_texture_amounts_samples(upload_to_aws = False):
         bin_num += 1
 
 print ("starting")
-save_texture_amounts_dicts()
+#save_texture_amounts_dicts()
 save_texture_amounts_samples(upload_to_aws=True)
 #make_react_code_for_years()
 #save_years_samples(upload_to_aws=True)
