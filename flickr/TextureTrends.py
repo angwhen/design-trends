@@ -24,7 +24,7 @@ s3 = boto3.client('s3')
 
 def get_center_of_mask(mask):
     # https://answers.opencv.org/question/204175/how-to-get-boundry-and-center-information-of-a-mask/
-    im, contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     M = cv2.moments(contours[0])
     if (M['m00'] == 0 or M['m00']):
         return 0,0
