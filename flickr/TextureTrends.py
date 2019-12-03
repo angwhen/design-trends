@@ -182,7 +182,7 @@ def save_texture_amounts_samples(upload_to_aws = False):
 
 print ("starting")
 save_texture_amounts_dicts()
-save_texture_amounts_samples(upload_to_aws=False)
+save_texture_amounts_samples(upload_to_aws=True)
 #make_react_code_for_years()
 #save_years_samples(upload_to_aws=True)
 print ("ending")
