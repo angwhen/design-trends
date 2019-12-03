@@ -180,9 +180,38 @@ def save_texture_amounts_samples(upload_to_aws = False):
             s3.upload_file(filename, bucket_name, objectname)
         bin_num += 1
 
+def make_react_code_for_texture_samples():
+    # show as many columns
+    my_str = ""
+    my_str += "  textures_samples_data: [\n"
+    for bin in range(0,21):
+        # will have some non-existing years
+        samples_url = "https://design-trends-bucket.s3.us-east-2.amazonaws.com/samples_from_texture_amounts_bin_%d.png"%bin
+        my_str += "['%s','%s'],\n"%(bin,samples_url)
+    my_str = my_str[:-2]+"\n"
+    my_str += "],"
+
+    text_file = open("%s/data/react-codes/react_for_samples_per_texture_bin.txt"%DATA_PATH, "w")
+    text_file.write(my_str)
+    text_file.close()
+
+def make_react_code_for_texture_over_time():
+    year_to_texture_score = pickle.load(open("%s/data/year_to_avg_texture_score_dict.p"%DATA_PATH,"rb"))
+    my_str += "my_data: ["
+    for year in range(1800,2020):
+        if year in year_to_texture_score:
+            my_str += "\t['%s', '%s'],\n"%(year, year_to_texture_score[year])
+    my_str = my_str[:-2]+"],\n\n"
+
+    text_file = open("%s/data/react-codes/react_texture_chart_over_time.txt"%(DATA_PATH), "w")
+    text_file.write(my_str)
+    text_file.close()
+    print ("Done with React codes")
+
 print ("starting")
+make_react_code_for_texture_over_time()
 #save_texture_amounts_dicts()
-save_texture_amounts_samples(upload_to_aws=True)
+#save_texture_amounts_samples(upload_to_aws=True)
 #make_react_code_for_years()
 #save_years_samples(upload_to_aws=True)
 print ("ending")
