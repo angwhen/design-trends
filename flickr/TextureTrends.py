@@ -197,7 +197,7 @@ def make_react_code_for_texture_samples():
 
 def make_react_code_for_texture_over_time():
     year_to_texture_score = pickle.load(open("%s/data/year_to_avg_texture_score_dict.p"%DATA_PATH,"rb"))
-    fnum_to_texture_score = pickle.load(open("%s/data/fnum_to_texture_score_dict.p"%DATA_PATH,"rb")))
+    fnum_to_texture_score = pickle.load(open("%s/data/fnum_to_texture_score_dict.p"%DATA_PATH,"rb"))
     year_to_fnums_dict = pickle.load(open("%s/data/basics/year_to_fnums_dict.p"%DATA_PATH,"rb"))
     my_str = "my_scatter_data: ["
     for year in range(1800,2020):
