@@ -54,6 +54,7 @@ def get_sample_of_image(fnum):
         if (center_y-35 < 0 or center_y +35 > im.shape[0] or center_x-35 < 0 or center_x +35 > im.shape[1]):
             #print ("The center that you got is too on the edge")
             if which_mask == len(people_indices) - 1:
+                print ("too off center")
                 return None, None, None
             else:
                 which_mask += 1
